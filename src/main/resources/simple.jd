@@ -1,0 +1,19 @@
+
+// Test comment
+justification initial {
+
+    evidence e1 is "asfafaff" {
+    }
+
+    sub-conclusion sc1 is "foobar"
+
+    e1 -> sc1
+}
+
+fragment partial {
+
+}
+
+composition {
+
+}
