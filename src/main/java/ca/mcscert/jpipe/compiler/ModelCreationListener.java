@@ -1,0 +1,101 @@
+package ca.mcscert.jpipe.compiler;
+
+import ca.mcscert.jpipe.compiler.builders.JustificationBuilder;
+import ca.mcscert.jpipe.model.*;
+import ca.mcscert.jpipe.syntax.JPipeBaseListener;
+import ca.mcscert.jpipe.syntax.JPipeParser;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ModelCreationListener extends JPipeBaseListener {
+
+    private static Logger logger = LogManager.getLogger(ModelCreationListener.class);
+
+
+    private JustificationBuilder justifBuilder;
+    private final List<Justification> justifications = new ArrayList<>();
+
+    public Unit build(String fileName) {
+        Unit result = new Unit(fileName);
+        for (Justification justification: justifications) {
+            result.add(justification);
+        }
+        return result;
+    }
+
+    /** Processing a Justification **/
+
+    @Override
+    public void enterJustification(JPipeParser.JustificationContext ctx) {
+        logger.trace("Entering Justification [" + ctx.id.getText() + "]");
+        justifBuilder = new JustificationBuilder(ctx.id.getText());
+        justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+    }
+
+    @Override
+    public void exitJustification(JPipeParser.JustificationContext ctx) {
+        logger.trace("Exiting Justification [" + ctx.id.getText() + "]");
+        Justification result = justifBuilder.build();
+        justifications.add(result);
+        justifBuilder = null;
+    }
+
+    /** Processing a Relation **/
+
+    @Override
+    public void enterRelation(JPipeParser.RelationContext ctx) {
+        logger.trace("  Processing Relation [" + ctx.from.getText() + "->" + ctx.to.getText() + "]");
+        justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+        justifBuilder.addDependency(ctx.from.getText(), ctx.to.getText());
+    }
+
+    /** Processing justification diagram elements **/
+
+    @Override
+    public void enterEvidence(JPipeParser.EvidenceContext ctx) {
+        logger.trace("  Processing Evidence [" + ctx.identified_element().id.getText() + "]");
+        justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+        Evidence evidence = new Evidence(ctx.identified_element().id.getText(),
+                                         clean(ctx.identified_element().name.getText()));
+        justifBuilder.addElement(evidence);
+    }
+
+    @Override
+    public void enterStrategy(JPipeParser.StrategyContext ctx) {
+        logger.trace("  Processing Strategy [" + ctx.identified_element().id.getText() + "]");
+        justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+        Strategy strategy = new Strategy(ctx.identified_element().id.getText(),
+                                         clean(ctx.identified_element().name.getText()));
+        justifBuilder.addElement(strategy);
+    }
+
+    @Override
+    public void enterSub_conclusion(JPipeParser.Sub_conclusionContext ctx) {
+        logger.trace("  Processing Sub-Conclusion [" + ctx.identified_element().id.getText() + "]");
+        justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+        SubConclusion subconclusion = new SubConclusion(ctx.identified_element().id.getText(),
+                                                        clean(ctx.identified_element().name.getText()));
+        justifBuilder.addElement(subconclusion);
+    }
+
+
+    @Override
+    public void enterConclusion(JPipeParser.ConclusionContext ctx) {
+        logger.trace("  Processing Sub-Conclusion [" + ctx.identified_element().id.getText() + "]");
+        justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+        Conclusion conclusion = new Conclusion(ctx.identified_element().id.getText(),
+                                                clean(ctx.identified_element().name.getText()));
+        justifBuilder.setConclusion(conclusion);
+        justifBuilder.addElement(conclusion);
+    }
+
+
+    private String clean(String s) {
+        return s.substring(1,s.length()-1);
+    }
+
+}
