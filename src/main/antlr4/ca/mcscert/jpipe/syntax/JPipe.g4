@@ -1,51 +1,77 @@
 grammar JPipe;
 
-/** Parser rules **/
-unit:
-    element+
-    EOF;
+/******************
+ ** Parser rules **
+ ******************/
 
-element:
-    justification | justif_fragment | composition;
+unit            : element+ EOF; // Root rule for parsing (called by the compiler)
+element         : justification | load | implementation ;
+justification   : JUSTIFICATION (is_pattern=PATTERN)? id=ID (impl=IMPLEMENTS parent=ID)? OPEN justif_body CLOSE;
+justif_body     : (evidence | sub_conclusion | strategy | relation | conclusion)+;
+load            : LOAD file=STRING;
+implementation  : IMPLEMENTATION id=ID OF justifiation_id=ID OPEN impl_body CLOSE;
+impl_body       : (IMPLEMENTS id=ID OPEN (probe | operation) expectation? CLOSE)+;
 
-justification:
-    JUSTIF id=ID '{'
-        (evidence | sub_conclusion | relation)*
-    '}';
+identified_element: id=ID IS name=STRING;
 
-justif_fragment:
-    FRAGMENT id=ID '{' '}';
+evidence        : (is_abstract=ABSTRACT)? EVIDENCE identified_element;
+strategy        : STRATEGY        identified_element;
+sub_conclusion  : SUBCONCLUSION   identified_element;
+conclusion      : CONCLUSION      identified_element;
 
-composition:
-    COMPOSITION '{' '}';
+probe           : PROBE IS command;
+operation       : OPERATION IS command;
+expectation     : EXPECTATION IS expression;
 
-relation:
-    from=ID '->' to=ID;
+relation        : from=ID SUPPORT_LNK to=ID;
 
-evidence:
-    EVIDENCE id=ID IS name=STRING '{' '}';
+command         : id=ID command_args?;
+command_args    : OP_CALL STRING (SEP_CALL STRING)* CL_CALL;
 
-sub_conclusion:
-    SUBCONCLUSION id=ID IS name=STRING;
+expression      : (boolean_expr | command) (op=BOOL_OP expression)*;
+boolean_expr    : (NOT)? symbol=ID (op=ARITH_OP INTEGER)?;
 
-/** Lexer rules **/
-
-WHITESPACE  : [ \t]+               -> channel(HIDDEN);
-NEWLINE     : ('\r'? '\n' | '\r')+ -> channel(HIDDEN) ;
-
-COMMENT     : '/*' .*? '*/'    -> skip;
-LINE_COMMENT: '//'STRING_CHAR* -> skip;
+/*****************
+ ** Lexer rules **
+ *****************/
 
 // Keywords
-IS           : 'is';
-JUSTIF       : 'justification';
-FRAGMENT     : 'fragment';
-COMPOSITION  : 'composition';
-EVIDENCE     : 'evidence';
-SUBCONCLUSION: 'sub-conclusion';
+JUSTIFICATION   : 'justification';
+IS              : 'is';
+EVIDENCE        : 'evidence';
+STRATEGY        : 'strategy';
+SUBCONCLUSION   : 'sub-conclusion';
+CONCLUSION      : 'conclusion';
+SUPPORT_LNK     : 'supports';
+LOAD            : 'load';
+IMPLEMENTATION  : 'implementation';
+OF              : 'of';
+IMPLEMENTS      : 'implements';
+PROBE           : 'probe';
+EXPECTATION     : 'expectation';
+OPERATION       : 'operation';
+BOOL_OP         : 'or' | 'and';
+NOT             : 'not';
+ARITH_OP        : '==' | '>' | '<' | '<=' | '>=';
+PATTERN         : 'pattern';
+ABSTRACT        : 'abstract';
 
-// Symbols
-ID          : ('A'..'Z' | 'a'..'z' | '0'..'9')+;
-STRING      : '"' STRING_CHAR* '"';
+// Making whitespaces and newlines irrelevant to the syntax
+WHITESPACE  : [ \t]+                -> channel(HIDDEN);
+NEWLINE     : ('\r'? '\n' | '\r')+  -> channel(HIDDEN);
+
+// Supporting multi-line and single-line comments
+COMMENT     : '/*' .*? '*/'         -> channel(HIDDEN);
+LINE_COMMENT: '//'STRING_CHAR*      -> channel(HIDDEN);
+
+// Symbols & strings
+INTEGER     : [0-9][1-9]*;
+ID          : ( [A-Z] | [a-z] | INTEGER | '_' | '-')+;
+STRING      : '"' STRING_CHAR* '"' | '\'' STRING_CHAR* '\'' ;
+OPEN        : '{';
+CLOSE       : '}';
+OP_CALL     : '(';
+CL_CALL     : ')';
+SEP_CALL    : ',';
 
 fragment STRING_CHAR : ~('\r' | '\n');

@@ -4,3 +4,6 @@
 target
 *.class 
 *~
+*.png
+*.jar
+.DS_Store
