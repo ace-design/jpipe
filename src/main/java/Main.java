@@ -7,9 +7,9 @@ import ca.mcscert.jpipe.exporters.ExportationError;
 import ca.mcscert.jpipe.model.Justification;
 import ca.mcscert.jpipe.model.Unit;
 
-import java.io.FileNotFoundException;
 import org.apache.commons.cli.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Main {
 
@@ -18,6 +18,7 @@ public class Main {
 
     private static CommandLine setupCLI(String[] args) {
         Options options = new Options();
+
         Option input = new Option("i", "input", true, "input file path");
         input.setRequired(true);
         options.addOption(input);
@@ -29,31 +30,30 @@ public class Main {
         Option diagram = new Option("d", "diagram", true, "diagram name");
         diagram.setRequired(true);
         options.addOption(diagram);
-    
+        
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
-        CommandLine cmd = null;
+        CommandLine cmd;
     
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
             System.out.println(e.getMessage());
             formatter.printHelp("jpipe", options);
-            System.exit(1);
+            throw new RuntimeException("Error parsing command line arguments", e);
         }
     
         return cmd;
     }
     
     public static void main(String[] args) {
-
         CommandLine cmd = setupCLI(args);
         String inputFile = cmd.getOptionValue("input");
         String outputFile = cmd.getOptionValue("output");
         String diagramName = cmd.getOptionValue("diagram");
-    
+        
         Compiler compiler = new Compiler();
-        Unit unit = null;
+        Unit unit;
         try {
             unit = compiler.compile(inputFile);
             
@@ -66,14 +66,12 @@ public class Main {
             }
         
             if (!diagramExists) {
-                System.err.println(ANSI_RED + "Diagram not found: " + diagramName + ANSI_RESET);
-                System.exit(1);
+                throw new IllegalArgumentException(ANSI_RED + "Diagram not found: " + diagramName + ANSI_RESET);
             }
         
             File outputDirectory = new File(outputFile).getParentFile();
             if (!outputDirectory.exists()) {
-                System.err.println(ANSI_RED + "Output directory does not exist: " + outputDirectory.getPath() + ANSI_RESET);
-                System.exit(1);
+                throw new IllegalArgumentException(ANSI_RED + "Output directory does not exist: " + outputDirectory.getPath() + ANSI_RESET);
             }
         
             Exportation<Justification> exporter = new DiagramExporter();
@@ -83,18 +81,15 @@ public class Main {
                     exporter.export(j, outputFilePath);
                 }    
             }
-        } catch (FileNotFoundException fnfe) {
-            System.err.println(ANSI_RED + "File not found: " + fnfe.getMessage() + ANSI_RESET);
-            System.exit(1);
-        } catch (CompilationError | TypeError | ExportationError err) {
-            System.err.println(ANSI_RED + err.getMessage() + ANSI_RESET);
-            System.exit(1);
+        } catch (FileNotFoundException e) {
+            System.err.println(ANSI_RED + "File not found: " + e.getMessage() + ANSI_RESET);
+        } catch (CompilationError | TypeError | ExportationError e) {
+            System.err.println(ANSI_RED + e.getMessage() + ANSI_RESET);
         }
-        System.exit(0);
     }
     
     private static String removeFileExtension(String filename) {
-        // https://www.baeldung.com/java-filename-without-extension
         return filename.replaceAll("(?<!^)[.][^.]*$", "");
     }
 }
+
