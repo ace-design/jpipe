@@ -1,9 +1,8 @@
 package ca.mcscert.jpipe.compiler;
 
-import ca.mcscert.jpipe.compiler.visitors.EvidenceCounter;
+import ca.mcscert.jpipe.compiler.visitors.ElementCounter;
 import ca.mcscert.jpipe.model.Justification;
 import ca.mcscert.jpipe.model.Unit;
-import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,9 +50,9 @@ public class CompilerTest {
     @Test
     public void rightNumberOfEvidences(){
         Justification justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
-        EvidenceCounter counter = new EvidenceCounter();
+        ElementCounter counter = new ElementCounter();
         justificationUnderTest.accept(counter);
-        assertEquals(3, counter.getResult());
+        assertEquals(3, counter.getResult().get(ElementCounter.EVIDENCE));
     }
 
 
