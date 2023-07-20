@@ -1,0 +1,58 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+  # Triggers the workflow on push and pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+     # added cache to used cached maven dependencies from previous build. 
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          # A directory to store and save the cache
+          path: ~/.m2/repository
+          # An explicit key for restoring and saving the cache 
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Setting up Java for running mvn
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          
+      # Compile main source code 
+      - name: Build with Maven
+        run: mvn compile
+      
+      # run unit tests 
+      - name: Test with Maven
+        run: mvn test
+      
+      # Installing packaged artifact to the local maven repository
+      - name: Install with Maven 
+        run: mvn clean install 
+        
+      # Uploading artifact 
+      - name: Store Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: jpipe-artifact
+          path: target/jpipe.jar
