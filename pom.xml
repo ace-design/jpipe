@@ -33,6 +33,11 @@
             <artifactId>graphviz-java</artifactId>
             <version>0.18.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+        </dependency>
         <!-- Tests dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

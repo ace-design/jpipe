@@ -1,7 +1,7 @@
 
 load "./simple.jd"
 
-implementation I1 of prove_model {
+implementation I1 of prove_models {
 
     implements Su1 {
       probe is count_files('./models/*.ndr')
@@ -29,3 +29,4 @@ implementation I1 of prove_model {
     }
 
 }
+
