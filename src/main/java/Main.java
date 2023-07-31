@@ -1,3 +1,5 @@
+import ca.mcscert.jpipe.CommandLineConfiguration;
+import ca.mcscert.jpipe.Logo;
 import ca.mcscert.jpipe.compiler.CompilationError;
 import ca.mcscert.jpipe.compiler.Compiler;
 import ca.mcscert.jpipe.compiler.TypeError;
@@ -11,89 +13,63 @@ import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Optional;
 
 public class Main {
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
 
-    private static CommandLine setupCLI(String[] args) {
-        Options options = new Options();
-        Option input = new Option("i", "input", true, "input file path");
-        input.setRequired(true);
-        options.addOption(input);
-
-        Option output = new Option("o", "output", true, "output file path");
-        output.setRequired(true);
-        options.addOption(output);
-
-        Option diagram = new Option("d", "diagram", true, "diagram name");
-        diagram.setRequired(true);
-        options.addOption(diagram);
-
-        Option help = new Option("h", "help", false, "display help message");
-        options.addOption(help);
-
-        CommandLineParser parser = new DefaultParser();
-        HelpFormatter formatter = new HelpFormatter();
-        CommandLine cmd;
-
+    public static void main(String[] args) {
+        CommandLineConfiguration config = new CommandLineConfiguration(args);
+        CommandLine cmd = null;
         try {
-            cmd = parser.parse(options, args);
-            if (cmd.hasOption("h")) {
-                formatter.printHelp("jpipe", options);
+            Optional<CommandLine> tmp = config.read();
+            if (tmp.isEmpty()){
+                config.help();
                 System.exit(0);
             }
+            cmd = tmp.get();
         } catch (ParseException e) {
-            System.out.println(e.getMessage());
-            formatter.printHelp("jpipe", options);
-            throw new RuntimeException("Error parsing command line arguments", e);
+            System.err.println(ANSI_RED +e.getMessage() + ANSI_RESET);
+            System.exit(1);
         }
 
-        return cmd;
-    }
-
-    public static void main(String[] args) {
-        CommandLine cmd = setupCLI(args);
         String inputFile = cmd.getOptionValue("input");
         String outputFile = cmd.getOptionValue("output");
         String diagramName = cmd.getOptionValue("diagram");
 
-        Compiler compiler = new Compiler();
-        Unit unit;
-
         try {
-            unit = compiler.compile(inputFile);
+            process(inputFile, outputFile, diagramName);
+        } catch (RuntimeException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+    }
 
-            boolean diagramExists = false;
-            for (Justification j : unit.getJustificationSet()) {
-                if (j.getName().equals(diagramName)) {
-                    diagramExists = true;
-                    break;
-                }
-            }
-
-            if (!diagramExists) {
-                throw new IllegalArgumentException(ANSI_RED + "Diagram not found: " + diagramName + ANSI_RESET);
-            }
-
-            File outputDirectory = new File(outputFile).getParentFile();
-            if (!outputDirectory.exists()) {
-                throw new IllegalArgumentException(ANSI_RED + "Output directory does not exist: " + outputDirectory.getPath() + ANSI_RESET);
-            }
-
-            Exportation<Justification> exporter = new DiagramExporter();
-            for (Justification j : unit.getJustificationSet()) {
-                if (j.getName().equals(diagramName)) {
-                    String outputFilePath = removeFileExtension(outputFile) + "_" + j.getName() + ".png";
-                    exporter.export(j, outputFilePath);
-                }
-            }
-        } catch (FileNotFoundException fnfe) {
-            throw new RuntimeException(ANSI_RED + "File not found: " + fnfe.getMessage() + ANSI_RESET, fnfe);
+    private static void process(String inputFile, String outputFile, String diagramName) {
+        Unit unit;
+        try {
+            unit = (new Compiler()).compile(inputFile);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(ANSI_RED + "File not found: " + e.getMessage() + ANSI_RESET, e);
         } catch (CompilationError | TypeError | ExportationError err) {
             throw new RuntimeException(ANSI_RED + err.getMessage() + ANSI_RESET, err);
         }
+
+        File outputDirectory = new File(outputFile).getParentFile();
+        if (!outputDirectory.exists()) {
+            throw new IllegalArgumentException(ANSI_RED + "Output directory does not exist: " + outputDirectory.getPath() + ANSI_RESET);
+        }
+
+        Optional<Justification> tmp = unit.findByName(diagramName);
+        if (tmp.isEmpty()) {
+            throw new IllegalArgumentException(ANSI_RED + "Diagram not found: " + diagramName + ANSI_RESET);
+        }
+        Justification justification = tmp.get();
+        Exportation<Justification> exporter = new DiagramExporter();
+        String outputFilePath = removeFileExtension(outputFile) + "_" + justification.getName() + ".png";
+        exporter.export(justification, outputFilePath);
     }
 
     private static String removeFileExtension(String filename) {
