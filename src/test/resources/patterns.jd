@@ -1,4 +1,4 @@
-justification pattern prover_pattern {
+pattern prover_pattern {
 
     @support Su1 is "Model is ready"
     @support Su2 is "Prover is available"
@@ -16,7 +16,7 @@ justification pattern prover_pattern {
 
 justification J1 realizes prover_pattern {
 
-    override sub-conclusion Su1 = "Merged model is available"
+    sub-conclusion Su1 = "Merged model is available"
     strategy St0 = "Merge Atomic model"
     support Su0 = "Atomic Petri nets are available"
     Su0 supports St0
