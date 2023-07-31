@@ -1,7 +1,6 @@
 package ca.mcscert.jpipe.compiler;
 
 import ca.mcscert.jpipe.model.Unit;
-import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeLexer;
 import ca.mcscert.jpipe.syntax.JPipeParser;
 import org.antlr.v4.runtime.CharStream;

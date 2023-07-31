@@ -3,6 +3,7 @@ package ca.mcscert.jpipe.model;
 import ca.mcscert.jpipe.visitors.AbstractVisitor;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class Unit implements Visitable {
@@ -13,6 +14,14 @@ public class Unit implements Visitable {
     public Unit(String fileName) {
         this.fileName = fileName;
         this.justificationSet = new HashSet<>();
+    }
+
+    public Optional<Justification> findByName(String name) {
+        for (Justification j : this.getJustificationSet()) {
+            if (j.getName().equals(name))
+                return Optional.of(j);
+        }
+        return Optional.empty();
     }
 
     public void add(Justification justification) {
