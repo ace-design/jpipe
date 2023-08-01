@@ -30,10 +30,15 @@ public class ToGraph extends AbstractVisitor<MutableGraph> {
     }
 
     @Override
-    public void visit(Justification j) {
-        logger.trace("  Visiting justification ["+j.getName()+"]");
+    public void visit(ConcreteJustification j) {
+        logger.trace("  Visiting justification ["+j.name()+"]");
         // we assume one single justification diagram
-        j.getConclusion().accept(this);
+        j.conclusion().accept(this);
+    }
+
+    @Override
+    public void visit(JustificationPattern p) {
+        throw new UnsupportedOperationException("Cannot export a Justification Pattern as a graph");
     }
 
     @Override
@@ -101,4 +106,11 @@ public class ToGraph extends AbstractVisitor<MutableGraph> {
         n.addTo(this.result);
         this.parent.ifPresent(n::addLink);
     }
+
+    @Override
+    public void visit(AbstractSupport a) {
+        throw new UnsupportedOperationException("A justification does not contain abstract supports");
+    }
+
+
 }

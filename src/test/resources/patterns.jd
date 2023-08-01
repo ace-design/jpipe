@@ -22,7 +22,7 @@ justification J1 realizes prover_pattern {
     Su0 supports St0
     St0 supports Su1
 
-    override support Su2 = "TINA is available"
+    evidence Su2 = "TINA is available"
 
 }
 

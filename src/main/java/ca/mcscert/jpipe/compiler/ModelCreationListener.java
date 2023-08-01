@@ -1,5 +1,6 @@
 package ca.mcscert.jpipe.compiler;
 
+import ca.mcscert.jpipe.compiler.builders.ConcreteJustificationBuilder;
 import ca.mcscert.jpipe.compiler.builders.JustificationBuilder;
 import ca.mcscert.jpipe.model.*;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
@@ -16,12 +17,12 @@ public class ModelCreationListener extends JPipeBaseListener {
     private static Logger logger = LogManager.getLogger(ModelCreationListener.class);
 
 
-    private JustificationBuilder justifBuilder;
-    private final List<Justification> justifications = new ArrayList<>();
+    private ConcreteJustificationBuilder justifBuilder;
+    private final List<JustificationDiagram> justifications = new ArrayList<>();
 
     public Unit build(String fileName) {
         Unit result = new Unit(fileName);
-        for (Justification justification: justifications) {
+        for (JustificationDiagram justification: justifications) {
             result.add(justification);
         }
         return result;
@@ -32,14 +33,14 @@ public class ModelCreationListener extends JPipeBaseListener {
     @Override
     public void enterJustification(JPipeParser.JustificationContext ctx) {
         logger.trace("Entering Justification [" + ctx.id.getText() + "]");
-        justifBuilder = new JustificationBuilder(ctx.id.getText());
+        justifBuilder = new ConcreteJustificationBuilder(ctx.id.getText());
         justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
     }
 
     @Override
     public void exitJustification(JPipeParser.JustificationContext ctx) {
         logger.trace("Exiting Justification [" + ctx.id.getText() + "]");
-        Justification result = justifBuilder.build();
+        JustificationDiagram result = justifBuilder.build();
         justifications.add(result);
         justifBuilder = null;
     }
