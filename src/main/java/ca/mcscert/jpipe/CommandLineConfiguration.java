@@ -56,7 +56,6 @@ public class CommandLineConfiguration {
         options.addOption(output);
 
         Option diagram = new Option("d", "diagram", true, "diagram name");
-        diagram.setRequired(true);
         options.addOption(diagram);
 
         return options;
