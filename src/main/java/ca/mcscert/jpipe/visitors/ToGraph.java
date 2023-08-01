@@ -14,7 +14,7 @@ import static guru.nidi.graphviz.model.Factory.*;
 
 public class ToGraph extends AbstractVisitor<MutableGraph> {
 
-    private static Logger logger = LogManager.getLogger(ToGraph.class);
+    private final static Logger logger = LogManager.getLogger(ToGraph.class);
 
     private Optional<String> parent;
 
@@ -32,13 +32,17 @@ public class ToGraph extends AbstractVisitor<MutableGraph> {
     @Override
     public void visit(ConcreteJustification j) {
         logger.trace("  Visiting justification ["+j.name()+"]");
+        this.result.graphAttrs().add(Label.markdown(j.name()));
         // we assume one single justification diagram
         j.conclusion().accept(this);
     }
 
     @Override
     public void visit(JustificationPattern p) {
-        throw new UnsupportedOperationException("Cannot export a Justification Pattern as a graph");
+        logger.trace("  Visiting pattern ["+p.name()+"]");
+        this.result.graphAttrs().add(Label.markdown("&lt;&lt;pattern&gt;&gt;&nbsp;" + p.name()));
+        // we assume one single justification diagram
+        p.conclusion().accept(this);
     }
 
     @Override
@@ -49,7 +53,7 @@ public class ToGraph extends AbstractVisitor<MutableGraph> {
                 .add(Shape.RECT)
                 .add(Style.FILLED)
                 .add(Color.LIGHTGREY.fill())
-                .add(Style.lineWidth(1))
+                .add(Style.lineWidth(1.01))
                 .addTo(this.result);
         this.parent = Optional.of(c.getIdentifier());
         for(Strategy s: c.getSupports()) {
@@ -65,7 +69,7 @@ public class ToGraph extends AbstractVisitor<MutableGraph> {
                 .add(Shape.PARALLELOGRAM)
                 .add(Style.FILLED)
                 .add(Color.PALEGREEN.fill())
-                .add(Style.lineWidth(1));
+                .add(Style.lineWidth(1.01));
         n.addTo(this.result);
         this.parent.ifPresent(n::addLink);
         Optional<String> old = this.parent;
@@ -83,7 +87,7 @@ public class ToGraph extends AbstractVisitor<MutableGraph> {
                 .add(Label.markdown(sc.getLabel()))
                 .add(Shape.RECT)
                 .add(Color.DODGERBLUE)
-                .add(Style.lineWidth(1));
+                .add(Style.lineWidth(1.01));
         n.addTo(this.result);
         this.parent.ifPresent(n::addLink);
         Optional<String> old = this.parent;
@@ -102,14 +106,22 @@ public class ToGraph extends AbstractVisitor<MutableGraph> {
                 .add(Shape.RECT)
                 .add(Color.LIGHTSKYBLUE2.fill())
                 .add(Style.FILLED)
-                .add(Style.lineWidth(1));
+                .add(Style.lineWidth(1.01));
         n.addTo(this.result);
         this.parent.ifPresent(n::addLink);
     }
 
     @Override
     public void visit(AbstractSupport a) {
-        throw new UnsupportedOperationException("A justification does not contain abstract supports");
+        logger.trace("  Visiting abstract support ["+a.getIdentifier()+"]");
+        MutableNode n = mutNode(a.getIdentifier())
+                .add(Label.markdown(a.getLabel()))
+                .add(Shape.RECT)
+                .add(Color.LIGHTCORAL.fill())
+                .add(Style.FILLED)
+                .add(Style.lineWidth(1.01));
+        n.addTo(this.result);
+        this.parent.ifPresent(n::addLink);
     }
 
 
