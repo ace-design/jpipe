@@ -5,12 +5,9 @@ import ca.mcscert.jpipe.compiler.TypeError;
 import ca.mcscert.jpipe.exporters.DiagramExporter;
 import ca.mcscert.jpipe.exporters.Exportation;
 import ca.mcscert.jpipe.exporters.ExportationError;
-import ca.mcscert.jpipe.model.ConcreteJustification;
 import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
-
 import org.apache.commons.cli.*;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Optional;
@@ -67,16 +64,14 @@ public class Main {
             throw new IllegalArgumentException(ANSI_RED + "Diagram not found: " + diagramName + ANSI_RESET);
         }
         JustificationDiagram justification = tmp.get();
-        Exportation<ConcreteJustification> exporter = new DiagramExporter();
+        Exportation<JustificationDiagram> exporter = new DiagramExporter();
         String outputFilePath = outputDirectory.getAbsolutePath() + "/" + removeFileExtension(inputFile) +
                 "_" + justification.name() + ".png";
-        System.out.println(outputFilePath);
-        exporter.export((ConcreteJustification) justification, outputFilePath);
+        exporter.export(justification, outputFilePath);
     }
 
     private static String removeFileExtension(String filename) {
         // https://www.baeldung.com/java-filename-without-extension
-        System.out.println(filename);
         File f = new File(filename);
         return f.getName().replaceAll("(?<!^)[.][^.]*$", "");
     }
