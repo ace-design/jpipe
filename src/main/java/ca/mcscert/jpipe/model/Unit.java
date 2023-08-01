@@ -9,22 +9,22 @@ import java.util.Set;
 public class Unit implements Visitable {
 
     private final String fileName;
-    private final Set<Justification> justificationSet;
+    private final Set<JustificationDiagram> justificationSet;
 
     public Unit(String fileName) {
         this.fileName = fileName;
         this.justificationSet = new HashSet<>();
     }
 
-    public Optional<Justification> findByName(String name) {
-        for (Justification j : this.getJustificationSet()) {
-            if (j.getName().equals(name))
+    public Optional<JustificationDiagram> findByName(String name) {
+        for (JustificationDiagram j : this.getJustificationSet()) {
+            if (j.name().equals(name))
                 return Optional.of(j);
         }
         return Optional.empty();
     }
 
-    public void add(Justification justification) {
+    public void add(JustificationDiagram justification) {
         this.justificationSet.add(justification);
     }
 
@@ -37,7 +37,7 @@ public class Unit implements Visitable {
         return fileName;
     }
 
-    public Set<Justification> getJustificationSet() {
+    public Set<JustificationDiagram> getJustificationSet() {
         return justificationSet;
     }
 }

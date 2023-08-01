@@ -2,16 +2,16 @@ package ca.mcscert.jpipe.compiler.builders;
 
 import ca.mcscert.jpipe.model.*;
 
-public final class ConcreteJustificationBuilder extends JustificationBuilder {
+public final class JustificationPatternBuilder extends JustificationBuilder {
 
-    public ConcreteJustificationBuilder(String name) {
+    public JustificationPatternBuilder(String name) {
         super(name);
     }
 
     public JustificationDiagram build() {
         this.line = -1; this.character = -1;
-        logger.trace("Finalizing build of Justification ["+this.name+"]");
-        JustificationDiagram result = new ConcreteJustification(this.name, this.conclusion);
+        logger.trace("Finalizing build of Pattern ["+this.name+"]");
+        JustificationDiagram result = new JustificationPattern(this.name, this.conclusion);
         fill(this.conclusion);
         logger.trace("Finalization complete! ["+this.name+"]");
         return result;
@@ -27,8 +27,8 @@ public final class ConcreteJustificationBuilder extends JustificationBuilder {
     @Override
     public void checkStrategyPredecessor(JustificationElement e) {
         if ( ! (e instanceof Support))
-            error("A Strategy can only be supported by a sub-conclusion or an evidence, but [" + e.getIdentifier() +
-                    "] is a " + e.getClass().getCanonicalName()+" )");
+            error("A Strategy can only be supported by a sub-conclusion, an evidence, or an abstract support but [" +
+                    e.getIdentifier() + "] is a " + e.getClass().getCanonicalName()+" )");
     }
 
     @Override
