@@ -11,8 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JustificationBuilder {
-
+public abstract class AbstractJustificationBuilder {
 
     private final String name;
     private final Map<String, JustificationElement> elements;
@@ -25,12 +24,12 @@ public class JustificationBuilder {
 
     private static Logger logger = LogManager.getLogger(JustificationBuilder.class);
 
-    public JustificationBuilder(String name) {
-       this.name = name;
-       this.elements = new HashMap<>();
-       this.dependencies = new HashMap<>();
-       this.line = 0;
-       this.character = 0;
+    public AbstractJustificationBuilder(String name) {
+        this.name = name;
+        this.elements = new HashMap<>();
+        this.dependencies = new HashMap<>();
+        this.line = 0;
+        this.character = 0;
 
     }
 
@@ -49,6 +48,7 @@ public class JustificationBuilder {
     }
 
     public void addElement(JustificationElement elem) {
+
         String identifier = elem.getIdentifier();
         if (this.elements.get(identifier) != null) {
             error("Cannot use the same element identifier twice ["+identifier+"]");
@@ -120,5 +120,7 @@ public class JustificationBuilder {
             fill(strategy);
         }
     }
+
+
 
 }
