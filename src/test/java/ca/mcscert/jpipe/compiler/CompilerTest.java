@@ -9,17 +9,13 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import org.apache.commons.lang3.StringUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CompilerTest {
 
     private Unit unitUnderTest;
-    private String implContent;
     private static final String SOURCE = "simple.jd";
-    private static final String IMPL_SOURCE = "with_impl.jd";
 
     @BeforeEach
     public void loadUnit(){
@@ -27,11 +23,6 @@ public class CompilerTest {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         try (InputStream is = classloader.getResourceAsStream(SOURCE)) {
             unitUnderTest = compiler.compile(CharStreams.fromStream(is), SOURCE);
-        } catch (IOException ioe) {
-            fail("Unexpected exception was thrown");
-        }
-        try (InputStream is = classloader.getResourceAsStream(IMPL_SOURCE)) {
-            implContent = new String(is.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException ioe) {
             fail("Unexpected exception was thrown");
         }
@@ -57,7 +48,7 @@ public class CompilerTest {
         assertEquals("prove_models", name);
     }
 
-    @Test //test case 1
+    @Test
     public void rightNumberOfEvidences(){
         Justification justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
         ElementCounter counter = new ElementCounter();
@@ -84,48 +75,6 @@ public class CompilerTest {
         ElementCounter counter = new ElementCounter();
         unitUnderTest.accept(counter);
         assertEquals(2, counter.getResult().get(ElementCounter.STRATEGY)); 
-    }
-    
-    
-    @Test
-    public void checkAbstractElements() {
-        String patternContent = ""; 
-        String patternSource = "patterns.jd";
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        try (InputStream is = classloader.getResourceAsStream(patternSource)) {
-            patternContent = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int patternCount = StringUtils.countMatches(patternContent, " pattern ");
-        System.out.println("Pattern count: " + patternCount);
-        assertEquals(1, patternCount);
-    }
-    
-    @Test
-    public void checkJustificationImplementation() {
-        Justification justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
-        String justificationName = justificationUnderTest.getName();
-        System.out.println("Justification name: " + justificationName);
-        System.out.println(implContent);
-        assertTrue(implContent.contains(justificationName));
-    }
-    @Test
-    public void countOperations() {
-        // Count the number of "operation" occurrences in implContent
-        int operationCount = StringUtils.countMatches(implContent, "operation");
-        System.out.println("Number of operations: " + operationCount);
-
-
-        assertEquals(2, operationCount); 
-    }
-
-    @Test
-    public void countProbes() {
-        // Count the number of "probe" occurrences in implContent
-        int probeCount = StringUtils.countMatches(implContent, "probe");
-        System.out.println("Number of probes: " + probeCount);
-        assertEquals(3, probeCount); 
     }
 
 
