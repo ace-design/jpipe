@@ -1,7 +1,7 @@
 package ca.mcscert.jpipe.compiler;
 
 import ca.mcscert.jpipe.compiler.visitors.ElementCounter;
-import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,21 +36,21 @@ public class CompilerTest {
 
     @Test
     public void modelConclusionIsTheRightOne(){ 
-        Justification justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
-        String label = justificationUnderTest.getConclusion().getLabel();
+        JustificationDiagram justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
+        String label = justificationUnderTest.conclusion().getLabel();
         assertEquals("Model is correct", label);
     }
 
     @Test
     public void modelNameIsTheRightOne(){
-        Justification justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
-        String name = justificationUnderTest.getName();
+        JustificationDiagram justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
+        String name = justificationUnderTest.name();
         assertEquals("prove_models", name);
     }
 
     @Test
     public void rightNumberOfEvidences(){
-        Justification justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
+        JustificationDiagram justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
         ElementCounter counter = new ElementCounter();
         justificationUnderTest.accept(counter);
         assertEquals(3, counter.getResult().get(ElementCounter.EVIDENCE));

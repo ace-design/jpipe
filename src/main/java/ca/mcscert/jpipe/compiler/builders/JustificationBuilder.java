@@ -3,6 +3,7 @@ package ca.mcscert.jpipe.compiler.builders;
 import ca.mcscert.jpipe.compiler.CompilationError;
 import ca.mcscert.jpipe.compiler.TypeError;
 import ca.mcscert.jpipe.model.*;
+import ca.mcscert.jpipe.model.justification.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

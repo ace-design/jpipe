@@ -1,6 +1,10 @@
 package ca.mcscert.jpipe.compiler.builders;
 
 import ca.mcscert.jpipe.model.*;
+import ca.mcscert.jpipe.model.justification.JustificationElement;
+import ca.mcscert.jpipe.model.justification.JustificationPattern;
+import ca.mcscert.jpipe.model.justification.Strategy;
+import ca.mcscert.jpipe.model.justification.Support;
 
 public final class JustificationPatternBuilder extends JustificationBuilder {
 

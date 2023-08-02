@@ -1,6 +1,6 @@
 package ca.mcscert.jpipe.visitors;
 
-import ca.mcscert.jpipe.model.*;
+import ca.mcscert.jpipe.model.justification.*;
 import guru.nidi.graphviz.attribute.*;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.model.MutableNode;

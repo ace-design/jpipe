@@ -1,6 +1,5 @@
 package ca.mcscert.jpipe.exporters;
 
-import ca.mcscert.jpipe.model.ConcreteJustification;
 import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.visitors.ToGraph;
 import guru.nidi.graphviz.engine.Format;

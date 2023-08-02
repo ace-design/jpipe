@@ -4,6 +4,7 @@ import ca.mcscert.jpipe.compiler.builders.ConcreteJustificationBuilder;
 import ca.mcscert.jpipe.compiler.builders.JustificationBuilder;
 import ca.mcscert.jpipe.compiler.builders.JustificationPatternBuilder;
 import ca.mcscert.jpipe.model.*;
+import ca.mcscert.jpipe.model.justification.*;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;
 
