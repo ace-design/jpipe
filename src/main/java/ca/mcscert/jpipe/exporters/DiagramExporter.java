@@ -1,6 +1,7 @@
 package ca.mcscert.jpipe.exporters;
 
-import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.model.ConcreteJustification;
+import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.visitors.ToGraph;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
@@ -11,12 +12,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
-public class DiagramExporter implements Exportation<Justification> {
+public class DiagramExporter implements Exportation<JustificationDiagram> {
 
-    private static Logger logger = LogManager.getLogger(DiagramExporter.class);
+    private static final Logger logger = LogManager.getLogger(DiagramExporter.class);
 
-    public void export(Justification j, String outputFile) {
-        logger.trace("Exporting justification ["+j.getName()+"]");
+    public void export(JustificationDiagram j, String outputFile) {
+        logger.trace("Exporting justification ["+j.name()+"]");
         ToGraph visitor = new ToGraph();
         j.accept(visitor);
         MutableGraph graph = visitor.getResult();
@@ -25,7 +26,7 @@ public class DiagramExporter implements Exportation<Justification> {
         } catch (IOException ioe) {
             throw new ExportationError(ioe.getMessage());
         }
-        logger.trace("End of exportation ["+j.getName()+"]");
+        logger.trace("End of exportation ["+j.name()+"]");
     }
 
 }

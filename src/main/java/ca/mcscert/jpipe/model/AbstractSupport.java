@@ -2,9 +2,9 @@ package ca.mcscert.jpipe.model;
 
 import ca.mcscert.jpipe.visitors.AbstractVisitor;
 
-public class Evidence extends Support implements Visitable {
+public class AbstractSupport extends Support implements Visitable {
 
-    public Evidence(String identifier, String label) {
+    public AbstractSupport(String identifier, String label) {
         super(identifier, label);
     }
 
@@ -12,5 +12,4 @@ public class Evidence extends Support implements Visitable {
     public void accept(AbstractVisitor<?> visitor) {
         visitor.visit(this);
     }
-
 }

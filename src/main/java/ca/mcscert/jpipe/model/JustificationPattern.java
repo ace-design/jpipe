@@ -2,11 +2,7 @@ package ca.mcscert.jpipe.model;
 
 import ca.mcscert.jpipe.visitors.AbstractVisitor;
 
-public class Evidence extends Support implements Visitable {
-
-    public Evidence(String identifier, String label) {
-        super(identifier, label);
-    }
+public record JustificationPattern(String name, Conclusion conclusion) implements JustificationDiagram {
 
     @Override
     public void accept(AbstractVisitor<?> visitor) {
