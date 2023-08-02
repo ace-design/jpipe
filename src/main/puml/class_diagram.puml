@@ -58,7 +58,7 @@ class Operation
 Operation "0..1" <-* Strategy
 JustificationElement <|-- Strategy
 Strategy -> "1..n" Support
-Strategy "1" <-- SubConclusion
+Strategy "1..*" <-- SubConclusion
 
 JustificationElement <|-- Support
 
