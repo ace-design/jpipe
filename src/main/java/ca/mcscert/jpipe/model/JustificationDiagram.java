@@ -1,5 +1,7 @@
 package ca.mcscert.jpipe.model;
 
+import ca.mcscert.jpipe.model.justification.Conclusion;
+
 public interface JustificationDiagram extends Visitable {
 
     /**

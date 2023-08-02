@@ -1,6 +1,7 @@
 package ca.mcscert.jpipe.visitors;
 
 import ca.mcscert.jpipe.model.*;
+import ca.mcscert.jpipe.model.justification.*;
 
 public abstract class AbstractVisitor<T> {
 

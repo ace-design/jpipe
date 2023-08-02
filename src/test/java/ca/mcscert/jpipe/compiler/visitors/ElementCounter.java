@@ -1,10 +1,6 @@
 package ca.mcscert.jpipe.compiler.visitors;
 
-import ca.mcscert.jpipe.model.Conclusion;
-import ca.mcscert.jpipe.model.Evidence;
-import ca.mcscert.jpipe.model.Justification;
-import ca.mcscert.jpipe.model.Strategy;
-import ca.mcscert.jpipe.model.SubConclusion;
+import ca.mcscert.jpipe.model.justification.*;
 import ca.mcscert.jpipe.visitors.DefaultVisitor;
 
 import java.util.HashMap;
@@ -34,7 +30,7 @@ public class ElementCounter extends DefaultVisitor<Map<String, Integer>> {
     }
 
     @Override
-    public void visit(Justification j) {
+    public void visit(ConcreteJustification j) {
         super.visit(j);
         increment(JUSTIFICATION);
     }

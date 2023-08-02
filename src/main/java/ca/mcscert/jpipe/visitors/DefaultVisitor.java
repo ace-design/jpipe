@@ -1,6 +1,7 @@
 package ca.mcscert.jpipe.visitors;
 
 import ca.mcscert.jpipe.model.*;
+import ca.mcscert.jpipe.model.justification.*;
 
 public abstract class DefaultVisitor<T> extends AbstractVisitor<T> {
 
@@ -11,13 +12,18 @@ public abstract class DefaultVisitor<T> extends AbstractVisitor<T> {
     }
 
     public void visit(Unit u) {
-        for(Justification j: u.getJustificationSet())
+        for(JustificationDiagram j: u.getJustificationSet())
             j.accept(this);
     }
 
-    public void visit(Justification j) {
-        j.getConclusion().accept(this);
+    public void visit(ConcreteJustification j) {
+        j.conclusion().accept(this);
     }
+
+    public void visit(JustificationPattern p) {
+        p.conclusion().accept(this);
+    }
+
     public void visit(Conclusion c) {
         for(Strategy s: c.getSupports()) {
             s.accept(this);
@@ -36,5 +42,11 @@ public abstract class DefaultVisitor<T> extends AbstractVisitor<T> {
     public void visit(Evidence e) {
 
     }
+
+    public void visit(AbstractSupport a) {
+
+    }
+
+
 
 }

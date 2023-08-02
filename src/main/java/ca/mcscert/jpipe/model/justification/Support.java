@@ -1,4 +1,6 @@
-package ca.mcscert.jpipe.model;
+package ca.mcscert.jpipe.model.justification;
+
+import ca.mcscert.jpipe.model.Visitable;
 
 public abstract class Support extends JustificationElement implements Visitable {
 
