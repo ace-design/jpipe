@@ -1,4 +1,4 @@
-package ca.mcscert.jpipe.model;
+package ca.mcscert.jpipe.model.justification;
 
 public abstract class JustificationElement {
 
