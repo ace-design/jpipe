@@ -1,6 +1,8 @@
 package ca.mcscert.jpipe.compiler;
 
+import ca.mcscert.jpipe.compiler.builders.ConcreteJustificationBuilder;
 import ca.mcscert.jpipe.compiler.builders.JustificationBuilder;
+import ca.mcscert.jpipe.compiler.builders.JustificationPatternBuilder;
 import ca.mcscert.jpipe.model.*;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;
@@ -17,11 +19,11 @@ public class ModelCreationListener extends JPipeBaseListener {
 
 
     private JustificationBuilder justifBuilder;
-    private final List<Justification> justifications = new ArrayList<>();
+    private final List<JustificationDiagram> justifications = new ArrayList<>();
 
     public Unit build(String fileName) {
         Unit result = new Unit(fileName);
-        for (Justification justification: justifications) {
+        for (JustificationDiagram justification: justifications) {
             result.add(justification);
         }
         return result;
@@ -32,14 +34,31 @@ public class ModelCreationListener extends JPipeBaseListener {
     @Override
     public void enterJustification(JPipeParser.JustificationContext ctx) {
         logger.trace("Entering Justification [" + ctx.id.getText() + "]");
-        justifBuilder = new JustificationBuilder(ctx.id.getText());
+        justifBuilder = new ConcreteJustificationBuilder(ctx.id.getText());
         justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
     }
 
     @Override
     public void exitJustification(JPipeParser.JustificationContext ctx) {
         logger.trace("Exiting Justification [" + ctx.id.getText() + "]");
-        Justification result = justifBuilder.build();
+        JustificationDiagram result = justifBuilder.build();
+        justifications.add(result);
+        justifBuilder = null;
+    }
+
+    /** Processing a pattern **/
+
+    @Override
+    public void enterPattern(JPipeParser.PatternContext ctx) {
+        logger.trace("Entering Pattern [" + ctx.id.getText() + "]");
+        justifBuilder = new JustificationPatternBuilder(ctx.id.getText());
+        justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+    }
+
+    @Override
+    public void exitPattern(JPipeParser.PatternContext ctx) {
+        logger.trace("Exiting Pattern [" + ctx.id.getText() + "]");
+        JustificationDiagram result = justifBuilder.build();
         justifications.add(result);
         justifBuilder = null;
     }
@@ -85,12 +104,22 @@ public class ModelCreationListener extends JPipeBaseListener {
 
     @Override
     public void enterConclusion(JPipeParser.ConclusionContext ctx) {
-        logger.trace("  Processing Sub-Conclusion [" + ctx.identified_element().id.getText() + "]");
+        logger.trace("  Processing Conclusion [" + ctx.identified_element().id.getText() + "]");
         justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
         Conclusion conclusion = new Conclusion(ctx.identified_element().id.getText(),
                                                 clean(ctx.identified_element().name.getText()));
         justifBuilder.setConclusion(conclusion);
         justifBuilder.addElement(conclusion);
+    }
+
+
+    @Override
+    public void enterAbs_support(JPipeParser.Abs_supportContext ctx) {
+        logger.trace("  Processing Abstract Support [" + ctx.identified_element().id.getText() + "]");
+        justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+        AbstractSupport evidence = new AbstractSupport(ctx.identified_element().id.getText(),
+                clean(ctx.identified_element().name.getText()));
+        justifBuilder.addElement(evidence);
     }
 
 
