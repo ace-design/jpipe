@@ -3,6 +3,7 @@ package ca.mcscert.jpipe.compiler.builders;
 import ca.mcscert.jpipe.compiler.CompilationError;
 import ca.mcscert.jpipe.compiler.TypeError;
 import ca.mcscert.jpipe.model.*;
+import ca.mcscert.jpipe.model.justification.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,26 +12,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JustificationBuilder {
+public abstract class JustificationBuilder {
 
+    protected final String name;
+    protected final Map<String, JustificationElement> elements;
+    protected final Map<String, List<String>> dependencies;
 
-    private final String name;
-    private final Map<String, JustificationElement> elements;
-    private final Map<String, List<String>> dependencies;
+    protected Conclusion conclusion = null;
 
-    private Conclusion conclusion = null;
-
-    private int line;
-    private int character;
-
-    private static Logger logger = LogManager.getLogger(JustificationBuilder.class);
+    protected int line;
+    protected int character;
+    protected static Logger logger = LogManager.getLogger(ConcreteJustificationBuilder.class);
 
     public JustificationBuilder(String name) {
-       this.name = name;
-       this.elements = new HashMap<>();
-       this.dependencies = new HashMap<>();
-       this.line = 0;
-       this.character = 0;
+        this.name = name;
+        this.elements = new HashMap<>();
+        this.dependencies = new HashMap<>();
+        this.line = 0;
+        this.character = 0;
 
     }
 
@@ -49,6 +48,7 @@ public class JustificationBuilder {
     }
 
     public void addElement(JustificationElement elem) {
+
         String identifier = elem.getIdentifier();
         if (this.elements.get(identifier) != null) {
             error("Cannot use the same element identifier twice ["+identifier+"]");
@@ -63,7 +63,7 @@ public class JustificationBuilder {
         this.conclusion = conclusion;
     }
 
-    private void error(String message) {
+    protected final void error(String message) {
         if (this.line != -1) {
             throw new CompilationError(this.line, this.character, message);
         } else {
@@ -72,22 +72,18 @@ public class JustificationBuilder {
     }
 
 
-    public Justification build() {
-        this.line = -1; this.character = -1;
-        logger.trace("Finalizing build of Justification ["+this.name+"]");
-        Justification result = new Justification(this.name, this.conclusion);
-        fill(this.conclusion);
-        logger.trace("Finalization complete! ["+this.name+"]");
-        return result;
-    }
+    public abstract JustificationDiagram build();
+    public abstract void checkConclusionPredecessor(JustificationElement e);
+    public abstract void checkStrategyPredecessor(JustificationElement e);
+    public abstract void checkSubConclusionPredecessor(JustificationElement e);
+
 
     @SuppressWarnings("all")
-    private void fill(Conclusion c) {
+    protected final void fill(Conclusion c) {
         logger.trace("  Finalizing build of Conclusion ["+c.getIdentifier()+"]");
         for(String from: this.dependencies.getOrDefault(c.getIdentifier(), new ArrayList<>())) {
             JustificationElement source = this.elements.get(from);
-            if(! (source instanceof Strategy))
-                error("A Conclusion can only be supported by strategies, but ["+from+"] is not a Strategy)");
+            checkConclusionPredecessor(source);
             Strategy strategy = (Strategy) source;
             c.addSupport(strategy);
             fill(strategy);
@@ -95,13 +91,11 @@ public class JustificationBuilder {
     }
 
     @SuppressWarnings("all")
-    private void fill(Strategy strategy) {
+    protected final void fill(Strategy strategy) {
         logger.trace("  Finalizing build of Strategy ["+ strategy.getIdentifier()+"]");
         for(String from: this.dependencies.getOrDefault(strategy.getIdentifier(), new ArrayList<>())) {
             JustificationElement source = this.elements.get(from);
-            if ( ! (source instanceof Support))
-                error("A Strategy can only be supported by a sub-conclusion or an evidence, but [" + from +
-                        "] is a " + source.getClass().getCanonicalName()+" )");
+            checkStrategyPredecessor(source);
             strategy.addSupport((Support) source);
             if (source instanceof SubConclusion)
                 fill((SubConclusion) source);
@@ -109,16 +103,17 @@ public class JustificationBuilder {
     }
 
     @SuppressWarnings("all")
-    private void fill(SubConclusion sc) {
+    protected final void fill(SubConclusion sc) {
         logger.trace("  Finalizing build of SubConclusion ["+ sc.getIdentifier()+"]");
         for(String from: this.dependencies.getOrDefault(sc.getIdentifier(), new ArrayList<>())) {
             JustificationElement source = this.elements.get(from);
-            if(! (source instanceof Strategy))
-                error("A Conclusion can only be supported by strategies, but ["+from+"] is not a Strategy)");
+            checkSubConclusionPredecessor(source);
             Strategy strategy = (Strategy) source;
             sc.addSupport(strategy);
             fill(strategy);
         }
     }
+
+
 
 }

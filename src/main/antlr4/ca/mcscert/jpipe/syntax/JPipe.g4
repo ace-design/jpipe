@@ -4,20 +4,26 @@ grammar JPipe;
  ** Parser rules **
  ******************/
 
-unit            : element+ EOF; // Root rule for parsing (called by the compiler)
-element         : justification | load | implementation ;
-justification   : JUSTIFICATION (is_pattern=PATTERN)? id=ID (impl=IMPLEMENTS parent=ID)? OPEN justif_body CLOSE;
+// Root rule for parsing (called by the compiler)
+unit            : (justification | pattern | load | implementation)+ EOF;
+
+justification   : JUSTIFICATION id=ID (impl=IMPLEMENTS parent=ID)? OPEN justif_body CLOSE;
 justif_body     : (evidence | sub_conclusion | strategy | relation | conclusion)+;
+
+pattern         : PATTERN id=ID OPEN pattern_body CLOSE;
+pattern_body    : (abs_support | evidence | sub_conclusion | strategy | relation | conclusion)+;
+
 load            : LOAD file=STRING;
+
 implementation  : IMPLEMENTATION id=ID OF justifiation_id=ID OPEN impl_body CLOSE;
 impl_body       : (IMPLEMENTS id=ID OPEN (probe | operation) expectation? CLOSE)+;
 
 identified_element: id=ID IS name=STRING;
-
-evidence        : (is_abstract=ABSTRACT)? EVIDENCE identified_element;
-strategy        : STRATEGY        identified_element;
-sub_conclusion  : SUBCONCLUSION   identified_element;
-conclusion      : CONCLUSION      identified_element;
+evidence        : EVIDENCE      identified_element;
+strategy        : STRATEGY      identified_element;
+sub_conclusion  : SUBCONCLUSION identified_element;
+conclusion      : CONCLUSION    identified_element;
+abs_support     : ABS_SUPPORT   identified_element;
 
 probe           : PROBE IS command;
 operation       : OPERATION IS command;
@@ -36,6 +42,8 @@ boolean_expr    : (NOT)? symbol=ID (op=ARITH_OP INTEGER)?;
  *****************/
 
 // Keywords
+PATTERN         : 'pattern';
+ABS_SUPPORT     : '@support';
 JUSTIFICATION   : 'justification';
 IS              : 'is';
 EVIDENCE        : 'evidence';
@@ -53,8 +61,6 @@ OPERATION       : 'operation';
 BOOL_OP         : 'or' | 'and';
 NOT             : 'not';
 ARITH_OP        : '==' | '>' | '<' | '<=' | '>=';
-PATTERN         : 'pattern';
-ABSTRACT        : 'abstract';
 
 // Making whitespaces and newlines irrelevant to the syntax
 WHITESPACE  : [ \t]+                -> channel(HIDDEN);
