@@ -34,7 +34,7 @@ public class Main {
 
         String inputFile = cmd.getOptionValue("input");
         String outputDirectory = cmd.getOptionValue("output");
-        String diagramName = cmd.hasOption("diagram") ? cmd.getOptionValue("diagram") : null;
+        Optional<String> diagramName = Optional.ofNullable(cmd.getOptionValue("diagram"));
 
         try {
             process(inputFile, outputDirectory, diagramName);
@@ -44,7 +44,7 @@ public class Main {
         }
     }
 
-    private static void process(String inputFile, String outputDirectory, String diagramName) {
+    private static void process(String inputFile, String outputDirectory, Optional<String> diagramName) {
         Unit unit;
         try {
             unit = (new Compiler()).compile(inputFile);
@@ -59,21 +59,21 @@ public class Main {
             throw new IllegalArgumentException(ANSI_RED + "Output directory does not exist: " + outputDir.getPath() + ANSI_RESET);
         }
 
-        if (diagramName == null) {
-            for (JustificationDiagram justification : unit.getJustificationSet()) {
-                Exportation<JustificationDiagram> exporter = new DiagramExporter();
-                String outputFilePath = outputDir.getAbsolutePath() + "/" + removeFileExtension(inputFile) + "_" + justification.name() + ".png";
-                exporter.export(justification, outputFilePath);
-            }
-        } else {
-            Optional<JustificationDiagram> tmp = unit.findByName(diagramName);
+        if (diagramName.isPresent()) {
+            Optional<JustificationDiagram> tmp = unit.findByName(diagramName.get());
             if (tmp.isEmpty()) {
-                throw new IllegalArgumentException(ANSI_RED + "Diagram not found: " + diagramName + ANSI_RESET);
+                throw new IllegalArgumentException(ANSI_RED + "Diagram not found: " + diagramName.get() + ANSI_RESET);
             }
             JustificationDiagram justification = tmp.get();
             Exportation<JustificationDiagram> exporter = new DiagramExporter();
             String outputFilePath = outputDir.getAbsolutePath() + "/" + removeFileExtension(inputFile) + "_" + justification.name() + ".png";
             exporter.export(justification, outputFilePath);
+        } else {
+            for (JustificationDiagram justification : unit.getJustificationSet()) {
+                Exportation<JustificationDiagram> exporter = new DiagramExporter();
+                String outputFilePath = outputDir.getAbsolutePath() + "/" + removeFileExtension(inputFile) + "_" + justification.name() + ".png";
+                exporter.export(justification, outputFilePath);
+            }
         }
     }
 
@@ -83,4 +83,5 @@ public class Main {
         return f.getName().replaceAll("(?<!^)[.][^.]*$", "");
     }
 }
+
 
