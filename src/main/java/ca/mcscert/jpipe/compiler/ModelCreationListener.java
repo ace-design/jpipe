@@ -9,6 +9,7 @@ import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;
 
 import com.kitfox.svg.A;
+import com.sun.tools.javac.Main;
 import org.apache.commons.cli.CommandLine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,10 +19,12 @@ import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ModelCreationListener extends JPipeBaseListener {
 
     private static Logger logger = LogManager.getLogger(ModelCreationListener.class);
+
 
 
     private JustificationBuilder justifBuilder;
@@ -144,7 +147,8 @@ public class ModelCreationListener extends JPipeBaseListener {
         }
         logger.trace("  Processing Load [" + path + "]");
         try {
-            Unit unit = new Compiler().compile(path);
+            new Compiler().compile(path);
+
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

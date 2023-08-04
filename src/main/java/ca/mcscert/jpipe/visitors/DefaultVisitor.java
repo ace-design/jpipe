@@ -47,8 +47,4 @@ public abstract class DefaultVisitor<T> extends AbstractVisitor<T> {
 
     }
 
-    @Override
-    public void visit(Load l) {
-
-    }
 }
