@@ -41,10 +41,10 @@ public class Unit implements Visitable {
         return justificationSet;
     }
 
-//    public void merge(Unit unit) {
-//        for (JustificationDiagram j : unit.getJustificationSet())
-//        {
-//            this.justificationSet.add(j);
-//        }
-//    }
+    public void merge(Unit unit) {
+        for (JustificationDiagram j : unit.getJustificationSet())
+        {
+            this.justificationSet.add(j);
+        }
+    }
 }
