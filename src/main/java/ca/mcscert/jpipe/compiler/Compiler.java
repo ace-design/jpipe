@@ -8,8 +8,6 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,7 +16,7 @@ import java.nio.file.Paths;
 
 public class Compiler {
 
-    public static String BASE_PATH;
+    public String BASE_PATH;
 
     public Unit compile(String fileName) throws FileNotFoundException {
         try {
@@ -35,9 +33,8 @@ public class Compiler {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         JPipeParser parser = new JPipeParser(tokens);
         ParseTree tree = parser.unit();
-        ModelCreationListener builder = new ModelCreationListener();
+        ModelCreationListener builder = new ModelCreationListener(BASE_PATH);
         ParseTreeWalker.DEFAULT.walk(builder, tree);
         return builder.build(fileName);
     }
-
 }

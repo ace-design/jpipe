@@ -8,28 +8,27 @@ import ca.mcscert.jpipe.model.justification.*;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;
 
-import com.kitfox.svg.A;
-import com.sun.tools.javac.Main;
-import org.apache.commons.cli.CommandLine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 
 public class ModelCreationListener extends JPipeBaseListener {
 
     private static Logger logger = LogManager.getLogger(ModelCreationListener.class);
 
-
-
     private JustificationBuilder justifBuilder;
     private final List<JustificationDiagram> justifications = new ArrayList<>();
 
+    String base_path;
+
+    ModelCreationListener(String base_path) {
+        this.base_path = base_path;
+    }
 
     public Unit build(String fileName) {
         Unit result = new Unit(fileName);
@@ -136,24 +135,22 @@ public class ModelCreationListener extends JPipeBaseListener {
     /** Processing load element **/
     @Override
     public void enterLoad(JPipeParser.LoadContext ctx) {
-
         String path;
-        if (Compiler.BASE_PATH != null)
+        if (base_path != null)
         {
-            path = Paths.get(System.getProperty("user.dir"), Compiler.BASE_PATH, ctx.file.getText().replaceAll("^\"|\"$", "")).toString();
+            path = Paths.get(System.getProperty("user.dir"), base_path, ctx.file.getText().replaceAll("^\"|\"$", "")).toString();
         }
         else {
             path = Paths.get(System.getProperty("user.dir"), ctx.file.getText().replaceAll("^\"|\"$", "")).toString();
         }
         logger.trace("  Processing Load [" + path + "]");
         try {
-            new Compiler().compile(path);
-
+            Unit u = new Compiler().compile(path);
+            justifications.addAll(u.getJustificationSet());
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
-
 
     private String clean(String s) {
         return s.substring(1,s.length()-1);
