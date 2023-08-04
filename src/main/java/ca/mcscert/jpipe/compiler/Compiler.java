@@ -8,15 +8,21 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 
 public class Compiler {
 
+    public static String BASE_PATH;
+
     public Unit compile(String fileName) throws FileNotFoundException {
         try {
+            BASE_PATH = Paths.get(fileName).getParent().toString();
             CharStream input = CharStreams.fromFileName(fileName);
             return this.compile(input, fileName);
         } catch (IOException e) {

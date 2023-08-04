@@ -8,9 +8,14 @@ import ca.mcscert.jpipe.model.justification.*;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;
 
+import com.kitfox.svg.A;
+import org.apache.commons.cli.CommandLine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +27,7 @@ public class ModelCreationListener extends JPipeBaseListener {
     private JustificationBuilder justifBuilder;
     private final List<JustificationDiagram> justifications = new ArrayList<>();
 
+
     public Unit build(String fileName) {
         Unit result = new Unit(fileName);
         for (JustificationDiagram justification: justifications) {
@@ -29,6 +35,7 @@ public class ModelCreationListener extends JPipeBaseListener {
         }
         return result;
     }
+
 
     /** Processing a Justification **/
 
@@ -121,6 +128,26 @@ public class ModelCreationListener extends JPipeBaseListener {
         AbstractSupport evidence = new AbstractSupport(ctx.identified_element().id.getText(),
                 clean(ctx.identified_element().name.getText()));
         justifBuilder.addElement(evidence);
+    }
+
+    /** Processing load element **/
+    @Override
+    public void enterLoad(JPipeParser.LoadContext ctx) {
+
+        String path;
+        if (Compiler.BASE_PATH != null)
+        {
+            path = Paths.get(System.getProperty("user.dir"), Compiler.BASE_PATH, ctx.file.getText().replaceAll("^\"|\"$", "")).toString();
+        }
+        else {
+            path = Paths.get(System.getProperty("user.dir"), ctx.file.getText().replaceAll("^\"|\"$", "")).toString();
+        }
+        logger.trace("  Processing Load [" + path + "]");
+        try {
+            Unit unit = new Compiler().compile(path);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

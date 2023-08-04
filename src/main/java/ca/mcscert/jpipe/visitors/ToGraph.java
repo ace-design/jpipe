@@ -1,5 +1,6 @@
 package ca.mcscert.jpipe.visitors;
 
+import ca.mcscert.jpipe.model.Load;
 import ca.mcscert.jpipe.model.justification.*;
 import guru.nidi.graphviz.attribute.*;
 import guru.nidi.graphviz.model.MutableGraph;
@@ -124,5 +125,8 @@ public class ToGraph extends AbstractVisitor<MutableGraph> {
         this.parent.ifPresent(n::addLink);
     }
 
+    @Override
+    public void visit(Load load) {
 
+    }
 }
