@@ -1,0 +1,8 @@
+justification missing_support {
+
+    strategy St1 is "Strategy 1"
+
+    conclusion C is "Conclusion 1"
+    St1 supports C  // There is no support for St1
+
+}
