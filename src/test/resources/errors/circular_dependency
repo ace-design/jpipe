@@ -1,0 +1,10 @@
+justification circular_dependency {
+
+    evidence Su1 is "Some evidence"
+    strategy St1 is "A strategy"
+    Su1 supports St1
+
+    sub-conclusion SC1 is "An invalid conclusion"
+    St1 supports SC1
+    SC1 supports St1 // Circular dependency
+}
