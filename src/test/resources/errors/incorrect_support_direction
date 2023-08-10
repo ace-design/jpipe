@@ -1,0 +1,8 @@
+justification reverse_dir {
+
+    evidence Su1 is "Evidence 1"
+    strategy St1 is "Strategy 1"
+
+    St1 supports Su1  // Typically, evidence supports strategy, not the other way around
+
+}
