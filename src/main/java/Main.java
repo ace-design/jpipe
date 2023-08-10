@@ -34,6 +34,12 @@ public class Main {
 
         String inputFile = cmd.getOptionValue("input");
         String outputDirectory = cmd.getOptionValue("output");
+
+
+        if (outputDirectory == null) {
+            outputDirectory = System.getProperty("user.dir");
+        }
+
         Optional<String> diagramName = Optional.ofNullable(cmd.getOptionValue("diagram"));
 
         try {

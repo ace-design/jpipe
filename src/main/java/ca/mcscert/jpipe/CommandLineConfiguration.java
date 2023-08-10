@@ -7,7 +7,6 @@ import java.util.Optional;
 public class CommandLineConfiguration {
 
     private static final String APP_NAME = "java -jar jpipe.jar";
-
     private final String[] userGiven;
 
     public CommandLineConfiguration(String[] userGiven) {
@@ -52,7 +51,7 @@ public class CommandLineConfiguration {
         options.addOption(input);
 
         Option output = new Option("o", "output", true, "output file path");
-        output.setRequired(true);
+        output.setRequired(false);
         options.addOption(output);
 
         Option diagram = new Option("d", "diagram", true, "diagram name");
