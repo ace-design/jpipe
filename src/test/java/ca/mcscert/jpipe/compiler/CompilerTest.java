@@ -29,13 +29,13 @@ public class CompilerTest {
     }
     
 
-    @Test 
+    @Test
     public void unitHasTheSize(){
         assertEquals(1, unitUnderTest.getJustificationSet().size());
     }
 
     @Test
-    public void modelConclusionIsTheRightOne(){ 
+    public void modelConclusionIsTheRightOne(){
         JustificationDiagram justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
         String label = justificationUnderTest.conclusion().getLabel();
         assertEquals("Model is correct", label);
@@ -60,21 +60,21 @@ public class CompilerTest {
     public void rightNumberOfJustifications(){
         ElementCounter counter = new ElementCounter();
         unitUnderTest.accept(counter);
-        assertEquals(1, counter.getResult().get(ElementCounter.JUSTIFICATION)); 
+        assertEquals(1, counter.getResult().get(ElementCounter.JUSTIFICATION));
     }
 
     @Test
     public void rightNumberOfSubConclusions(){
         ElementCounter counter = new ElementCounter();
         unitUnderTest.accept(counter);
-        assertEquals(1, counter.getResult().get(ElementCounter.SUBCONCLUSION)); 
+        assertEquals(1, counter.getResult().get(ElementCounter.SUBCONCLUSION));
     }
 
     @Test
     public void rightNumberOfStrategies(){
         ElementCounter counter = new ElementCounter();
         unitUnderTest.accept(counter);
-        assertEquals(2, counter.getResult().get(ElementCounter.STRATEGY)); 
+        assertEquals(2, counter.getResult().get(ElementCounter.STRATEGY));
     }
 
 
