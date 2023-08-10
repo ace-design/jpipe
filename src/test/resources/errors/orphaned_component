@@ -1,0 +1,8 @@
+justification orphaned {
+
+    evidence Su1 is "Evidence 1"
+    conclusion C is "Conclusion 1"
+
+    // Su1 has no relations
+
+}
