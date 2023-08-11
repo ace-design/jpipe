@@ -1,8 +1,5 @@
-justification orphaned {
-
+justification orphaned_component {
     evidence Su1 is "Evidence 1"
-    conclusion C is "Conclusion 1"
-
     // Su1 has no relations
-
 }
+
