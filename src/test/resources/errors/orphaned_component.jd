@@ -1,0 +1,5 @@
+justification orphaned_component {
+    evidence Su1 is "Evidence 1"
+    // Su1 has no relations
+}
+
