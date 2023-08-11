@@ -1,0 +1,15 @@
+justification duplicate {
+
+    evidence Su1 is "Evidence 1"
+    conclusion C is "Conclusion 1"
+    Su1 supports C
+
+}
+
+justification duplicate {
+
+    evidence Su2 is "Evidence 2"
+    conclusion C2 is "Conclusion 2"
+    Su2 supports C2
+
+}
