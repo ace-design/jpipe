@@ -24,10 +24,10 @@ public class ModelCreationListener extends JPipeBaseListener {
     private JustificationBuilder justifBuilder;
     private final List<JustificationDiagram> justifications = new ArrayList<>();
 
-    String base_path;
+    private String basePath;
 
-    ModelCreationListener(String base_path) {
-        this.base_path = base_path;
+    ModelCreationListener(String basePath) {
+        this.basePath = basePath;
     }
 
     public Unit build(String fileName) {
@@ -136,12 +136,13 @@ public class ModelCreationListener extends JPipeBaseListener {
     @Override
     public void enterLoad(JPipeParser.LoadContext ctx) {
         String path;
-        if (base_path != null)
+        logger.trace("THIS IS BASE PATH for the xyz file: "+basePath);
+        if (basePath != null)
         {
-            path = Paths.get(System.getProperty("user.dir"), base_path, ctx.file.getText().replaceAll("^\"|\"$", "")).toString();
+            path = Paths.get(basePath, ctx.file.getText().replaceAll("\"", "")).toString();
         }
         else {
-            path = Paths.get(System.getProperty("user.dir"), ctx.file.getText().replaceAll("^\"|\"$", "")).toString();
+            path = Paths.get(ctx.file.getText().replaceAll("\"", "")).toString();
         }
         logger.trace("  Processing Load [" + path + "]");
         try {

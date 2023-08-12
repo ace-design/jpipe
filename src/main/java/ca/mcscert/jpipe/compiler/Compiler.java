@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -16,11 +17,11 @@ import java.nio.file.Paths;
 
 public class Compiler {
 
-    public String BASE_PATH;
+    private String BASE_PATH;
 
     public Unit compile(String fileName) throws FileNotFoundException {
         try {
-            BASE_PATH = Paths.get(fileName).getParent().toString();
+            BASE_PATH = new File(fileName).getParent();
             CharStream input = CharStreams.fromFileName(fileName);
             return this.compile(input, fileName);
         } catch (IOException e) {
