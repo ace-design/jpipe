@@ -54,9 +54,9 @@ public class CommandLineConfiguration {
         output.setRequired(false);
         options.addOption(output);
 
-        // CHANGE: Modified diagram option to allow multiple instances and updated description.
-        Option diagram = new Option("d", "diagram", true, "diagram names (you can specify multiple with repeated -d)");  // <-- CHANGED LINE
-        diagram.setArgs(Option.UNLIMITED_VALUES);  // <-- ADDED LINE
+
+        Option diagram = new Option("d", "diagram", true, "diagram names (you can specify multiple with repeated -d)"); 
+        diagram.setArgs(Option.UNLIMITED_VALUES);
         options.addOption(diagram);
 
         return options;
