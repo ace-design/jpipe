@@ -33,6 +33,16 @@
             <artifactId>graphviz-java</artifactId>
             <version>0.18.1</version>
         </dependency>
+        <dependency>
+            <groupId>guru.nidi</groupId>
+            <artifactId>graphviz-rough</artifactId>
+            <version>0.18.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.eclipsesource.j2v8</groupId>
+            <artifactId>j2v8_macosx_x86_64</artifactId>
+            <version>4.6.0</version>
+        </dependency>
         <!-- Tests dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
