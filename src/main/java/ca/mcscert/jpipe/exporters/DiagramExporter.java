@@ -15,17 +15,40 @@ public class DiagramExporter implements Exportation<JustificationDiagram> {
 
     private static final Logger logger = LogManager.getLogger(DiagramExporter.class);
 
+    @Override
     public void export(JustificationDiagram j, String outputFile) {
-        logger.trace("Exporting justification ["+j.name()+"]");
+        throw new UnsupportedOperationException("Use the export method with the format parameter.");
+    }
+
+    public void export(JustificationDiagram j, String outputFile, String format) {
+        Format fileFormat = getFormatFromString(format);
+
+        logger.trace("Exporting justification [" + j.name() + "]");
+
         ToGraph visitor = new ToGraph();
         j.accept(visitor);
+
         MutableGraph graph = visitor.getResult();
+
         try {
-            Graphviz.fromGraph(graph).render(Format.PNG).toFile(new File(outputFile));
+            Graphviz.fromGraph(graph).render(fileFormat).toFile(new File(outputFile));
         } catch (IOException ioe) {
             throw new ExportationError(ioe.getMessage());
         }
-        logger.trace("End of exportation ["+j.name()+"]");
+
+        logger.trace("End of exportation [" + j.name() + "]");
     }
 
+    private Format getFormatFromString(String format) {
+        switch (format.toLowerCase()) {
+            case "png":
+                return Format.PNG;
+            case "svg":
+                return Format.SVG;
+            default:
+                throw new ExportationError("Unsupported file format: " + format);
+        }
+    }
 }
+
+
