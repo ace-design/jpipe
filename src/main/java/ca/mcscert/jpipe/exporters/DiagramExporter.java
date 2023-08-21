@@ -40,14 +40,11 @@ public class DiagramExporter implements Exportation<JustificationDiagram> {
     }
 
     private Format getFormatFromString(String format) {
-        switch (format.toLowerCase()) {
-            case "png":
-                return Format.PNG;
-            case "svg":
-                return Format.SVG;
-            default:
-                throw new ExportationError("Unsupported file format: " + format);
-        }
+        return switch (format.toLowerCase()) {
+            case "png" -> Format.PNG;
+            case "svg" -> Format.SVG;
+            default -> throw new ExportationError("Unsupported file format: " + format);
+        };
     }
 }
 
