@@ -7,18 +7,12 @@ import ca.mcscert.jpipe.exporters.Exportation;
 import ca.mcscert.jpipe.exporters.ExportationError;
 import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
-import java.io.File;
-import java.io.FileNotFoundException;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Optional;
+
 
 public class Main {
 
@@ -28,6 +22,7 @@ public class Main {
     public static void main(String[] args) {
         CommandLineConfiguration config = new CommandLineConfiguration(args);
         CommandLine cmd = null;
+
         try {
             Optional<CommandLine> tmp = config.read();
             if (tmp.isEmpty()){
@@ -42,7 +37,12 @@ public class Main {
 
         String inputFile = cmd.getOptionValue("input");
         String outputDirectory = cmd.getOptionValue("output");
+        String format = cmd.getOptionValue("format", "png");  // Default to PNG if no format is specified
 
+        if (!"png".equals(format) && !"svg".equals(format)) {
+            System.err.println(ANSI_RED + "Invalid format specified. Choose 'png' or 'svg'." + ANSI_RESET);
+            System.exit(1);
+        }
 
         if (outputDirectory == null) {
             outputDirectory = System.getProperty("user.dir");
@@ -51,14 +51,14 @@ public class Main {
         Optional<String> diagramName = Optional.ofNullable(cmd.getOptionValue("diagram"));
 
         try {
-            process(inputFile, outputDirectory, diagramName);
+            process(inputFile, outputDirectory, diagramName, format);
         } catch (RuntimeException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }
     }
 
-    private static void process(String inputFile, String outputDirectory, Optional<String> diagramName) {
+    private static void process(String inputFile, String outputDirectory, Optional<String> diagramName, String format) {
         Unit unit;
         try {
             unit = (new Compiler()).compile(inputFile);
@@ -73,29 +73,26 @@ public class Main {
             throw new IllegalArgumentException(ANSI_RED + "Output directory does not exist: " + outputDir.getPath() + ANSI_RESET);
         }
 
+        DiagramExporter exporter = new DiagramExporter();
+
         if (diagramName.isPresent()) {
             Optional<JustificationDiagram> tmp = unit.findByName(diagramName.get());
             if (tmp.isEmpty()) {
                 throw new IllegalArgumentException(ANSI_RED + "Diagram not found: " + diagramName.get() + ANSI_RESET);
             }
             JustificationDiagram justification = tmp.get();
-            Exportation<JustificationDiagram> exporter = new DiagramExporter();
-            String outputFilePath = outputDir.getAbsolutePath() + "/" + removeFileExtension(inputFile) + "_" + justification.name() + ".png";
-            exporter.export(justification, outputFilePath);
+            String outputFilePath = outputDir.getAbsolutePath() + "/" + removeFileExtension(inputFile) + "_" + justification.name() + "." + format;
+            exporter.export(justification, outputFilePath, format);
         } else {
             for (JustificationDiagram justification : unit.getJustificationSet()) {
-                Exportation<JustificationDiagram> exporter = new DiagramExporter();
-                String outputFilePath = outputDir.getAbsolutePath() + "/" + removeFileExtension(inputFile) + "_" + justification.name() + ".png";
-                exporter.export(justification, outputFilePath);
+                String outputFilePath = outputDir.getAbsolutePath() + "/" + removeFileExtension(inputFile) + "_" + justification.name() + "." + format;
+                exporter.export(justification, outputFilePath, format);
             }
         }
     }
 
     private static String removeFileExtension(String filename) {
-        // https://www.baeldung.com/java-filename-without-extension
         File f = new File(filename);
         return f.getName().replaceAll("(?<!^)[.][^.]*$", "");
     }
 }
-
-

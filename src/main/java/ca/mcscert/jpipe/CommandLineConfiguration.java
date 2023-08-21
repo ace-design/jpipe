@@ -36,7 +36,7 @@ public class CommandLineConfiguration {
         Options help = new Options();
         help.addOption(new Option("h", "help", false, "display help message"));
         CommandLineParser parser = new DefaultParser();
-        CommandLine tmp = parser.parse(help,args, true);
+        CommandLine tmp = parser.parse(help, args, true);
         return tmp.hasOption("h");
     }
 
@@ -57,12 +57,11 @@ public class CommandLineConfiguration {
         Option diagram = new Option("d", "diagram", true, "diagram name");
         options.addOption(diagram);
 
+        Option format = new Option("f", "format", true, "output format (png or svg)");
+        format.setRequired(false);
+        options.addOption(format);
+
         return options;
     }
-
-
-
-
-
 
 }
