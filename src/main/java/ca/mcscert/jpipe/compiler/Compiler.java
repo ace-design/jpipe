@@ -17,11 +17,9 @@ import java.nio.file.Paths;
 
 public class Compiler {
 
-    private String BASE_PATH;
 
     public Unit compile(String fileName) throws FileNotFoundException {
         try {
-            BASE_PATH = new File(fileName).getParent();
             CharStream input = CharStreams.fromFileName(fileName);
             return this.compile(input, fileName);
         } catch (IOException e) {
@@ -34,8 +32,8 @@ public class Compiler {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         JPipeParser parser = new JPipeParser(tokens);
         ParseTree tree = parser.unit();
-        ModelCreationListener builder = new ModelCreationListener(BASE_PATH);
+        ModelCreationListener builder = new ModelCreationListener(fileName);
         ParseTreeWalker.DEFAULT.walk(builder, tree);
-        return builder.build(fileName);
+        return builder.build();
     }
 }

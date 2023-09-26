@@ -15,6 +15,8 @@ import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Path;
+
 
 
 public class ModelCreationListener extends JPipeBaseListener {
@@ -24,14 +26,15 @@ public class ModelCreationListener extends JPipeBaseListener {
     private JustificationBuilder justifBuilder;
     private final List<JustificationDiagram> justifications = new ArrayList<>();
 
-    private String basePath;
+    private Unit result;
+    private Path fileName;
 
-    ModelCreationListener(String basePath) {
-        this.basePath = basePath;
+    public ModelCreationListener(String fileName) {
+        this.fileName = Paths.get(fileName);
+        this.result = new Unit(fileName);
     }
 
-    public Unit build(String fileName) {
-        Unit result = new Unit(fileName);
+    public Unit build() {
         for (JustificationDiagram justification: justifications) {
             result.add(justification);
         }
@@ -135,20 +138,14 @@ public class ModelCreationListener extends JPipeBaseListener {
     /** Processing load element **/
     @Override
     public void enterLoad(JPipeParser.LoadContext ctx) {
-        String path;
-        logger.trace("THIS IS BASE PATH for the xyz file: "+basePath);
-        if (basePath != null)
-        {
-            path = Paths.get(basePath, ctx.file.getText().replaceAll("\"", "")).toString();
-        }
-        else {
-            path = Paths.get(ctx.file.getText().replaceAll("\"", "")).toString();
-        }
-        logger.trace("  Processing Load [" + path + "]");
+        Path loadPath=Paths.get(ctx.file.getText().replace("\"",""));
+        logger.trace("  Entering Load ["+loadPath.getFileName()+"]");
+        Load loadFile=new Load(loadPath,fileName);
+
         try {
-            Unit u = new Compiler().compile(path);
-            justifications.addAll(u.getJustificationSet());
-        } catch (FileNotFoundException e) {
+            Unit unit = new Compiler().compile(loadFile.getLoadPath());
+            result.merge(unit);
+        } catch (FileNotFoundException e){
             throw new RuntimeException(e);
         }
     }
