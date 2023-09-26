@@ -47,4 +47,8 @@ public abstract class DefaultVisitor<T> extends AbstractVisitor<T> {
 
     }
 
+    public void visit(Load l){
+        
+    }
+
 }
