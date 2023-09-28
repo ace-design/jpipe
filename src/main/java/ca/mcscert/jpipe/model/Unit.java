@@ -16,6 +16,7 @@ public class Unit implements Visitable {
         this.justificationSet = new HashSet<>();
     }
 
+
     public Optional<JustificationDiagram> findByName(String name) {
         for (JustificationDiagram j : this.getJustificationSet()) {
             if (j.name().equals(name))

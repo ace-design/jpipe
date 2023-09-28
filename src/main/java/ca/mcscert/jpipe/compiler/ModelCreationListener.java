@@ -28,10 +28,12 @@ public class ModelCreationListener extends JPipeBaseListener {
 
     private Unit result;
     private Path fileName;
+    private Compiler compiler;
 
-    public ModelCreationListener(String fileName) {
+    public ModelCreationListener(String fileName, Compiler compiler) {
         this.fileName = Paths.get(fileName);
         this.result = new Unit(fileName);
+        this.compiler = compiler;
     }
 
     public Unit build() {
@@ -139,14 +141,21 @@ public class ModelCreationListener extends JPipeBaseListener {
     @Override
     public void enterLoad(JPipeParser.LoadContext ctx) {
         Path loadPath=Paths.get(ctx.file.getText().replace("\"",""));
-        logger.trace("  Entering Load ["+loadPath.getFileName()+"]");
-        Load loadFile=new Load(loadPath,fileName);
 
-        try {
-            Unit unit = new Compiler().compile(loadFile.getLoadPath());
-            result.merge(unit);
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
+        if (compiler.isCompiled(loadPath)){
+
+            logger.trace("  Already entered ["+loadPath.getFileName()+"]");
+            
+        }else{
+            logger.trace("  Entering Load ["+loadPath.getFileName()+"]");
+            
+            Load loadFile=new Load(loadPath,fileName);
+            try {
+                Unit unit = compiler.compile(loadFile.getLoadPath());
+                result.merge(unit);
+            } catch (FileNotFoundException e){
+                throw new RuntimeException(e);
+            }
         }
     }
 
