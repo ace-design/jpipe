@@ -1,3 +1,6 @@
+
+load "./with_impl.jd"
+
 pattern prover_pattern {
 
     @support Su1 is "Model is ready"
