@@ -54,15 +54,12 @@ public class CommandLineConfiguration {
         output.setRequired(false);
         options.addOption(output);
 
-        Option diagram = new Option("d", "diagram", true, "diagram name");
+
+        Option diagram = new Option("d", "diagram", true, "diagram names (you can specify multiple with repeated -d)"); 
+        diagram.setArgs(Option.UNLIMITED_VALUES);
         options.addOption(diagram);
 
         return options;
     }
-
-
-
-
-
-
 }
+
