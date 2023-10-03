@@ -1,5 +1,5 @@
 
-load "./simple.jd"
+load "./patterns.jd"
 
 implementation I1 of prove_model {
 

@@ -11,24 +11,38 @@ import ca.mcscert.jpipe.syntax.JPipeParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Path;
+
+
 
 public class ModelCreationListener extends JPipeBaseListener {
 
     private static Logger logger = LogManager.getLogger(ModelCreationListener.class);
 
-
     private JustificationBuilder justifBuilder;
     private final List<JustificationDiagram> justifications = new ArrayList<>();
 
-    public Unit build(String fileName) {
-        Unit result = new Unit(fileName);
+    private Unit result;
+    private Path fileName;
+    private Compiler compiler;
+
+    public ModelCreationListener(String fileName, Compiler compiler) {
+        this.fileName = Paths.get(fileName);
+        this.result = new Unit(fileName);
+        this.compiler = compiler;
+    }
+
+    public Unit build() {
         for (JustificationDiagram justification: justifications) {
             result.add(justification);
         }
         return result;
     }
+
 
     /** Processing a Justification **/
 
@@ -123,6 +137,27 @@ public class ModelCreationListener extends JPipeBaseListener {
         justifBuilder.addElement(evidence);
     }
 
+    /** Processing load element **/
+    @Override
+    public void enterLoad(JPipeParser.LoadContext ctx) {
+        Path loadPath=Paths.get(ctx.file.getText().replace("\"",""));
+
+        if (compiler.isCompiled(loadPath)){
+
+            logger.trace("  Already entered ["+loadPath.getFileName()+"]");
+            
+        }else{
+            logger.trace("  Entering Load ["+loadPath.getFileName()+"]");
+            
+            Load loadFile=new Load(loadPath,fileName);
+            try {
+                Unit unit = compiler.compile(loadFile.getLoadPath());
+                result.merge(unit);
+            } catch (FileNotFoundException e){
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     private String clean(String s) {
         return s.substring(1,s.length()-1);

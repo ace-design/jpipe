@@ -16,6 +16,7 @@ public class Unit implements Visitable {
         this.justificationSet = new HashSet<>();
     }
 
+
     public Optional<JustificationDiagram> findByName(String name) {
         for (JustificationDiagram j : this.getJustificationSet()) {
             if (j.name().equals(name))
@@ -39,5 +40,12 @@ public class Unit implements Visitable {
 
     public Set<JustificationDiagram> getJustificationSet() {
         return justificationSet;
+    }
+
+    public void merge(Unit unit) {
+        for (JustificationDiagram j : unit.getJustificationSet())
+        {
+            this.justificationSet.add(j);
+        }
     }
 }

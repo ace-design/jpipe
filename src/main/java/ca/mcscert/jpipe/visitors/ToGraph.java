@@ -124,5 +124,9 @@ public class ToGraph extends AbstractVisitor<MutableGraph> {
         this.parent.ifPresent(n::addLink);
     }
 
+    @Override
+    public void visit(Load load){
+        
+    }
 
 }
