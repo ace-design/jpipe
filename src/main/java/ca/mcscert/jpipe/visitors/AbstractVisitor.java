@@ -24,5 +24,8 @@ public abstract class AbstractVisitor<T> {
     public abstract void visit(Evidence e);
     public abstract void visit(AbstractSupport a);
     public abstract void visit(JustificationPattern p);
+    public abstract void visit(Load p);
+
+
 
 }
