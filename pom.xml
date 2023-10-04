@@ -153,8 +153,11 @@
                         <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                     </sourceDirectories>
                     <configLocation>google_checks.xml</configLocation>
+                    <suppressionsLocation>${project.resources[0].directory}/checkstyle-ignore.xml</suppressionsLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
+                    <!-- <violationSeverity>warning</violationSeverity>
+                    <failOnViolation>true</failOnViolation> -->
                     <linkXRef>false</linkXRef>
                 </configuration>
                 <executions>
