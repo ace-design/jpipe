@@ -37,7 +37,8 @@ public class Main {
             String inputFile = cmd.getOptionValue("input");
             String outputDirectory = cmd.getOptionValue("output",
                                                         System.getProperty("user.dir"));
-            String format = cmd.getOptionValue("format");
+            String format = cmd.getOptionValue("format",
+                                    "png");
             String[] diagramNames = cmd.getOptionValues("diagram");
 
             process(inputFile, outputDirectory, diagramNames, format);
@@ -95,8 +96,7 @@ public class Main {
             if (all.contains(name)) {
              asked.add(name);
             } else {
-             throw new ExportationError(ANSI_RED + "Unknown diagram identifier: ["
-                     + name + "]" + ANSI_RESET);
+             throw new ExportationError("Unknown diagram identifier: [" + name + "]");
             }
         }
         return asked;
@@ -105,8 +105,8 @@ public class Main {
     private static File getOutputDirectory(String outputDirectory) {
         File outputDir = new File(outputDirectory);
         if (!outputDir.exists()) {
-            throw new IllegalArgumentException(ANSI_RED + "Output directory does not exist: "
-                    + outputDir.getPath() + ANSI_RESET);
+            throw new IllegalArgumentException("Output directory does not exist: "
+                    + outputDir.getPath());
         }
         return outputDir;
     }
@@ -115,10 +115,9 @@ public class Main {
         try {
             return (new Compiler()).compile(inputFile);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(ANSI_RED + "File not found: " + e.getMessage()
-                    + ANSI_RESET, e);
+            throw new RuntimeException("File not found: " + e.getMessage(), e);
         } catch (CompilationError | TypeError | ExportationError err) {
-            throw new RuntimeException(ANSI_RED + err.getMessage() + ANSI_RESET, err);
+            throw new RuntimeException(err.getMessage(), err);
         }
     }
 

@@ -1,6 +1,9 @@
 package ca.mcscert.jpipe;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -39,6 +42,7 @@ public class CommandLineConfiguration {
         if (checkForHelp(userGiven)) {
             return Optional.empty();
         }
+
         Options options = getOptions();
         CommandLine cmd = parser.parse(options, userGiven);
         return Optional.of(cmd);
@@ -61,11 +65,8 @@ public class CommandLineConfiguration {
      * @throws ParseException is Apache CLI cannot parse the arguments
      */
     private boolean checkForHelp(String[] args) throws ParseException {
-        Options help = new Options();
-        help.addOption(new Option("h", "help", false, "display help message"));
-        CommandLineParser parser = new DefaultParser();
-        CommandLine tmp = parser.parse(help, args, true);
-        return tmp.hasOption("h");
+        Set<String> arguments = new HashSet<>(Arrays.asList(args));
+        return (arguments.contains("-h") || arguments.contains("--help"));
     }
 
     /**
@@ -97,7 +98,7 @@ public class CommandLineConfiguration {
         options.addOption(diagram);
 
         Option format = new Option("f", "format", true,
-                "output format (png, pdf or svg)");
+                "output format (png, svg)");
         format.setRequired(false);
         options.addOption(format);
 
