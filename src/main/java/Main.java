@@ -9,28 +9,30 @@ import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
 import java.io.File;
 import java.io.FileNotFoundException;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Optional;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.ParseException;
 
+
+/**
+ * Entry point of the compiler.
+ */
 public class Main {
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
 
+    /**
+     * Entry point of the system, triggering the compilation process.
+     *
+     * @param args arguments provided to the compiler through command line
+     */
     public static void main(String[] args) {
         CommandLineConfiguration config = new CommandLineConfiguration(args);
         CommandLine cmd = null;
         try {
             Optional<CommandLine> tmp = config.read();
-            if (tmp.isEmpty()){
+            if (tmp.isEmpty()) {
                 config.help();
                 System.exit(0);
             }
@@ -63,31 +65,36 @@ public class Main {
         try {
             unit = (new Compiler()).compile(inputFile);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(ANSI_RED + "File not found: " + e.getMessage() + ANSI_RESET, e);
+            throw new RuntimeException(ANSI_RED + "File not found: " + e.getMessage()
+                    + ANSI_RESET, e);
         } catch (CompilationError | TypeError | ExportationError err) {
             throw new RuntimeException(ANSI_RED + err.getMessage() + ANSI_RESET, err);
         }
 
         File outputDir = new File(outputDirectory);
         if (!outputDir.exists()) {
-            throw new IllegalArgumentException(ANSI_RED + "Output directory does not exist: " + outputDir.getPath() + ANSI_RESET);
+            throw new IllegalArgumentException(ANSI_RED + "Output directory does not exist: "
+                    + outputDir.getPath() + ANSI_RESET);
         }
 
         if (diagramNames != null && diagramNames.length > 0) {
             for (String diagramName : diagramNames) {
                 Optional<JustificationDiagram> tmp = unit.findByName(diagramName);
                 if (tmp.isEmpty()) {
-                    throw new IllegalArgumentException(ANSI_RED + "Diagram not found: " + diagramName + ANSI_RESET);
+                    throw new IllegalArgumentException(ANSI_RED + "Diagram not found: "
+                            + diagramName + ANSI_RESET);
                 }
                 JustificationDiagram justification = tmp.get();
                 Exportation<JustificationDiagram> exporter = new DiagramExporter();
-                String outputFilePath = outputDir.getAbsolutePath() + "/" + removeFileExtension(inputFile) + "_" + justification.name() + ".png";
+                String outputFilePath = outputDir.getAbsolutePath() + "/"
+                        + removeFileExtension(inputFile) + "_" + justification.name() + ".png";
                 exporter.export(justification, outputFilePath);
             }
         } else {
             for (JustificationDiagram justification : unit.getJustificationSet()) {
                 Exportation<JustificationDiagram> exporter = new DiagramExporter();
-                String outputFilePath = outputDir.getAbsolutePath() + "/" + removeFileExtension(inputFile) + "_" + justification.name() + ".png";
+                String outputFilePath = outputDir.getAbsolutePath() + "/"
+                        + removeFileExtension(inputFile) + "_" + justification.name() + ".png";
                 exporter.export(justification, outputFilePath);
             }
         }
