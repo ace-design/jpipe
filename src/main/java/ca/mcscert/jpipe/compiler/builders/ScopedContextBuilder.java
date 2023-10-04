@@ -144,7 +144,6 @@ public abstract class ScopedContextBuilder {
     public abstract void checkSubConclusionPredecessor(JustificationElement e);
 
 
-    @SuppressWarnings("unchecked")
     protected final void fill(Conclusion c) {
         logger.trace("  Finalizing build of Conclusion [" + c.getIdentifier() + "]");
         for (String from :
@@ -157,7 +156,6 @@ public abstract class ScopedContextBuilder {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private final void fill(Strategy strategy) {
         logger.trace("  Finalizing build of Strategy [" + strategy.getIdentifier() + "]");
         for (String from :
@@ -171,7 +169,6 @@ public abstract class ScopedContextBuilder {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private final void fill(SubConclusion sc) {
         logger.trace("  Finalizing build of SubConclusion [" + sc.getIdentifier() + "]");
         for (String from : this.dependencies.getOrDefault(sc.getIdentifier(), new ArrayList<>())) {
