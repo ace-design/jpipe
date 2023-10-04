@@ -24,17 +24,31 @@ public class DiagramExporter implements Exportation<JustificationDiagram> {
      * @param j the diagram to export.
      * @param outputFile the output file to use.
      */
-    public void export(JustificationDiagram j, String outputFile) {
+    @Override
+    public void export(JustificationDiagram j, String outputFile, String format) {
         logger.trace("Exporting justification [" + j.name() + "]");
         ToGraph visitor = new ToGraph();
         j.accept(visitor);
+
         MutableGraph graph = visitor.getResult();
+
         try {
-            Graphviz.fromGraph(graph).render(Format.PNG).toFile(new File(outputFile));
+            Format fileFormat = getFormatFromString(format);
+            Graphviz.fromGraph(graph).render(fileFormat).toFile(new File(outputFile));
         } catch (IOException ioe) {
             throw new ExportationError(ioe.getMessage());
         }
+
         logger.trace("End of exportation [" + j.name() + "]");
     }
 
+    private Format getFormatFromString(String format) {
+        return switch (format.toLowerCase()) {
+            case "png" -> Format.PNG;
+            case "svg" -> Format.SVG;
+            default -> throw new ExportationError("Unsupported file format: " + format);
+        };
+    }
 }
+
+
