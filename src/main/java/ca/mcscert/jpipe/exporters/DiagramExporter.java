@@ -22,7 +22,7 @@ public class DiagramExporter implements Exportation<JustificationDiagram> {
      * run the exportation to image.
      *
      * @param j the diagram to export.
-     * @param outputFile the outputfile to use.
+     * @param outputFile the output file to use.
      */
     public void export(JustificationDiagram j, String outputFile) {
         logger.trace("Exporting justification [" + j.name() + "]");
