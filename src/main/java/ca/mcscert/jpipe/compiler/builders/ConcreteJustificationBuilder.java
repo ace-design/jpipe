@@ -11,7 +11,7 @@ import ca.mcscert.jpipe.model.justification.SubConclusion;
  * Builder specialization in charge of building the AST of a concrete justification diagram.
  * We use a template method pattern here (template root is JustificationBuilder).
  */
-public final class ConcreteJustificationBuilder extends JustificationBuilder {
+public final class ConcreteJustificationBuilder extends ScopedContextBuilder {
 
     /**
      * Constructor for this justification builder.

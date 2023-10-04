@@ -6,7 +6,7 @@ import ca.mcscert.jpipe.model.justification.JustificationPattern;
 import ca.mcscert.jpipe.model.justification.Strategy;
 import ca.mcscert.jpipe.model.justification.Support;
 
-public final class JustificationPatternBuilder extends JustificationBuilder {
+public final class JustificationPatternBuilder extends ScopedContextBuilder {
 
     public JustificationPatternBuilder(String name) {
         super(name);
