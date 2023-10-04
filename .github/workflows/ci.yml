@@ -38,9 +38,9 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      # Installing packaged artifact to the local maven repository
+      # Building the jpipe.jar artefact
       - name: Create executable jar with Maven
-        run: mvn clean package -DskipTests
+        run: mvn clean package -DskipTests -Dcheckstyle.skip
         
       # Uploading artifact 
       - name: Store Artifact
