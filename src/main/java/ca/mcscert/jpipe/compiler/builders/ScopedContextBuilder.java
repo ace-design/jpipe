@@ -158,7 +158,7 @@ public abstract class ScopedContextBuilder {
     }
 
     @SuppressWarnings("all")
-    protected final void fill(Strategy strategy) {
+    private final void fill(Strategy strategy) {
         logger.trace("  Finalizing build of Strategy [" + strategy.getIdentifier() + "]");
         for (String from :
                 this.dependencies.getOrDefault(strategy.getIdentifier(), new ArrayList<>())) {
@@ -172,7 +172,7 @@ public abstract class ScopedContextBuilder {
     }
 
     @SuppressWarnings("all")
-    protected final void fill(SubConclusion sc) {
+    private final void fill(SubConclusion sc) {
         logger.trace("  Finalizing build of SubConclusion [" + sc.getIdentifier() + "]");
         for (String from : this.dependencies.getOrDefault(sc.getIdentifier(), new ArrayList<>())) {
             JustificationElement source = this.elements.get(from);
