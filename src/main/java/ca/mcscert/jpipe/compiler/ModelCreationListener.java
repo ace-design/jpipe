@@ -1,8 +1,8 @@
 package ca.mcscert.jpipe.compiler;
 
 import ca.mcscert.jpipe.compiler.builders.ConcreteJustificationBuilder;
-import ca.mcscert.jpipe.compiler.builders.JustificationBuilder;
 import ca.mcscert.jpipe.compiler.builders.JustificationPatternBuilder;
+import ca.mcscert.jpipe.compiler.builders.ScopedContextBuilder;
 import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.justification.AbstractSupport;
@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 public class ModelCreationListener extends JPipeBaseListener {
 
     private static Logger logger = LogManager.getLogger(ModelCreationListener.class);
-    private JustificationBuilder justifBuilder;
+    private ScopedContextBuilder justifBuilder;
     private final List<JustificationDiagram> justifications = new ArrayList<>();
     private Unit result;
     private Path fileName;
