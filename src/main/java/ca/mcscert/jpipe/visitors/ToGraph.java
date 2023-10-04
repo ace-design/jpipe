@@ -40,11 +40,6 @@ public class ToGraph extends DefaultVisitor<MutableGraph> {
     }
 
     @Override
-    public MutableGraph getResult() {
-        return super.getResult();
-    }
-
-    @Override
     public void visit(ConcreteJustification j) {
         logger.trace("  Visiting justification [" + j.name() + "]");
         this.result.graphAttrs().add(Label.markdown(j.name()));
