@@ -105,7 +105,7 @@ public abstract class JustificationBuilder {
     @SuppressWarnings("all")
     protected final void fill(SubConclusion sc) {
         logger.trace("  Finalizing build of SubConclusion ["+ sc.getIdentifier()+"]");
-        for(String from: this.dependencies.getOrDefault(sc.getIdentifier(), new ArrayList<>())) {
+        for(String from : this.dependencies.getOrDefault(sc.getIdentifier(), new ArrayList<>())) {
             JustificationElement source = this.elements.get(from);
             checkSubConclusionPredecessor(source);
             Strategy strategy = (Strategy) source;
