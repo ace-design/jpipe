@@ -1,28 +1,38 @@
 package ca.mcscert.jpipe.visitors;
 
-import ca.mcscert.jpipe.model.*;
-import ca.mcscert.jpipe.model.justification.*;
+import ca.mcscert.jpipe.model.Unit;
+import ca.mcscert.jpipe.model.justification.AbstractSupport;
+import ca.mcscert.jpipe.model.justification.Conclusion;
+import ca.mcscert.jpipe.model.justification.ConcreteJustification;
+import ca.mcscert.jpipe.model.justification.Evidence;
+import ca.mcscert.jpipe.model.justification.JustificationPattern;
+import ca.mcscert.jpipe.model.justification.Load;
+import ca.mcscert.jpipe.model.justification.Strategy;
+import ca.mcscert.jpipe.model.justification.SubConclusion;
 
-public abstract class AbstractVisitor<T> {
+/**
+ * Interface for visiting an AST model. Basic Visitor pattern implementation.
+ *
+ * @param <T> what will this visitor produce?
+ */
+public interface AbstractVisitor<T> {
 
-    protected T result;
+    void visit(Unit u);
 
-    public T getResult() {
-        return result;
-    }
+    void visit(ConcreteJustification j);
 
+    void visit(Conclusion c);
 
-    public void visit(Unit u) {
-        for(JustificationDiagram j: u.getJustificationSet())
-            j.accept(this);
-    }
+    void visit(Strategy s);
 
-    public abstract void visit(ConcreteJustification j);
-    public abstract void visit(Conclusion c);
-    public abstract void visit(Strategy s);
-    public abstract void visit(SubConclusion sc);
-    public abstract void visit(Evidence e);
-    public abstract void visit(AbstractSupport a);
-    public abstract void visit(JustificationPattern p);
+    void visit(SubConclusion sc);
+
+    void visit(Evidence e);
+
+    void visit(AbstractSupport a);
+
+    void visit(JustificationPattern p);
+
+    void visit(Load p);
 
 }
