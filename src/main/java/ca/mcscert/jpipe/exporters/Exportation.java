@@ -12,7 +12,8 @@ public interface Exportation<T> {
      *
      * @param element the element to export (e.g., a justification diagram)
      * @param outputFile the file where to put the result of the exportation.
+     * @param format file format to export to.
      */
-    void export(T element, String outputFile);
+    void export(T element, String outputFile, String format);
 
 }
