@@ -1,7 +1,16 @@
 package ca.mcscert.jpipe.visitors;
 
-import ca.mcscert.jpipe.model.*;
-import ca.mcscert.jpipe.model.justification.*;
+import ca.mcscert.jpipe.model.JustificationDiagram;
+import ca.mcscert.jpipe.model.Unit;
+import ca.mcscert.jpipe.model.justification.AbstractSupport;
+import ca.mcscert.jpipe.model.justification.Conclusion;
+import ca.mcscert.jpipe.model.justification.ConcreteJustification;
+import ca.mcscert.jpipe.model.justification.Evidence;
+import ca.mcscert.jpipe.model.justification.JustificationPattern;
+import ca.mcscert.jpipe.model.justification.Load;
+import ca.mcscert.jpipe.model.justification.Strategy;
+import ca.mcscert.jpipe.model.justification.SubConclusion;
+import ca.mcscert.jpipe.model.justification.Support;
 
 public abstract class DefaultVisitor<T> extends AbstractVisitor<T> {
 

@@ -153,6 +153,7 @@
                         <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                     </sourceDirectories>
                     <configLocation>google_checks.xml</configLocation>
+                    <suppressionsLocation>${project.resources[0].directory}/checkstyle-no-indent.xml</suppressionsLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>

@@ -21,7 +21,7 @@ import java.util.Set;
 
 public class Compiler {
 
-    private Set<String> compiled = new HashSet();
+    private final Set<String> compiled = new HashSet<>();
 
 
     public Unit compile(String fileName) throws FileNotFoundException {
