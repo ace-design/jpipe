@@ -15,8 +15,8 @@ import java.util.Map;
 public abstract class JustificationBuilder {
 
     protected final String name;
-    protected final Map<String, JustificationElement> elements;
-    protected final Map<String, List<String>> dependencies;
+    protected Map<String, JustificationElement> elements;
+    protected Map<String, List<String>> dependencies;
 
     protected Conclusion conclusion = null;
 
@@ -56,6 +56,7 @@ public abstract class JustificationBuilder {
         this.elements.put(identifier, elem);
     }
 
+
     public void setConclusion(Conclusion conclusion) {
         if (this.conclusion != null) {
             error("A justification cannot lead to two different conclusions");
@@ -69,6 +70,10 @@ public abstract class JustificationBuilder {
         } else {
             throw new TypeError(message);
         }
+    }
+
+    public String getJustificationName(){
+        return this.name;
     }
 
 
@@ -86,6 +91,7 @@ public abstract class JustificationBuilder {
             checkConclusionPredecessor(source);
             Strategy strategy = (Strategy) source;
             c.addSupport(strategy);
+
             fill(strategy);
         }
     }
@@ -113,6 +119,16 @@ public abstract class JustificationBuilder {
             fill(strategy);
         }
     }
+
+    // @Override
+    // public boolean equals(Object o){
+    //     if (o instanceof JustificationBuilder){
+    //         JustificationBuilder comparable = (JustificationBuilder)o;
+    //         return (comparable.getJustificationName().equals(this.name));
+    //     }else{
+    //         return false;
+    //     }
+    // }
 
 
 

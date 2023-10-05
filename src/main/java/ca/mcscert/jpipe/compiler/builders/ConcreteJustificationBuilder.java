@@ -3,7 +3,7 @@ package ca.mcscert.jpipe.compiler.builders;
 import ca.mcscert.jpipe.model.*;
 import ca.mcscert.jpipe.model.justification.*;
 
-public final class ConcreteJustificationBuilder extends JustificationBuilder {
+public class ConcreteJustificationBuilder extends JustificationBuilder {
 
     public ConcreteJustificationBuilder(String name) {
         super(name);
