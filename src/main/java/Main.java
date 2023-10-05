@@ -1,7 +1,6 @@
 import ca.mcscert.jpipe.CommandLineConfiguration;
-import ca.mcscert.jpipe.compiler.CompilationError;
 import ca.mcscert.jpipe.compiler.Compiler;
-import ca.mcscert.jpipe.compiler.TypeError;
+import ca.mcscert.jpipe.compiler.exceptions.CompilationError;
 import ca.mcscert.jpipe.exporters.DiagramExporter;
 import ca.mcscert.jpipe.exporters.Exportation;
 import ca.mcscert.jpipe.exporters.ExportationError;
@@ -43,7 +42,8 @@ public class Main {
 
             process(inputFile, outputDirectory, diagramNames, format);
         } catch (Exception | Error e) {
-            System.err.println(ANSI_RED + e.getMessage() + ANSI_RESET);
+            String msg = e.getMessage();
+            System.err.println(ANSI_RED + msg + ANSI_RESET);
             System.exit(1);
         }
     }
@@ -116,8 +116,6 @@ public class Main {
             return (new Compiler()).compile(inputFile);
         } catch (FileNotFoundException e) {
             throw new RuntimeException("File not found: " + e.getMessage(), e);
-        } catch (CompilationError | TypeError | ExportationError err) {
-            throw new RuntimeException(err.getMessage(), err);
         }
     }
 

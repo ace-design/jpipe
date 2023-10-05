@@ -1,15 +1,15 @@
-justification duplicate {
-
-    evidence Su1 is "Evidence 1"
-    conclusion C is "Conclusion 1"
-    Su1 supports C
-
+justification dupli_diag {
+    evidence e is "An evidence"
+    strategy s is "a Strategy"
+    conclusion c is "a Conclusion"
+    e supports s
+    s supports c
 }
 
-justification duplicate {
-
-    evidence Su2 is "Evidence 2"
-    conclusion C2 is "Conclusion 2"
-    Su2 supports C2
-
+justification dupli_diag {
+    evidence e1 is "An evidence"
+    strategy s1 is "a Strategy"
+    conclusion c1 is "a Conclusion"
+    e1 supports s1
+    s1 supports c1
 }

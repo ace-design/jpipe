@@ -1,6 +1,7 @@
-package ca.mcscert.jpipe.compiler;
+package ca.mcscert.jpipe.tests.unit;
 
-import ca.mcscert.jpipe.compiler.visitors.ElementCounter;
+import ca.mcscert.jpipe.compiler.Compiler;
+import ca.mcscert.jpipe.tests.helpers.ElementCounter;
 import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
 import org.antlr.v4.runtime.CharStreams;
@@ -12,22 +13,11 @@ import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CompilerTest {
+public class CompilerTest extends AbstractFileTest {
 
-    private Unit unitUnderTest;
-    private static final String SOURCE = "simple.jd";
-
-    @BeforeEach
-    public void loadUnit(){
-        Compiler compiler = new Compiler();
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        try (InputStream is = classloader.getResourceAsStream(SOURCE)) {
-            unitUnderTest = compiler.compile(CharStreams.fromStream(is), SOURCE);
-        } catch (IOException ioe) {
-            fail("Unexpected exception was thrown");
-        }
+    protected String source() {
+        return "simple.jd";
     }
-    
 
     @Test
     public void unitHasTheSize(){
@@ -36,21 +26,24 @@ public class CompilerTest {
 
     @Test
     public void modelConclusionIsTheRightOne(){
-        JustificationDiagram justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
+        JustificationDiagram justificationUnderTest =
+                unitUnderTest.getJustificationSet().iterator().next();
         String label = justificationUnderTest.conclusion().getLabel();
         assertEquals("Model is correct", label);
     }
 
     @Test
     public void modelNameIsTheRightOne(){
-        JustificationDiagram justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
+        JustificationDiagram justificationUnderTest =
+                unitUnderTest.getJustificationSet().iterator().next();
         String name = justificationUnderTest.name();
         assertEquals("prove_models", name);
     }
 
     @Test
     public void rightNumberOfEvidences(){
-        JustificationDiagram justificationUnderTest = unitUnderTest.getJustificationSet().iterator().next();
+        JustificationDiagram justificationUnderTest =
+                unitUnderTest.getJustificationSet().iterator().next();
         ElementCounter counter = new ElementCounter();
         justificationUnderTest.accept(counter);
         assertEquals(3, counter.getResult().get(ElementCounter.EVIDENCE));

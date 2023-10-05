@@ -1,4 +1,4 @@
-package ca.mcscert.jpipe.compiler.visitors;
+package ca.mcscert.jpipe.tests.helpers;
 
 import ca.mcscert.jpipe.model.justification.*;
 import ca.mcscert.jpipe.visitors.DefaultVisitor;

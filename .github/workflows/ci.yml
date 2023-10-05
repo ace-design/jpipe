@@ -61,8 +61,24 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       # run unit tests
-      - name: Test with Maven
+      - name: Unit tests with Maven (surefire)
         run: mvn test
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: [ test ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      # run integration tests (any test ending with IT)
+      - name: Integration tests with Maven (failsafe)
+        run: mvn verify -Dskip.tests.unit
+
 
   linter:
     runs-on: ubuntu-latest

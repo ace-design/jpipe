@@ -1,5 +1,7 @@
 package ca.mcscert.jpipe.compiler;
 
+import ca.mcscert.jpipe.compiler.exceptions.LexerErrorListener;
+import ca.mcscert.jpipe.compiler.exceptions.ParsingErrorListener;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.syntax.JPipeLexer;
 import ca.mcscert.jpipe.syntax.JPipeParser;
@@ -51,8 +53,12 @@ public final class Compiler {
     public Unit compile(CharStream stream, String fileName) {
         this.compiled.add(Paths.get(fileName).getFileName().toString());
         JPipeLexer lexer = new JPipeLexer(stream);
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(new LexerErrorListener());
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         JPipeParser parser = new JPipeParser(tokens);
+        parser.removeErrorListeners();
+        parser.addErrorListener(new ParsingErrorListener());
         ParseTree tree = parser.unit();
         ModelCreationListener builder = new ModelCreationListener(fileName, this);
         ParseTreeWalker.DEFAULT.walk(builder, tree);
