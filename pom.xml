@@ -124,6 +124,29 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
+                <configuration>
+                    <!-- invoke with -Dskip.tests.units to skip unit tests -->
+                    <skipTests>${skip.tests.unit}</skipTests>
+                    <trimStackTrace>true</trimStackTrace>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <!-- invoke with -Dskip.tests.integration to skip unit tests -->
+                    <skipTests>${skip.tests.integration}</skipTests>
+                    <trimStackTrace>true</trimStackTrace>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>com.coderplus.maven.plugins</groupId>
