@@ -1,7 +1,7 @@
 
 load "./patterns.jd"
 
-implementation I1 of prove_model {
+implementation I1 of prover_pattern {
 
     implements Su1 {
       probe is count_files('./models/*.ndr')

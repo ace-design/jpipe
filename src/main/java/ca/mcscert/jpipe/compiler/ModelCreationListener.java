@@ -3,17 +3,25 @@ package ca.mcscert.jpipe.compiler;
 import ca.mcscert.jpipe.compiler.builders.ConcreteJustificationBuilder;
 import ca.mcscert.jpipe.compiler.builders.JustificationBuilder;
 import ca.mcscert.jpipe.compiler.builders.JustificationPatternBuilder;
+import ca.mcscert.jpipe.compiler.builders.ImplementJustificationBuilder;
 import ca.mcscert.jpipe.model.*;
 import ca.mcscert.jpipe.model.justification.*;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;
+import ca.mcscert.jpipe.compiler.CompilationError;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import java.util.ArrayList;
+
 import java.util.List;
 import java.nio.file.Path;
 
@@ -24,7 +32,7 @@ public class ModelCreationListener extends JPipeBaseListener {
     private static Logger logger = LogManager.getLogger(ModelCreationListener.class);
 
     private JustificationBuilder justifBuilder;
-    private final List<JustificationDiagram> justifications = new ArrayList<>();
+    private final Map<String,JustificationDiagram> justifications = new HashMap<>();
 
     private Unit result;
     private Path fileName;
@@ -37,7 +45,7 @@ public class ModelCreationListener extends JPipeBaseListener {
     }
 
     public Unit build() {
-        for (JustificationDiagram justification: justifications) {
+        for (JustificationDiagram justification: justifications.values()) {
             result.add(justification);
         }
         return result;
@@ -48,16 +56,31 @@ public class ModelCreationListener extends JPipeBaseListener {
 
     @Override
     public void enterJustification(JPipeParser.JustificationContext ctx) {
-        logger.trace("Entering Justification [" + ctx.id.getText() + "]");
-        justifBuilder = new ConcreteJustificationBuilder(ctx.id.getText());
+        if (ctx.parent!=null){
+            logger.trace("Implementation of [" + ctx.parent.getText() + "]");
+                if (justifications.get(ctx.parent.getText())!=null){
+                    try{
+                        JustificationPattern parent_pattern=(JustificationPattern)justifications.get(ctx.parent.getText());
+                        justifBuilder = new ImplementJustificationBuilder(ctx.id.getText(),parent_pattern);
+                    }catch (ClassCastException e){
+                        logger.trace("Cannot implement [" + ctx.parent.getText() + "] since it is not a pattern");
+                        throw new RuntimeException(e);        
+                    }
+                }else{
+                    throw new CompilationError(ctx.id.getLine(), ctx.id.getStartIndex(), "Pattern does not exist");
+
+                }
+        }else{
+            logger.trace("Entering Justification [" + ctx.id.getText() + "]");
+            justifBuilder = new ConcreteJustificationBuilder(ctx.id.getText());
+        }
         justifBuilder.updateLocation(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
     }
 
     @Override
     public void exitJustification(JPipeParser.JustificationContext ctx) {
         logger.trace("Exiting Justification [" + ctx.id.getText() + "]");
-        JustificationDiagram result = justifBuilder.build();
-        justifications.add(result);
+        justifications.put(ctx.id.getText(),justifBuilder.build());
         justifBuilder = null;
     }
 
@@ -73,8 +96,7 @@ public class ModelCreationListener extends JPipeBaseListener {
     @Override
     public void exitPattern(JPipeParser.PatternContext ctx) {
         logger.trace("Exiting Pattern [" + ctx.id.getText() + "]");
-        JustificationDiagram result = justifBuilder.build();
-        justifications.add(result);
+        justifications.put(ctx.id.getText(),justifBuilder.build());
         justifBuilder = null;
     }
 
@@ -143,15 +165,15 @@ public class ModelCreationListener extends JPipeBaseListener {
         Path loadPath=Paths.get(ctx.file.getText().replace("\"",""));
 
         if (compiler.isCompiled(loadPath)){
-
             logger.trace("  Already entered ["+loadPath.getFileName()+"]");
-            
         }else{
             logger.trace("  Entering Load ["+loadPath.getFileName()+"]");
-            
             Load loadFile=new Load(loadPath,fileName);
             try {
                 Unit unit = compiler.compile(loadFile.getLoadPath());
+                for (JustificationDiagram j:unit.getJustificationSet()){
+                    justifications.put(j.name(),j);
+                }
                 result.merge(unit);
             } catch (FileNotFoundException e){
                 throw new RuntimeException(e);
