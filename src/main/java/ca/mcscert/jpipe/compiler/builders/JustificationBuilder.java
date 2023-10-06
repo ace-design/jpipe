@@ -91,7 +91,6 @@ public abstract class JustificationBuilder {
             checkConclusionPredecessor(source);
             Strategy strategy = (Strategy) source;
             c.addSupport(strategy);
-
             fill(strategy);
         }
     }
@@ -119,16 +118,6 @@ public abstract class JustificationBuilder {
             fill(strategy);
         }
     }
-
-    // @Override
-    // public boolean equals(Object o){
-    //     if (o instanceof JustificationBuilder){
-    //         JustificationBuilder comparable = (JustificationBuilder)o;
-    //         return (comparable.getJustificationName().equals(this.name));
-    //     }else{
-    //         return false;
-    //     }
-    // }
 
 
 

@@ -6,6 +6,8 @@ import ca.mcscert.jpipe.visitors.AbstractVisitor;
 import java.util.HashSet;
 import java.util.Set;
 
+
+
 public class Strategy extends JustificationElement implements Visitable {
 
     private Set<Support> supports = new HashSet<>();
@@ -15,6 +17,9 @@ public class Strategy extends JustificationElement implements Visitable {
     }
 
     public void addSupport(Support s) {
+        if (supports.contains(s)){
+            supports.remove(s);
+        }
         this.supports.add(s);
     }
 
@@ -26,5 +31,6 @@ public class Strategy extends JustificationElement implements Visitable {
     public void accept(AbstractVisitor<?> visitor) {
         visitor.visit(this);
     }
+
 
 }

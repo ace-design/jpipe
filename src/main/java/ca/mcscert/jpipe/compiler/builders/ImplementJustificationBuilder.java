@@ -3,10 +3,7 @@ package ca.mcscert.jpipe.compiler.builders;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.mcscert.jpipe.model.*;
 import ca.mcscert.jpipe.model.justification.*;
-import ca.mcscert.jpipe.model.justification.Conclusion;
-import ca.mcscert.jpipe.model.justification.JustificationElement;
 
 
 public class ImplementJustificationBuilder extends ConcreteJustificationBuilder{
@@ -43,9 +40,4 @@ public class ImplementJustificationBuilder extends ConcreteJustificationBuilder{
         this.conclusion = conclusion;
     }
 
-
-
-
-
-    
 }

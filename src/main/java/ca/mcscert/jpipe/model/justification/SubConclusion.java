@@ -15,6 +15,9 @@ public class SubConclusion extends Support implements Visitable {
     }
 
     public void addSupport(Strategy strategy) {
+        if (this.supports.contains(strategy)){
+            this.supports.remove(strategy);
+        }
         this.supports.add(strategy);
     }
 

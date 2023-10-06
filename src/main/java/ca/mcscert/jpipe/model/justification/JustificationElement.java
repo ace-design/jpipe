@@ -17,4 +17,20 @@ public abstract class JustificationElement {
     public String getLabel() {
         return label;
     }
+
+    @Override
+    public boolean equals(Object obj){
+        if (obj instanceof Support){
+            Support foreign_obj=(Support)obj;
+            if (foreign_obj.getIdentifier().equals(this.identifier)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.identifier.hashCode();
+    }
 }
