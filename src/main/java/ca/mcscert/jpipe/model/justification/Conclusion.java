@@ -15,6 +15,9 @@ public class Conclusion extends JustificationElement implements Visitable {
     }
 
     public void addSupport(Strategy from) {
+        if (supports.contains(from)){
+            this.supports.remove(from);
+        }
         this.supports.add(from);
     }
 
