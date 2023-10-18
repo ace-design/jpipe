@@ -1,7 +1,6 @@
 package ca.mcscert.jpipe.model.justification;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.visitors.AbstractVisitor;
-import java.nio.file.Paths;
 import java.nio.file.Path;
 
 
