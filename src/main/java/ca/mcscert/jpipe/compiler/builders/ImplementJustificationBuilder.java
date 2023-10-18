@@ -18,9 +18,9 @@ public class ImplementJustificationBuilder extends ConcreteJustificationBuilder{
 
     private void extract(){
         template.unbuild();
-        this.elements=template.template_elements();
-        this.dependencies=template.template_dependencies();
-        setConclusion(template.template_conclusion());
+        this.elements=template.templateElements();
+        this.dependencies=template.templateDependencies();
+        setConclusion(template.templateConclusion());
     }
 
     @Override

@@ -19,22 +19,23 @@ public record ConcreteJustification(String name, Conclusion conclusion) implemen
 
     public void unbuild(){
         try{
-            template_conclusion=JustificationDiagram.traverseGraph(conclusion);
+            unbuilder.traverseGraph(conclusion);
         }catch (CloneNotSupportedException e){
             throw new RuntimeException(e);
         }
     }
+    
 
-    public Map<String, JustificationElement> template_elements(){
-        return template_elements;
+    public Map<String, JustificationElement> templateElements(){
+        return unbuilder.templateElements();
     }
 
-    public Map<String, List<String>> template_dependencies(){
-        return template_dependencies;
+    public Map<String, List<String>> templateDependencies(){
+        return unbuilder.templateDependencies();
     }
 
-    public Conclusion template_conclusion(){
-        return template_conclusion;
+    public Conclusion templateConclusion(){
+        return unbuilder.templateConclusion();
     }
 
 }
