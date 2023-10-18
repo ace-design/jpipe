@@ -6,7 +6,7 @@ import ca.mcscert.jpipe.visitors.AbstractVisitor;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SubConclusion extends Support implements Visitable {
+public class SubConclusion extends Support implements Visitable, Cloneable {
 
     private Set<Strategy> supports = new HashSet<>();
 
@@ -15,9 +15,6 @@ public class SubConclusion extends Support implements Visitable {
     }
 
     public void addSupport(Strategy strategy) {
-        if (this.supports.contains(strategy)){
-            this.supports.remove(strategy);
-        }
         this.supports.add(strategy);
     }
 
@@ -28,5 +25,12 @@ public class SubConclusion extends Support implements Visitable {
     @Override
     public void accept(AbstractVisitor<?> visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public SubConclusion clone() throws CloneNotSupportedException {
+        SubConclusion cloned_subconclusion = (SubConclusion) super.clone();
+        cloned_subconclusion.supports = new HashSet<>();
+        return cloned_subconclusion;
     }
 }

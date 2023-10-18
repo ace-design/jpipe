@@ -15,7 +15,7 @@ public final class JustificationPatternBuilder extends JustificationBuilder {
     public JustificationDiagram build() {
         this.line = -1; this.character = -1;
         logger.trace("Finalizing build of Pattern ["+this.name+"]");
-        JustificationDiagram result = new JustificationPattern(this.name, this.conclusion, this.elements,this.dependencies);
+        JustificationDiagram result = new JustificationPattern(this.name, this.conclusion);
         fill(this.conclusion);
         logger.trace("Finalization complete! ["+this.name+"]");
         return result;

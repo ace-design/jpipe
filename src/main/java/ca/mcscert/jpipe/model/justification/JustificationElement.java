@@ -1,6 +1,6 @@
 package ca.mcscert.jpipe.model.justification;
 
-public abstract class JustificationElement {
+public abstract class JustificationElement implements Cloneable{
 
     protected final String identifier;
     protected final String label;
@@ -18,19 +18,9 @@ public abstract class JustificationElement {
         return label;
     }
 
-    @Override
-    public boolean equals(Object obj){
-        if (obj instanceof Support){
-            Support foreign_obj=(Support)obj;
-            if (foreign_obj.getIdentifier().equals(this.identifier)){
-                return true;
-            }
-        }
-        return false;
+    public JustificationElement clone() throws CloneNotSupportedException{
+        JustificationElement cloned_element = (JustificationElement) super.clone();
+        return cloned_element;
     }
 
-    @Override
-    public int hashCode() {
-        return this.identifier.hashCode();
-    }
 }

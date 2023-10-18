@@ -17,9 +17,10 @@ public class ImplementJustificationBuilder extends ConcreteJustificationBuilder{
     }
 
     private void extract(){
-        this.elements=template.elements();
-        this.dependencies=template.dependencies();
-        this.conclusion=template.conclusion();
+        template.unbuild();
+        this.elements=template.template_elements();
+        this.dependencies=template.template_dependencies();
+        setConclusion(template.template_conclusion());
     }
 
     @Override

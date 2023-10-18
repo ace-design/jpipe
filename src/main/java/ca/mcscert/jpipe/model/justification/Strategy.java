@@ -8,7 +8,7 @@ import java.util.Set;
 
 
 
-public class Strategy extends JustificationElement implements Visitable {
+public class Strategy extends JustificationElement implements Visitable,Cloneable{
 
     private Set<Support> supports = new HashSet<>();
 
@@ -17,9 +17,6 @@ public class Strategy extends JustificationElement implements Visitable {
     }
 
     public void addSupport(Support s) {
-        if (supports.contains(s)){
-            supports.remove(s);
-        }
         this.supports.add(s);
     }
 
@@ -30,6 +27,13 @@ public class Strategy extends JustificationElement implements Visitable {
     @Override
     public void accept(AbstractVisitor<?> visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public Strategy clone() throws CloneNotSupportedException {
+        Strategy cloned_strategy = (Strategy) super.clone();
+        cloned_strategy.supports = new HashSet<>();
+        return cloned_strategy;
     }
 
 
