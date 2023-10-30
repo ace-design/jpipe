@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.mcscert.jpipe.model.justification.*;
+import ca.mcscert.jpipe.visitors.UnBuilder;
 
 
 public class ImplementJustificationBuilder extends ConcreteJustificationBuilder{
 
     private final JustificationPattern template;
+
+    private final UnBuilder unbuilder = new UnBuilder();
 
     public ImplementJustificationBuilder(String name, JustificationPattern template){
         super(name);
@@ -17,10 +20,10 @@ public class ImplementJustificationBuilder extends ConcreteJustificationBuilder{
     }
 
     private void extract(){
-        template.unbuild();
-        this.elements=template.templateElements();
-        this.dependencies=template.templateDependencies();
-        setConclusion(template.templateConclusion());
+        template.accept(unbuilder);
+        this.elements=unbuilder.getElements();
+        this.dependencies=unbuilder.getDependencies();
+        setConclusion(unbuilder.getConclusion());
     }
 
     @Override
