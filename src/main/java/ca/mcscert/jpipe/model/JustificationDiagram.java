@@ -1,7 +1,6 @@
 package ca.mcscert.jpipe.model;
 
 import ca.mcscert.jpipe.model.justification.Conclusion;
-import ca.mcscert.jpipe.compiler.builders.JustificationUnBuilder;
 
 
 public interface JustificationDiagram extends Visitable {
@@ -17,8 +16,6 @@ public interface JustificationDiagram extends Visitable {
      * @return the diagram's conclusion
      */
     Conclusion conclusion();
-
-    public static JustificationUnBuilder unbuilder = new JustificationUnBuilder();
 
 
 }
