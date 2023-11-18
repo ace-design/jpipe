@@ -1,24 +1,25 @@
 package ca.mcscert.jpipe.model.justification;
+
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.visitors.AbstractVisitor;
 import java.nio.file.Path;
 
+/**
+ * Load directive (equivalent to a #include for the compiler).
+ */
+public class Load implements Visitable {
 
-public class Load implements Visitable{
-
-    private final String fileName;
     private final String path;
 
     public Load(Path loadFilePath, Path parentFilePath) {
-        this.fileName=loadFilePath.getFileName().toString();
-        this.path=generatePath(parentFilePath,loadFilePath);
+        this.path = generatePath(parentFilePath, loadFilePath);
     }
 
-    private String generatePath(Path parent, Path child){
-        return parent.getParent().toString()+"/"+child.toString();
+    private String generatePath(Path parent, Path child) {
+        return parent.getParent().toString() + "/" + child.toString();
     }
 
-    public String getLoadPath(){
+    public String getLoadPath() {
         return this.path;
     }
 

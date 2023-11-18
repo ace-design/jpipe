@@ -9,95 +9,120 @@ import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
 import java.io.File;
 import java.io.FileNotFoundException;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.ParseException;
 
+
+/**
+ * Entry point of the compiler.
+ */
 public class Main {
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
 
+    /**
+     * Entry point of the system, triggering the compilation process.
+     *
+     * @param args arguments provided to the compiler through command line
+     */
     public static void main(String[] args) {
-        CommandLineConfiguration config = new CommandLineConfiguration(args);
-        CommandLine cmd = null;
         try {
-            Optional<CommandLine> tmp = config.read();
-            if (tmp.isEmpty()){
-                config.help();
-                System.exit(0);
-            }
-            cmd = tmp.get();
-        } catch (ParseException e) {
+            CommandLine cmd = getCommandLineArgs(args);
+
+            String inputFile = cmd.getOptionValue("input");
+            String outputDirectory = cmd.getOptionValue("output",
+                                                        System.getProperty("user.dir"));
+            String format = cmd.getOptionValue("format",
+                                    "png");
+            String[] diagramNames = cmd.getOptionValues("diagram");
+
+            process(inputFile, outputDirectory, diagramNames, format);
+        } catch (Exception | Error e) {
             System.err.println(ANSI_RED + e.getMessage() + ANSI_RESET);
-            System.exit(1);
-        }
-
-        String inputFile = cmd.getOptionValue("input");
-        String outputDirectory = cmd.getOptionValue("output");
-
-
-        if (outputDirectory == null) {
-            outputDirectory = System.getProperty("user.dir");
-        }
-
-        String[] diagramNames = cmd.getOptionValues("diagram");
-
-        try {
-            process(inputFile, outputDirectory, diagramNames);
-        } catch (RuntimeException e) {
-            System.err.println(e.getMessage());
             System.exit(1);
         }
     }
 
-    private static void process(String inputFile, String outputDirectory, String[] diagramNames) {
-        Unit unit;
-        try {
-            unit = (new Compiler()).compile(inputFile);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(ANSI_RED + "File not found: " + e.getMessage() + ANSI_RESET, e);
-        } catch (CompilationError | TypeError | ExportationError err) {
-            throw new RuntimeException(ANSI_RED + err.getMessage() + ANSI_RESET, err);
+    /**
+     * Extract CommandLine elements from the args provided by the user.
+     * this method ends up the compilation process of the help is invoked from the CLI.
+     *
+     * @param args argument provided on the command line
+     * @return parsed command line.
+     */
+    private static CommandLine getCommandLineArgs(String[] args) throws ParseException {
+        CommandLineConfiguration config = new CommandLineConfiguration(args);
+        Optional<CommandLine> tmp = config.read();
+        if (tmp.isEmpty()) {
+            config.help();
+            System.exit(0);
         }
+        return tmp.get();
+    }
 
+    private static void process(String inputFile, String outputDirectory,
+                                String[] diagramNames, String format) {
+        Unit unit = buildUnitFromFile(inputFile);
+        File outputDir = getOutputDirectory(outputDirectory);
+        Set<String> relevantDiagrams = extractDiagrams(unit, diagramNames);
+        Exportation<JustificationDiagram> exporter = new DiagramExporter();
+
+        for (String diagramName : relevantDiagrams) {
+            JustificationDiagram diag = unit.findByName(diagramName).orElseThrow();
+            String outfile = getOutputFilePath(inputFile, outputDir, diagramName, format);
+            exporter.export(diag, outfile, format);
+        }
+    }
+
+    private static String getOutputFilePath(String inputFile, File outputDir,
+                                            String name, String format) {
+        return outputDir.getAbsolutePath() + "/"
+                + removeFileExtension(inputFile) + "_" + name + "." + format;
+    }
+
+    private static Set<String> extractDiagrams(Unit unit, String[] diagramNames) {
+        Set<String> all = unit.getJustificationSet().stream()
+                              .map(JustificationDiagram::name).collect(Collectors.toSet());
+        if (diagramNames == null || diagramNames.length == 0) {
+            return all;
+        }
+        Set<String> asked = new HashSet<>();
+        for (String name : diagramNames) {
+            if (all.contains(name)) {
+             asked.add(name);
+            } else {
+             throw new ExportationError("Unknown diagram identifier: [" + name + "]");
+            }
+        }
+        return asked;
+    }
+
+    private static File getOutputDirectory(String outputDirectory) {
         File outputDir = new File(outputDirectory);
         if (!outputDir.exists()) {
-            throw new IllegalArgumentException(ANSI_RED + "Output directory does not exist: " + outputDir.getPath() + ANSI_RESET);
+            throw new IllegalArgumentException("Output directory does not exist: "
+                    + outputDir.getPath());
         }
+        return outputDir;
+    }
 
-        if (diagramNames != null && diagramNames.length > 0) {
-            for (String diagramName : diagramNames) {
-                Optional<JustificationDiagram> tmp = unit.findByName(diagramName);
-                if (tmp.isEmpty()) {
-                    throw new IllegalArgumentException(ANSI_RED + "Diagram not found: " + diagramName + ANSI_RESET);
-                }
-                JustificationDiagram justification = tmp.get();
-                Exportation<JustificationDiagram> exporter = new DiagramExporter();
-                String outputFilePath = outputDir.getAbsolutePath() + "/" + removeFileExtension(inputFile) + "_" + justification.name() + ".png";
-                exporter.export(justification, outputFilePath);
-            }
-        } else {
-            for (JustificationDiagram justification : unit.getJustificationSet()) {
-                Exportation<JustificationDiagram> exporter = new DiagramExporter();
-                String outputFilePath = outputDir.getAbsolutePath() + "/" + removeFileExtension(inputFile) + "_" + justification.name() + ".png";
-                exporter.export(justification, outputFilePath);
-            }
+    private static Unit buildUnitFromFile(String inputFile) {
+        try {
+            return (new Compiler()).compile(inputFile);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("File not found: " + e.getMessage(), e);
+        } catch (CompilationError | TypeError | ExportationError err) {
+            throw new RuntimeException(err.getMessage(), err);
         }
     }
 
     private static String removeFileExtension(String filename) {
-        // https://www.baeldung.com/java-filename-without-extension
         File f = new File(filename);
         return f.getName().replaceAll("(?<!^)[.][^.]*$", "");
     }
 }
-
-
