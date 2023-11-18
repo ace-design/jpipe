@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
+import ca.mcscert.jpipe.model.Unit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,7 +22,7 @@ import ca.mcscert.jpipe.model.justification.SubConclusion;
 import ca.mcscert.jpipe.model.justification.AbstractSupport;
 
 
-public class UnBuilder extends AbstractVisitor<JustificationDiagram>{
+public class UnBuilder implements AbstractVisitor<JustificationDiagram>{
 
     private final static Logger logger = LogManager.getLogger(UnBuilder.class);
 
@@ -32,19 +33,16 @@ public class UnBuilder extends AbstractVisitor<JustificationDiagram>{
     private Conclusion template_conclusion = null;
 
 
-    @Override
     public void visit(JustificationPattern jp){
         logger.trace("  UnBuilding justification ["+jp.name()+"]");
         jp.conclusion().accept(this);
     }
 
-    @Override
     public void visit(ConcreteJustification cj){
         logger.trace("  UnBuilding justification ["+cj.name()+"]");
         cj.conclusion().accept(this);
     }
 
-    @Override
     public void visit(SubConclusion subc){
         logger.trace("  UnBuilding subconclusion ["+subc.getIdentifier()+"]");
 
@@ -62,7 +60,6 @@ public class UnBuilder extends AbstractVisitor<JustificationDiagram>{
         }
     }
 
-    @Override
     public void visit(Conclusion c){
         logger.trace("  UnBuilding conclusion ["+c.getIdentifier()+"]");
 
@@ -81,7 +78,6 @@ public class UnBuilder extends AbstractVisitor<JustificationDiagram>{
         }
     }
 
-    @Override
     public void visit(Strategy s){
         logger.trace("  UnBuilding strategy ["+s.getIdentifier()+"]");
         try{
@@ -102,16 +98,16 @@ public class UnBuilder extends AbstractVisitor<JustificationDiagram>{
         }
     }
 
-    @Override
+    public void visit(Unit u){
+    }
+
     public void visit(AbstractSupport as){
     }
 
-    @Override
     public void visit(Load l){
 
     }
 
-    @Override
     public void visit(Evidence e) {
     }
 

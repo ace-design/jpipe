@@ -37,22 +37,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-          
-      # Compile main source code 
-      - name: Build with Maven
-        run: mvn compile
-      
-      # run unit tests 
-      - name: Test with Maven
-        run: mvn test
 
-      # run linter
-      - name: CheckStyle (Google ruleset)
-        run: mvn checkstyle:check
-      
-      # Installing packaged artifact to the local maven repository
-      - name: Install with Maven 
-        run: mvn clean install 
+      # Building the jpipe.jar artefact
+      - name: Create executable jar with Maven
+        run: mvn clean package -DskipTests -Dcheckstyle.skip
         
       # Uploading artifact 
       - name: Store Artifact
@@ -60,3 +48,33 @@ jobs:
         with:
           name: jpipe-artifact
           path: target/jpipe.jar
+
+  test:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      # run unit tests
+      - name: Test with Maven
+        run: mvn test
+
+  linter:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      # run linter
+      - name: CheckStyle (Google ruleset)
+        run: mvn checkstyle:check
