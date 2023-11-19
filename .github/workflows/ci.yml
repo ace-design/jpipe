@@ -22,17 +22,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repository
         uses: actions/checkout@v3
-        
-     # added cache to used cached maven dependencies from previous build. 
-#    - name: Cache Maven dependencies
-#      uses: actions/cache@v3
-#      with:
-#          # A directory to store and save the cache
-#         path: ~/.m2/repository
-#          # An explicit key for restoring and saving the cache
-#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-#          restore-keys: |
-#            ${{ runner.os }}-maven-
 
       # Setting up Java for running mvn
       - name: Set up Java
@@ -47,11 +36,17 @@ jobs:
         run: mvn clean package -DskipTests -Dcheckstyle.skip
         
       # Uploading artifact 
-      - name: Store Artifact
+      - name: Store Artifact - Library
         uses: actions/upload-artifact@v3
         with:
-          name: jpipe-artifact
+          name: jpipe-lib.jar
           path: target/jpipe.jar
+      # Uploading artifact - Compiler
+      - name: Store Artifact - compiler
+        uses: actions/upload-artifact@v3
+        with:
+          name: jpipe-compiler.jar
+          path: target/jpipe-jar-with-dependencies.jar
 
   test:
     runs-on: ubuntu-latest
