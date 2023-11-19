@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 env:
-  JAVA_ENV_VERSION: 21
+  JAVA_ENV_VERSION: '21'
 
 jobs:
 
@@ -24,22 +24,23 @@ jobs:
         uses: actions/checkout@v3
         
      # added cache to used cached maven dependencies from previous build. 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          # A directory to store and save the cache
-          path: ~/.m2/repository
-          # An explicit key for restoring and saving the cache 
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+#    - name: Cache Maven dependencies
+#      uses: actions/cache@v3
+#      with:
+#          # A directory to store and save the cache
+#         path: ~/.m2/repository
+#          # An explicit key for restoring and saving the cache
+#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-maven-
 
       # Setting up Java for running mvn
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: "$JAVA_ENV_VERSION"
+          java-version: ${{env.JAVA_ENV_VERSION}}
           distribution: 'adopt'
+          cache: 'maven'
 
       # Building the jpipe.jar artefact
       - name: Create executable jar with Maven
@@ -61,8 +62,9 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: "$JAVA_ENV_VERSION"
+          java-version: ${{env.JAVA_ENV_VERSION}}
           distribution: 'adopt'
+          cache: 'maven'
       # run unit tests
       - name: Test with Maven
         run: mvn test
@@ -76,8 +78,9 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: "$JAVA_ENV_VERSION"
+          java-version: ${{env.JAVA_ENV_VERSION}}
           distribution: 'adopt'
+          cache: 'maven'
       # run linter
       - name: CheckStyle (Google ruleset)
         run: mvn checkstyle:check
