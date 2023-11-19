@@ -23,7 +23,6 @@ public class DuplicateTest extends AbstractFaultyLoadingTest<TypeError> {
     public void exceptionIndicatesTheDuplicationIssue() {
         assertNotNull(this.exception);
         TypeError e = (TypeError) this.exception;
-        System.out.println(e.getMessage());
         assertTrue(e.getMessage().toLowerCase().contains("duplicate"));
         assertTrue(e.getMessage().contains("dupli_diag"));
     }
