@@ -2,6 +2,7 @@ package ca.mcscert.jpipe.compiler;
 
 import ca.mcscert.jpipe.compiler.builders.ConcreteJustificationBuilder;
 import ca.mcscert.jpipe.compiler.builders.JustificationPatternBuilder;
+import ca.mcscert.jpipe.compiler.builders.MergeBuilder;
 import ca.mcscert.jpipe.compiler.builders.ScopedContextBuilder;
 import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
@@ -27,14 +28,15 @@ import org.apache.logging.log4j.Logger;
  * This class uses a Builder pattern => to get the compiled Unit, one needs to call the
  * `build()` method after having listened to the parsing.
  */
-public class ModelCreationListener extends JPipeBaseListener {
+public final class ModelCreationListener extends JPipeBaseListener {
 
-    private static Logger logger = LogManager.getLogger(ModelCreationListener.class);
+    private static final Logger logger = LogManager.getLogger(ModelCreationListener.class);
     private ScopedContextBuilder justifBuilder;
     private final List<JustificationDiagram> justifications = new ArrayList<>();
-    private Unit result;
-    private Path fileName;
-    private Compiler compiler;
+    private final Unit result;
+    private final Path fileName;
+    private final Compiler compiler;
+    private MergeBuilder mergeBuilder;
 
     /**
      * Instantiate the listener, referring to the compiler (to avoid load cycles) and the filename.
@@ -241,6 +243,45 @@ public class ModelCreationListener extends JPipeBaseListener {
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+
+    /**
+     * Processing a composition unit.
+     *
+     * @param ctx the parse tree
+     */
+    @Override
+    public void enterComposition(JPipeParser.CompositionContext ctx) {
+        logger.trace("Entering composition unit " + ctx.name.getText());
+    }
+
+    @Override
+    public void exitComposition(JPipeParser.CompositionContext ctx) {
+        logger.trace("Exiting composition unit " + ctx.name.getText());
+    }
+
+    @Override
+    public void enterMerge_directive(JPipeParser.Merge_directiveContext ctx) {
+        logger.trace("  Entering merge unit " + ctx.id.getText());
+        this.mergeBuilder = new MergeBuilder(this.justifications);
+
+    }
+
+    @Override
+    public void exitMerge_directive(JPipeParser.Merge_directiveContext ctx) {
+        logger.trace("  Finalizing build of " + ctx.id.getText());
+        this.justifications.add(this.mergeBuilder.build());
+        this.mergeBuilder = null;
+    }
+
+
+    @Override
+    public void enterMerge_equation(JPipeParser.Merge_equationContext ctx) {
+        this.mergeBuilder.register(ctx.left.getText());
+        if (ctx.right != null) {
+            this.mergeBuilder.register(ctx.right.getText());
         }
     }
 
