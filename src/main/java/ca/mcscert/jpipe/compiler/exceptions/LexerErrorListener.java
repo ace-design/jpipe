@@ -1,6 +1,5 @@
 package ca.mcscert.jpipe.compiler.exceptions;
 
-import ca.mcscert.jpipe.compiler.exceptions.LexingError;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;

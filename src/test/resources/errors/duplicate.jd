@@ -7,9 +7,9 @@ justification dupli_diag {
 }
 
 justification dupli_diag {
-    evidence e1 is "An evidence"
-    strategy s1 is "a Strategy"
-    conclusion c1 is "a Conclusion"
-    e1 supports s1
-    s1 supports c1
+    evidence e is "An evidence"
+    strategy s is "a Strategy"
+    conclusion c is "a Conclusion"
+    e supports s
+    s supports c
 }
