@@ -30,7 +30,6 @@ public class SyntaxErrorRepeatedTest extends AbstractFaultyLoadingTest<ParsingEr
     public void exceptionGivesTheRightAdviceToFix() {
         assertNotNull(this.exception);
         String msg = exception.getMessage().toLowerCase();
-        System.out.println(exception);
         assertTrue(msg.contains("extraneous"));
         assertTrue(msg.contains("evidence"));
         assertTrue(msg.contains("expecting"));
