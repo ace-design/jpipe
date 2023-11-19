@@ -23,9 +23,9 @@ public abstract class ScopedContextBuilder {
     // the name of the scope
     protected final String name;
     // set of elements in the scope, indexed by name inside the scope.
-    protected final Map<String, JustificationElement> elements;
+    protected Map<String, JustificationElement> elements;
     // List of dependencies between elements
-    protected final Map<String, List<String>> dependencies;
+    protected Map<String, List<String>> dependencies;
     // the entry point of the scope (a conclusion)
     protected Conclusion conclusion = null;
     // Current line analysed when building the element (location in the source file)
