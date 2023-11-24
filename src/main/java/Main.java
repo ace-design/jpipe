@@ -15,6 +15,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+
 
 
 /**
@@ -40,11 +46,23 @@ public class Main {
             String format = cmd.getOptionValue("format",
                                     "png");
             String[] diagramNames = cmd.getOptionValues("diagram");
+            configureLogLevel(cmd);
 
             process(inputFile, outputDirectory, diagramNames, format);
         } catch (Exception | Error e) {
             System.err.println(ANSI_RED + e.getMessage() + ANSI_RESET);
             System.exit(1);
+        }
+    }
+
+    private static void configureLogLevel(CommandLine cmd) {
+        if (cmd.hasOption("log-level")) {
+            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+            Configuration config = ctx.getConfiguration();
+            LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
+            String level = cmd.getOptionValue("log-level");
+            loggerConfig.setLevel(Level.getLevel(level));
+            ctx.updateLoggers();
         }
     }
 
