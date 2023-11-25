@@ -19,6 +19,7 @@ import ca.mcscert.jpipe.syntax.JPipeParser;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -274,13 +275,14 @@ public class ModelCreationListener extends JPipeBaseListener {
         logger.trace("Exiting composition unit " + ctx.name.getText());
     }
 
-    @Override
-    public void enterMerge_directive(JPipeParser.Merge_directiveContext ctx) {
-        logger.trace("  Entering merge unit " + ctx.id.getText());
-        this.mergeBuilder = new MergeBuilder(
-            (List<JustificationDiagram>) this.justifications.values());
+  @Override
+  public void enterMerge_directive(JPipeParser.Merge_directiveContext ctx) {
+    logger.trace("  Entering merge unit " + ctx.id.getText());
+    List<JustificationDiagram> list =
+        new ArrayList<JustificationDiagram>(this.justifications.values());
+    this.mergeBuilder = new MergeBuilder(list);
 
-    }
+  }
 
     @Override
     public void exitMerge_directive(JPipeParser.Merge_directiveContext ctx) {
