@@ -3,6 +3,7 @@ package ca.mcscert.jpipe.compiler;
 import ca.mcscert.jpipe.compiler.builders.ConcreteJustificationBuilder;
 import ca.mcscert.jpipe.compiler.builders.ImplementJustificationBuilder;
 import ca.mcscert.jpipe.compiler.builders.JustificationPatternBuilder;
+import ca.mcscert.jpipe.compiler.builders.MergeBuilder;
 import ca.mcscert.jpipe.compiler.builders.ScopedContextBuilder;
 import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
@@ -18,7 +19,9 @@ import ca.mcscert.jpipe.syntax.JPipeParser;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,6 +42,7 @@ public class ModelCreationListener extends JPipeBaseListener {
   private Unit result;
   private Path fileName;
   private Compiler compiler;
+  private MergeBuilder mergeBuilder;
 
   /**
    * Instantiate the listener, referring to the compiler (to avoid load cycles) and the filename.
@@ -255,15 +259,56 @@ public class ModelCreationListener extends JPipeBaseListener {
     }
   }
 
-  /**
-   * Clean up a string by removing the first and last characters. this is useful to get the
-   * contents of a quoted string for example.
-   *
-   * @param s a given string, e.g., "foo"
-   * @return the contents of the string without 1st and last character (here, foo)
-   */
-  private String clean(String s) {
-    return s.substring(1, s.length() - 1);
+
+    /**
+     * Processing a composition unit.
+     *
+     * @param ctx the parse tree
+     */
+    @Override
+    public void enterComposition(JPipeParser.CompositionContext ctx) {
+        logger.trace("Entering composition unit " + ctx.name.getText());
+    }
+
+    @Override
+    public void exitComposition(JPipeParser.CompositionContext ctx) {
+        logger.trace("Exiting composition unit " + ctx.name.getText());
+    }
+
+  @Override
+  public void enterMerge_directive(JPipeParser.Merge_directiveContext ctx) {
+    logger.trace("  Entering merge unit " + ctx.id.getText());
+    List<JustificationDiagram> list =
+        new ArrayList<JustificationDiagram>(this.justifications.values());
+    this.mergeBuilder = new MergeBuilder(list);
+
   }
+
+    @Override
+    public void exitMerge_directive(JPipeParser.Merge_directiveContext ctx) {
+        logger.trace("  Finalizing build of " + ctx.id.getText());
+        this.justifications.put(ctx.id.getText(), this.mergeBuilder.build());
+        this.mergeBuilder = null;
+    }
+
+
+    @Override
+    public void enterMerge_equation(JPipeParser.Merge_equationContext ctx) {
+        this.mergeBuilder.register(ctx.left.getText());
+        if (ctx.right != null) {
+            this.mergeBuilder.register(ctx.right.getText());
+        }
+    }
+
+    /**
+     * Clean up a string by removing the first and last characters. this is useful to get the
+     * contents of a quoted string for example.
+     *
+     * @param s a given string, e.g., "foo"
+     * @return the contents of the string without 1st and last character (here, foo)
+     */
+    private String clean(String s) {
+        return s.substring(1, s.length() - 1);
+    }
 
 }

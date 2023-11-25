@@ -1,0 +1,34 @@
+justification j1 {
+
+    conclusion c1 is "a shared conclusion"
+
+    strategy s1 is "a strategy"
+    s1 supports c1
+
+    evidence e1 is "an evidence specific to j1"
+    e1 supports s1
+
+    evidence e2 is "a shared evidence"
+    e2 supports s1
+
+}
+
+justification j2 {
+
+    conclusion c2 is "a shared conclusion"
+
+    strategy s1 is "another strategy"
+    s1 supports c2
+
+    evidence e3 is "an evidence specific to j2"
+    e3 supports s1
+
+    evidence e4 is "a shared evidence"
+    e4 supports s1
+
+}
+
+
+composition unit1 {
+    justification j is j1 with j2
+}
