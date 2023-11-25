@@ -1,5 +1,6 @@
 package ca.mcscert.jpipe.compiler;
 
+import ca.mcscert.jpipe.model.justification.Conclusion;
 import ca.mcscert.jpipe.model.justification.JustificationElement;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,9 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Keeps track of identifiers and JusitificationElements from merging diagrams.
+ */
 public class Tracker {
 
   private static Logger logger = LogManager.getLogger(ModelCreationListener.class);
@@ -15,6 +19,12 @@ public class Tracker {
 
   Map<JustificationElement, Map<String, String>> equalElements = new HashMap<>();
 
+  /**
+   * Keeps track of current diagram, and associates all elements to given diagram.
+   *
+   * @param diagramName name of given diagram.
+   * @param elements elements of given diagram.
+   */
   public void addDiagram(String diagramName, Map<String, JustificationElement> elements) {
     if (!allDependencies.containsKey(diagramName)) {
       logger.trace("Tracking diagram [" + diagramName + "]");
@@ -33,7 +43,6 @@ public class Tracker {
       throw new RuntimeException("Two diagrams have the same name.");
     }
   }
-
 
 
   public String getIdentifier(JustificationElement element, String diagramName) {
