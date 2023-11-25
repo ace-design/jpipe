@@ -1,0 +1,98 @@
+justification PEP8_CodeStandard {
+    evidence Su1 is "notebook file is ready"
+    strategy St1 is "Check PEP8 coding standard"
+    Su1 supports St1
+
+    sub-conclusion Sc1 is "notebook follows PEP8 coding standards"
+    St1 supports Sc1
+    strategy St2 is "Test High-Quality Code"
+    Sc1 supports St2
+
+    conclusion C is "Notebook quality is fair"
+    St2 supports C
+}
+
+justification File_Name {
+    evidence Su1 is "notebook file is ready"
+    strategy St1 is "Check file name only contains regular expression"
+    Su1 supports St1
+
+    sub-conclusion Sc1 is "notebook has a meaningful name"
+    St1 supports Sc1
+    strategy St2 is "Test High-Quality Code"
+    Sc1 supports St2
+
+    conclusion C is "Notebook quality is fair"
+    St2 supports C
+}
+
+justification best_practice_model {
+    evidence Su1 is "Remove empty cells"
+    evidence Su2 is "Remove dead cells"
+    strategy St1 is "Ensure notebook tidiness"
+    Su1 supports St1
+    Su2 supports St1
+
+    evidence Su3 is "Limit notebook length"
+    evidence Su4 is "Split long cells"
+    evidence Su5 is "Perform meaningful code steps"
+    strategy St2 is "Ensure notebook concise"
+    Su3 supports St2
+    Su4 supports St2
+    Su5 supports St2
+
+    sub-conclusion Sc1 is "Clean and Concise"
+    strategy St3 is "Prove clean and concise"
+    St1 supports Sc1
+    St2 supports Sc1
+    Sc1 supports St3
+
+    conclusion C is "Notebook quality is fair"
+    St3 supports C
+
+}
+
+justification best_practice_model {
+    evidence Su1 is "Adopt version control practices"
+    strategy St1 is "Track notebook changes"
+    Su1 supports St1
+    evidence Su2 is "re-running notebooks"
+    strategy St2 is "Reduce hidden states impact"
+    Su2 supports St2
+
+    sub-conclusion Sc1 is "reproducible and reusable notebooks"
+    St1 supports Sc1
+    St2 supports Sc1
+
+
+    evidence Su3 is "requirement files exist"
+    evidence Su4 is "Put imports at front"
+    strategy St3 is "Ensure correct dependencies installed"
+    Su3 supports St3
+    Su4 supports St3
+    evidence Su5 is "Execute docker container"
+    evidence Su6 is "Employ virtual environment"
+    strategy St4 is "Optimize reproducibility"
+    Su5 supports St4
+    Su6 supports St4
+    Su5 supports St3
+    Su6 supports St3
+
+    sub-conclusion Sc2 is "replicability of the execution environment"
+    St3 supports Sc2
+    St4 supports Sc2
+
+    strategy St5 is "Prove traceability and reproducibility"
+    Sc1 supports St5
+    Sc2 supports St5
+
+    conclusion C is "Notebook quality is fair"
+    St5 supports C
+
+}
+
+composition unit1 {
+    justification j is PEP8_CodeStandard with File_Name
+    justification k is j with best_practice_model
+    justification final is k with best_practice_model
+}

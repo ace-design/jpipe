@@ -280,7 +280,7 @@ public class ModelCreationListener extends JPipeBaseListener {
     logger.trace("  Entering merge unit " + ctx.id.getText());
     List<JustificationDiagram> list =
         new ArrayList<JustificationDiagram>(this.justifications.values());
-    this.mergeBuilder = new MergeBuilder(list);
+    this.mergeBuilder = new MergeBuilder(ctx.id.getText(), list);
 
   }
 
