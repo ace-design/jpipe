@@ -7,16 +7,17 @@ public class Logo {
 
     @Override
     public String toString() {
-        return
-                "McMaster University - McMaster Centre for Software Certification (c) 2023-...\n"
-                        + "   _ ______  _\n"
-                        + "  (_)| ___ \\(_)\n"
-                        + "   _ | |_/ / _  _ __    ___\n"
-                        + "  | ||  __/ | || '_ \\  / _ \\\n"
-                        + "  | || |    | || |_) ||  __/\n"
-                        + "  | |\\_|    |_|| .__/  \\___|\n"
-                        + " _/ |          | |\n"
-                        + "|__/           |_|";
+        return """
+                McMaster University - McSCert (c) 2023-...
+                   _ ______  _
+                  (_)| ___ \\(_)
+                   _ | |_/ / _  _ __    ___
+                  | ||  __/ | || '_ \\  / _ \\
+                  | || |    | || |_) ||  __/
+                  | |\\_|    |_|| .__/  \\___|
+                 _/ |          | |
+                |__/           |_|
+                """;
     }
 
     /**
