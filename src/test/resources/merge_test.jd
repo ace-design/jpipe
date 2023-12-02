@@ -93,6 +93,5 @@ justification best_practice_model {
 
 composition unit1 {
     justification j is PEP8_CodeStandard with File_Name
-    justification k is j with best_practice_model
-    justification final is k with best_practice_model
+    justification final is j with best_practice_model
 }
