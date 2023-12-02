@@ -30,5 +30,5 @@ justification j2 {
 
 
 composition unit1 {
-    justification j is j1 with j2
+    justification k is j1 with j2
 }

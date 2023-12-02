@@ -1,6 +1,7 @@
 package ca.mcscert.jpipe.operators;
 
 import ca.mcscert.jpipe.model.JustificationDiagram;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,6 +15,6 @@ public interface NaryOperator {
      * @param input the set of justification diagrams to compose
      * @return the result of the composition operator
      */
-    JustificationDiagram apply(Set<JustificationDiagram> input);
+    JustificationDiagram apply(String name, List<JustificationDiagram> input);
 
 }

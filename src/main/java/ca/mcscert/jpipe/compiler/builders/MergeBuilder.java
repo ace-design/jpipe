@@ -19,12 +19,15 @@ public class MergeBuilder {
     private final Set<String> contents;
     private final Map<String, JustificationDiagram> known;
 
+    private final String name;
+
     /**
      * Instantiate a merge builder, considering the justification diagram we already know.
      *
      * @param encountered the known diagrams
      */
-    public MergeBuilder(List<JustificationDiagram> encountered) {
+    public MergeBuilder(String diagramName, List<JustificationDiagram> encountered) {
+        this.name = diagramName;
         this.contents = new HashSet<>();
         this.known = encountered.stream()
                         .collect(Collectors.toMap(JustificationDiagram::name, Function.identity()));
@@ -57,10 +60,10 @@ public class MergeBuilder {
      * @return the merged diagram
      */
     public JustificationDiagram build() {
-        Set<JustificationDiagram> toMerge =
-                contents.stream().map(known::get).collect(Collectors.toSet());
+        List<JustificationDiagram> toMerge =
+                contents.stream().map(known::get).collect(Collectors.toList());
         NaryOperator merge = new MergeOperator();
-        return merge.apply(toMerge);
+        return merge.apply(this.name, toMerge);
     }
 
 }

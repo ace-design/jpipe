@@ -1,0 +1,38 @@
+justification best_practice_model {
+    evidence Su1 is "Adopt version control practices"
+    strategy St1 is "Track notebook changes"
+    Su1 supports St1
+    evidence Su2 is "re-running notebooks"
+    strategy St2 is "Reduce hidden states impact"
+    Su2 supports St2
+
+    sub-conclusion Sc1 is "reproducible and reusable notebooks"
+    St1 supports Sc1
+    St2 supports Sc1
+
+
+    evidence Su3 is "requirement files exist"
+    evidence Su4 is "Put imports at front"
+    strategy St3 is "Ensure correct dependencies installed"
+    Su3 supports St3
+    Su4 supports St3
+    evidence Su5 is "Execute docker container"
+    evidence Su6 is "Employ virtual environment"
+    strategy St4 is "Optimize reproducibility"
+    Su5 supports St4
+    Su6 supports St4
+    Su5 supports St3
+    Su6 supports St3
+
+    sub-conclusion Sc2 is "replicability of the execution environment"
+    St3 supports Sc2
+    St4 supports Sc2
+
+    strategy St5 is "Prove traceability and reproducibility"
+    Sc1 supports St5
+    Sc2 supports St5
+
+    conclusion C is "Notebook Quality validated"
+    St5 supports C
+
+}
