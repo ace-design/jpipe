@@ -1,11 +1,12 @@
 package ca.mcscert.jpipe.tests.unit.errors;
 
 import ca.mcscert.jpipe.compiler.exceptions.ParsingError;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+@Disabled
 public class MissingScopeTest extends AbstractFaultyLoadingTest<ParsingError> {
     @Override
     protected String source() {

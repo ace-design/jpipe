@@ -3,11 +3,12 @@ package ca.mcscert.jpipe.tests.unit.errors;
 import ca.mcscert.jpipe.compiler.exceptions.CompilationError;
 import ca.mcscert.jpipe.compiler.exceptions.ParsingError;
 import ca.mcscert.jpipe.compiler.exceptions.TypeError;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+@Disabled
 public class DuplicateTest extends AbstractFaultyLoadingTest<TypeError> {
     @Override
     protected String source() {

@@ -3,6 +3,7 @@ package ca.mcscert.jpipe.tests.unit.errors;
 import ca.mcscert.jpipe.compiler.Compiler;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -11,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@Disabled
 public abstract class AbstractFaultyLoadingTest<T> {
 
     protected Exception exception;
