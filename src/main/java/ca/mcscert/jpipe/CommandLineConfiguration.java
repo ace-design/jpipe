@@ -54,7 +54,7 @@ public class CommandLineConfiguration {
     public void help() {
         Logo.sout();
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp(APP_NAME, getOptions());
+        formatter.printHelp(APP_NAME, getOptions(), true);
     }
 
     /**
@@ -87,20 +87,26 @@ public class CommandLineConfiguration {
         options.addOption(input);
 
         Option output = new Option("o", "output", true,
-                "output file path");
+                "output file(s) directory\n(default: .)");
         output.setRequired(false);
         options.addOption(output);
 
 
         Option diagram = new Option("d", "diagram", true,
-                "diagram names (you can specify multiple with repeated -d)");
+                "diagram names\n(use multiple -d if needed. Default: all)");
         diagram.setArgs(Option.UNLIMITED_VALUES);
         options.addOption(diagram);
 
         Option format = new Option("f", "format", true,
-                "output format (png, svg)");
+                "output format in [png, svg]\n(Default: png)");
         format.setRequired(false);
         options.addOption(format);
+
+        Option logLvl = new Option(null, "log-level", true,
+                "log level for Java logging API\n(default: ERROR)");
+        format.setRequired(false);
+        options.addOption(logLvl);
+
 
         return options;
     }

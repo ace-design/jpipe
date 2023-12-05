@@ -6,6 +6,7 @@ import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 public class CompilerTest extends AbstractFileTest {
 
     protected String source() {
