@@ -5,6 +5,7 @@ import ca.mcscert.jpipe.compiler.builders.ImplementJustificationBuilder;
 import ca.mcscert.jpipe.compiler.builders.JustificationPatternBuilder;
 import ca.mcscert.jpipe.compiler.builders.MergeBuilder;
 import ca.mcscert.jpipe.compiler.builders.ScopedContextBuilder;
+import ca.mcscert.jpipe.compiler.exceptions.CompilationError;
 import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.justification.AbstractSupport;

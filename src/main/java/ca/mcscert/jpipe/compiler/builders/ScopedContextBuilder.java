@@ -1,7 +1,7 @@
 package ca.mcscert.jpipe.compiler.builders;
 
-import ca.mcscert.jpipe.compiler.CompilationError;
-import ca.mcscert.jpipe.compiler.TypeError;
+import ca.mcscert.jpipe.compiler.exceptions.CompilationError;
+import ca.mcscert.jpipe.compiler.exceptions.TypeError;
 import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.justification.Conclusion;
 import ca.mcscert.jpipe.model.justification.JustificationElement;
@@ -124,7 +124,7 @@ public abstract class ScopedContextBuilder {
     if (this.line != -1) {
       throw new CompilationError(this.line, this.character, message);
     } else {
-      throw new TypeError(message);
+      throw new TypeError(message, "?");
     }
   }
 
