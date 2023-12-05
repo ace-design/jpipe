@@ -4,6 +4,7 @@ import ca.mcscert.jpipe.visitors.AbstractVisitor;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Represent a compilation unit (the contents of a file, and its included ones).
@@ -51,6 +52,16 @@ public class Unit implements Visitable {
      */
     public Set<JustificationDiagram> getJustificationSet() {
         return justificationSet;
+    }
+
+    /**
+     * Compute the set of identifiers already used at the top level of this unit.
+     *
+     * @return a set of string with all top-level identifiers.
+     */
+    public Set<String> getIdentifiers() {
+        return justificationSet.stream().map(JustificationDiagram::name)
+                .collect(Collectors.toSet());
     }
 
     @Override
