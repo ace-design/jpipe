@@ -10,7 +10,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	) { }
 
 	private static viewType = "jpipe.vis";
-    private webviewPanel: vscode.WebviewPanel | undefined;
+	private static data = "NO DATA";
 
     public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		vscode.commands.registerCommand(editorReader.viewType, () => {});
@@ -39,9 +39,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, document);
 
 		const updateWebview = () => {
-			webviewPanel.webview.postMessage({
-				type: 'update',
-			});
+			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, document);
 		}
 
 		// Hook up event handlers so that we can synchronize the webview with the text document.
@@ -54,8 +52,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
 			if (e.document.uri.toString() === document.uri.toString()) {
-				vscode.window.showInformationMessage("UPDATINGGG");
-
+				vscode.window.showInformationMessage("UPDATINGGG!!!!");
 				updateWebview();
 			}
 		});
@@ -76,33 +73,35 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 		const { exec } = require('node:child_process')
 
-
 		// const visExt = this.context.extensionUri.path.toString()+'/output/simple_prove_models.png'
 
 		// const URI = webview.asWebviewUri(vscode.Uri.file(visExt)).toString()
 
 
-		const URI = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'output', 'simple_prove_models.png'));
-
-
-
-		exec(('java -jar '+jarExt+' -i '+fileExt+ ' -o '+this.context.extensionUri.path.toString()+'/output'), (err: any, output: any) => {
+		exec(('java -jar '+jarExt+' -i '+fileExt+ ' --format svg -o '+this.context.extensionUri.path.toString()+'/output'), (err: any, output: any) => {
 			if (err) {
-				// exec(('echo "'+output.toString()+'" > '+this.context.extensionUri.path.toString()+'/temp.txt'))
-				// exec(('echo "'+err.toString()+'" > '+this.context.extensionUri.path.toString()+'/temp2.txt'))
-				vscode.window.showInformationMessage(err.toString());
+				vscode.window.showErrorMessage(err.toString());
 				return
 			}
-			// vscode.window.showInformationMessage(output.toString());
+			vscode.window.showInformationMessage(output.toString());
 		})
+
+
+		exec(('cat '+this.context.extensionUri.path.toString()+'/output'+'/simple_prove_models.svg'), (err: any, output: any) => {
+			if (err) {
+				vscode.window.showErrorMessage(err.toString());
+				return
+			}
+			editorReader.data = output
+			vscode.window.showInformationMessage(output);
+		})
+
 
 		return /* html */`
 			<!DOCTYPE html>
 			<html lang="en">
 			<body>
-				<div>
-					<img src=${URI} alt="Can't find Document"/>
-				</div>
+				${editorReader.data}
 			</body>
 			</html>`;	 
     }
