@@ -1,0 +1,3 @@
+Error: Command failed: java -jar /Users/nirmalchaudhari/Documents/github_repos/jpipe/jpipe.jar -i /Users/nirmalchaudhari/Documents/github_repos/LeetCodeSolutions/C++/simple.jd -o /Users/nirmalchaudhari/Documents/github_repos/jpipe/jpipe-ext/output --log-level all
+[31mOutput directory does not exist: /Users/nirmalchaudhari/Documents/github_repos/jpipe/jpipe-ext/output[0m
+
