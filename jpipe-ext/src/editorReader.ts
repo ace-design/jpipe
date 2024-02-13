@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import util from "node:util";
 
 
 
@@ -19,9 +20,6 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		return providerRegistration;
 
 	}
-
-	
-
 	
     public async resolveCustomTextEditor(
 		document: vscode.TextDocument,
@@ -36,10 +34,12 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 			{} // Webview options. More on these later.
 		  );
 
-		webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, document);
+		this.updateSVG(webviewPanel.webview, document);
+		webviewPanel.webview.html = this.getHtmlForWebview();
 
 		const updateWebview = () => {
-			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, document);
+			this.updateSVG(webviewPanel.webview, document);
+			webviewPanel.webview.html = this.getHtmlForWebview();
 		}
 
 		// Hook up event handlers so that we can synchronize the webview with the text document.
@@ -66,35 +66,54 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	}
 
 
-    private getHtmlForWebview(webview: vscode.Webview, document: vscode.TextDocument): string {
+	private async updateSVG(webview: vscode.Webview, document: vscode.TextDocument): Promise<void> {
 		const jarExt = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, '../jpipe.jar')).path.toString()
 		const fileExt = document.uri.path.toString()
 
-
-		const { exec } = require('node:child_process')
-
-		// const visExt = this.context.extensionUri.path.toString()+'/output/simple_prove_models.png'
-
-		// const URI = webview.asWebviewUri(vscode.Uri.file(visExt)).toString()
+		const { exec } = require('node:child_process');
+		const execPromise = util.promisify(exec);
 
 
-		exec(('java -jar '+jarExt+' -i '+fileExt+ ' --format svg -o '+this.context.extensionUri.path.toString()+'/output'), (err: any, output: any) => {
-			if (err) {
-				vscode.window.showErrorMessage(err.toString());
-				return
-			}
-			vscode.window.showInformationMessage(output.toString());
-		})
+		// Waits for the result
+
+		try{
+			const {stdout, stderr} = await execPromise('java -jar '+jarExt+' -i '+fileExt+ ' --format svg -o '+this.context.extensionUri.path.toString()+'/output');
+			// editorReader.data = stdout;
+		} catch (error: any){
+			vscode.window.showErrorMessage(error.toString());
+		}
+
+		try{
+			const {stdout, stderr} = await execPromise('cat '+this.context.extensionUri.path.toString()+'/output'+'/simple_prove_models.svg');
+			editorReader.data = stdout;
+		} catch (error: any){
+			vscode.window.showErrorMessage(error.toString());
+		}
+
+		
+
+		//Doesn't wait for the result.
+
+		// exec(('java -jar '+jarExt+' -i '+fileExt+ ' --format svg -o '+this.context.extensionUri.path.toString()+'/output'), (err: any, output: any) => {
+		// 	if (err) {
+		// 		vscode.window.showErrorMessage(err.toString());
+		// 		return
+		// 	}
+		// 	vscode.window.showInformationMessage(output.toString());
+		// })
+		
+		// exec(('cat '+this.context.extensionUri.path.toString()+'/output'+'/simple_prove_models.svg'), (err: any, output: any) => {
+		// 	if (err) {
+		// 		vscode.window.showErrorMessage(err.toString());
+		// 		return
+		// 	}
+		// 	editorReader.data = output
+		// 	vscode.window.showInformationMessage(output);
+		// })
+	}
 
 
-		exec(('cat '+this.context.extensionUri.path.toString()+'/output'+'/simple_prove_models.svg'), (err: any, output: any) => {
-			if (err) {
-				vscode.window.showErrorMessage(err.toString());
-				return
-			}
-			editorReader.data = output
-			vscode.window.showInformationMessage(output);
-		})
+    private getHtmlForWebview(): string {
 
 
 		return /* html */`

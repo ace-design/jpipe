@@ -22,16 +22,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.editorReader = void 0;
 const vscode = __importStar(require("vscode"));
+const node_util_1 = __importDefault(require("node:util"));
 class editorReader {
     context;
     constructor(context) {
         this.context = context;
     }
     static viewType = "jpipe.vis";
-    webviewPanel;
+    static data = "NO DATA";
     static register(context) {
         vscode.commands.registerCommand(editorReader.viewType, () => { });
         const provider = new editorReader(context);
@@ -45,11 +49,11 @@ class editorReader {
         vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
         {} // Webview options. More on these later.
         );
-        webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, document);
+        this.updateSVG(webviewPanel.webview, document);
+        webviewPanel.webview.html = this.getHtmlForWebview();
         const updateWebview = () => {
-            webviewPanel.webview.postMessage({
-                type: 'update',
-            });
+            this.updateSVG(webviewPanel.webview, document);
+            webviewPanel.webview.html = this.getHtmlForWebview();
         };
         // Hook up event handlers so that we can synchronize the webview with the text document.
         //
@@ -60,7 +64,7 @@ class editorReader {
         // editors (this happens for example when you split a custom editor)
         const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
             if (e.document.uri.toString() === document.uri.toString()) {
-                vscode.window.showInformationMessage("UPDATINGGG");
+                vscode.window.showInformationMessage("UPDATINGGG!!!!");
                 updateWebview();
             }
         });
@@ -70,29 +74,49 @@ class editorReader {
         });
         updateWebview();
     }
-    getHtmlForWebview(webview, document) {
+    async updateSVG(webview, document) {
         const jarExt = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, '../jpipe.jar')).path.toString();
         const fileExt = document.uri.path.toString();
         const { exec } = require('node:child_process');
-        // const visExt = this.context.extensionUri.path.toString()+'/output/simple_prove_models.png'
-        // const URI = webview.asWebviewUri(vscode.Uri.file(visExt)).toString()
-        const URI = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'output', 'simple_prove_models.png'));
-        exec(('java -jar ' + jarExt + ' -i ' + fileExt + ' -o ' + this.context.extensionUri.path.toString() + '/output'), (err, output) => {
-            if (err) {
-                // exec(('echo "'+output.toString()+'" > '+this.context.extensionUri.path.toString()+'/temp.txt'))
-                // exec(('echo "'+err.toString()+'" > '+this.context.extensionUri.path.toString()+'/temp2.txt'))
-                vscode.window.showInformationMessage(err.toString());
-                return;
-            }
-            // vscode.window.showInformationMessage(output.toString());
-        });
+        const execPromise = node_util_1.default.promisify(exec);
+        // Waits for the result
+        try {
+            const { stdout, stderr } = await execPromise('java -jar ' + jarExt + ' -i ' + fileExt + ' --format svg -o ' + this.context.extensionUri.path.toString() + '/output');
+            // editorReader.data = stdout;
+        }
+        catch (error) {
+            vscode.window.showErrorMessage(error.toString());
+        }
+        try {
+            const { stdout, stderr } = await execPromise('cat ' + this.context.extensionUri.path.toString() + '/output' + '/simple_prove_models.svg');
+            editorReader.data = stdout;
+        }
+        catch (error) {
+            vscode.window.showErrorMessage(error.toString());
+        }
+        //Doesn't wait for the result.
+        // exec(('java -jar '+jarExt+' -i '+fileExt+ ' --format svg -o '+this.context.extensionUri.path.toString()+'/output'), (err: any, output: any) => {
+        // 	if (err) {
+        // 		vscode.window.showErrorMessage(err.toString());
+        // 		return
+        // 	}
+        // 	vscode.window.showInformationMessage(output.toString());
+        // })
+        // exec(('cat '+this.context.extensionUri.path.toString()+'/output'+'/simple_prove_models.svg'), (err: any, output: any) => {
+        // 	if (err) {
+        // 		vscode.window.showErrorMessage(err.toString());
+        // 		return
+        // 	}
+        // 	editorReader.data = output
+        // 	vscode.window.showInformationMessage(output);
+        // })
+    }
+    getHtmlForWebview() {
         return /* html */ `
 			<!DOCTYPE html>
 			<html lang="en">
 			<body>
-				<div>
-					<img src=${URI} alt="Can't find Document"/>
-				</div>
+				${editorReader.data}
 			</body>
 			</html>`;
     }
