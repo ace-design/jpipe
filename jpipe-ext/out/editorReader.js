@@ -36,6 +36,7 @@ class editorReader {
     }
     static viewType = "jpipe.vis";
     static data = "NO DATA";
+    static output_channel = vscode.window.createOutputChannel("output_channel");
     static register(context) {
         vscode.commands.registerCommand(editorReader.viewType, () => { });
         const provider = new editorReader(context);
@@ -51,9 +52,11 @@ class editorReader {
         );
         this.updateSVG(webviewPanel.webview, document);
         webviewPanel.webview.html = this.getHtmlForWebview();
-        const updateWebview = () => {
-            this.updateSVG(webviewPanel.webview, document);
+        const updateWebview = async () => {
+            await this.updateSVG(webviewPanel.webview, document);
+            // editorReader.output_channel.appendLine("Updated SVG")
             webviewPanel.webview.html = this.getHtmlForWebview();
+            editorReader.output_channel.appendLine("Updated HTML");
         };
         // Hook up event handlers so that we can synchronize the webview with the text document.
         //
@@ -64,7 +67,7 @@ class editorReader {
         // editors (this happens for example when you split a custom editor)
         const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
             if (e.document.uri.toString() === document.uri.toString()) {
-                vscode.window.showInformationMessage("UPDATINGGG!!!!");
+                editorReader.output_channel.appendLine("Document Changed! Will update now");
                 updateWebview();
             }
         });
@@ -82,34 +85,22 @@ class editorReader {
         // Waits for the result
         try {
             const { stdout, stderr } = await execPromise('java -jar ' + jarExt + ' -i ' + fileExt + ' --format svg -o ' + this.context.extensionUri.path.toString() + '/output');
-            // editorReader.data = stdout;
+            editorReader.output_channel.appendLine(stdout.toString());
         }
         catch (error) {
-            vscode.window.showErrorMessage(error.toString());
+            editorReader.output_channel.appendLine(error.toString());
+            // vscode.window.showErrorMessage(error.toString());
         }
+        editorReader.output_channel.appendLine("Executed Jar");
         try {
             const { stdout, stderr } = await execPromise('cat ' + this.context.extensionUri.path.toString() + '/output' + '/simple_prove_models.svg');
             editorReader.data = stdout;
         }
         catch (error) {
-            vscode.window.showErrorMessage(error.toString());
+            editorReader.output_channel.appendLine(error.toString());
+            // vscode.window.showErrorMessage(error.toString());
         }
-        //Doesn't wait for the result.
-        // exec(('java -jar '+jarExt+' -i '+fileExt+ ' --format svg -o '+this.context.extensionUri.path.toString()+'/output'), (err: any, output: any) => {
-        // 	if (err) {
-        // 		vscode.window.showErrorMessage(err.toString());
-        // 		return
-        // 	}
-        // 	vscode.window.showInformationMessage(output.toString());
-        // })
-        // exec(('cat '+this.context.extensionUri.path.toString()+'/output'+'/simple_prove_models.svg'), (err: any, output: any) => {
-        // 	if (err) {
-        // 		vscode.window.showErrorMessage(err.toString());
-        // 		return
-        // 	}
-        // 	editorReader.data = output
-        // 	vscode.window.showInformationMessage(output);
-        // })
+        editorReader.output_channel.appendLine("Catting output");
     }
     getHtmlForWebview() {
         return /* html */ `
