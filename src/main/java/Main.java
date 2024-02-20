@@ -1,22 +1,18 @@
+import ca.mcscert.jpipe.ColorPrinter;
 import ca.mcscert.jpipe.CommandLineConfiguration;
 import ca.mcscert.jpipe.compiler.Compiler;
 import ca.mcscert.jpipe.exporters.DiagramExporter;
 import ca.mcscert.jpipe.exporters.Exportation;
-import ca.mcscert.jpipe.exporters.ExportationError;
 import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.model.Unit;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.FileSystemException;
-import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.Level;
@@ -50,8 +46,8 @@ public class Main {
                 processOne(unit, config.diagramName(), config.output(), config.format());
             }
         } catch (Exception | Error e) {
-            String msg = e.getMessage();
-            System.err.println(ANSI_RED + msg + ANSI_RESET);
+            ColorPrinter printer = new ColorPrinter(System.err);
+            printer.println("Top-level error: " + e.getMessage());
             System.exit(1);
         }
     }
@@ -75,8 +71,6 @@ public class Main {
 
     }
 
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_RED = "\u001B[31m";
     private static final Logger logger = LogManager.getLogger();
 
 
@@ -208,8 +202,9 @@ public class Main {
         }
         Exportation<JustificationDiagram> exporter = new DiagramExporter();
         JustificationDiagram diag =
-                unit.findByName(identifier).orElseThrow(()
-                        -> new IllegalArgumentException("unknown diagram " + identifier));
+                unit.findByName(identifier)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException("Unknown diagram " + identifier));
         try {
             exporter.export(diag, os, format);
         } finally {
