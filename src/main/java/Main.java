@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.FileSystemException;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -44,7 +45,7 @@ public class Main {
             logger.info(config);
             Unit unit = new Compiler().compile(config.input);
             if (config.flushAll()) {
-                // flushAllDiagrams(unit, config.all().get(), config.format());
+                flushAllDiagrams(unit, config.all().get(), config.format());
             } else {
                 processOne(unit, config.diagramName(), config.output(), config.format());
             }
@@ -217,76 +218,15 @@ public class Main {
 
     }
 
-
-
-
-
-
-
-    /*
-
-
-    private static void process(String inputFile, String outputDirectory,
-                                String[] diagramNames, String format) {
-        Unit unit = buildUnitFromFile(inputFile);
-        File outputDir = getOutputDirectory(outputDirectory);
-        Set<String> relevantDiagrams = extractDiagrams(unit, diagramNames);
-        Exportation<JustificationDiagram> exporter = new DiagramExporter();
-
-        for (String diagramName : relevantDiagrams) {
-            JustificationDiagram diag = unit.findByName(diagramName).orElseThrow();
-            String outfile = getOutputFilePath(inputFile, outputDir, diagramName, format);
-            exporter.export(diag, outfile, format);
+    private static void flushAllDiagrams(Unit unit, File outputDirectory, String format)
+            throws IOException {
+        Set<String> identifiers = unit.getIdentifiers();
+        for (String id : identifiers) {
+            String filename = outputDirectory.getPath() + "/" + id + "." + format.toLowerCase();
+            File outputFile = new File(filename);
+            processOne(unit, Optional.of(id), Optional.of(outputFile), format);
         }
+
     }
-
-    private static String getOutputFilePath(String inputFile, File outputDir,
-                                            String name, String format) {
-        return outputDir.getAbsolutePath() + "/"
-                + removeFileExtension(inputFile) + "_" + name + "." + format;
-    }
-
-    private static Set<String> extractDiagrams(Unit unit, String[] diagramNames) {
-        Set<String> all = unit.getJustificationSet().stream()
-                              .map(JustificationDiagram::name).collect(Collectors.toSet());
-        if (diagramNames == null || diagramNames.length == 0) {
-            return all;
-        }
-        Set<String> asked = new HashSet<>();
-        for (String name : diagramNames) {
-            if (all.contains(name)) {
-             asked.add(name);
-            } else {
-             throw new ExportationError("Unknown diagram identifier: [" + name + "]");
-            }
-        }
-        return asked;
-    }
-
-    private static File getOutputDirectory(String outputDirectory) {
-        File outputDir = new File(outputDirectory);
-        if (!outputDir.exists()) {
-            throw new IllegalArgumentException("Output directory does not exist: "
-                    + outputDir.getPath());
-        }
-        return outputDir;
-    }
-
-    private static Unit buildUnitFromFile(String inputFile) {
-        try {
-            return (new Compiler()).compile(inputFile);
-        } catch (IOException e) {
-            throw new RuntimeException("IO error: " + e.getMessage(), e);
-        }
-    }
-
-    private static String removeFileExtension(String filename) {
-        File f = new File(filename);
-        return f.getName().replaceAll("(?<!^)[.][^.]*$", "");
-    }
-
-
-     */
-
 
 }
