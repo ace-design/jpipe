@@ -1,5 +1,7 @@
 package ca.mcscert.jpipe.exporters;
 
+import java.io.OutputStream;
+
 /**
  * Generic interface to export "things" into files.
  *
@@ -11,9 +13,9 @@ public interface Exportation<T> {
      * Export element into outputFile.
      *
      * @param element the element to export (e.g., a justification diagram)
-     * @param outputFile the file where to put the result of the exportation.
+     * @param output the stream where to put the result of the exportation.
      * @param format file format to export to.
      */
-    void export(T element, String outputFile, String format);
+    void export(T element, OutputStream output, String format);
 
 }
