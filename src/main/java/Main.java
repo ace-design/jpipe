@@ -1,5 +1,6 @@
 import ca.mcscert.jpipe.ColorPrinter;
 import ca.mcscert.jpipe.CommandLineConfiguration;
+import ca.mcscert.jpipe.compiler.CompilationErrorLog;
 import ca.mcscert.jpipe.compiler.Compiler;
 import ca.mcscert.jpipe.exporters.DiagramExporter;
 import ca.mcscert.jpipe.exporters.Exportation;
@@ -45,9 +46,11 @@ public class Main {
             } else {
                 processOne(unit, config.diagramName(), config.output(), config.format());
             }
+            CompilationErrorLog.singleton().printAsText(System.err);
         } catch (Exception | Error e) {
             ColorPrinter printer = new ColorPrinter(System.err);
             printer.println("Top-level error: " + e.getMessage());
+            CompilationErrorLog.singleton().printAsText(System.err);
             System.exit(1);
         }
     }
