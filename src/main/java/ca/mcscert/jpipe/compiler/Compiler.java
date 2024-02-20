@@ -5,11 +5,12 @@ import ca.mcscert.jpipe.compiler.exceptions.ParsingErrorListener;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.syntax.JPipeLexer;
 import ca.mcscert.jpipe.syntax.JPipeParser;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -32,15 +33,23 @@ public final class Compiler {
      *
      * @param fileName name of the file to compile.
      * @return a Unit model element modelling the AST of the compiled file
-     * @throws FileNotFoundException if file does not exist
+     * @throws IOException if encountering IO issues
      */
-    public Unit compile(String fileName) throws FileNotFoundException {
-        try {
-            CharStream input = CharStreams.fromFileName(fileName);
-            return this.compile(input, fileName);
-        } catch (IOException e) {
-            throw new FileNotFoundException(fileName);
+    public Unit compile(Optional<File> fileName) throws IOException {
+        CharStream input;
+        String path;
+        if (fileName.isEmpty()) {
+            input = CharStreams.fromStream(System.in);
+            path = "<stdin>";
+        } else {
+            path = fileName.get().toPath().toString();
+            input = CharStreams.fromPath(fileName.get().toPath());
         }
+        return this.compile(input, path);
+    }
+
+    public Unit compile(String fileName) throws IOException {
+        return this.compile(Optional.of(new File(fileName)));
     }
 
     /**
