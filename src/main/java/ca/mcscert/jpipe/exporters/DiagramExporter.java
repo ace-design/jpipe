@@ -4,8 +4,9 @@ import ca.mcscert.jpipe.model.JustificationDiagram;
 import ca.mcscert.jpipe.visitors.ToGraph;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.engine.GraphvizCmdLineEngine;
+import guru.nidi.graphviz.engine.GraphvizException;
 import guru.nidi.graphviz.model.MutableGraph;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.apache.logging.log4j.LogManager;
@@ -35,9 +36,12 @@ public class DiagramExporter implements Exportation<JustificationDiagram> {
 
         try {
             Format fileFormat = getFormatFromString(format);
+            Graphviz.useEngine(new GraphvizCmdLineEngine());
             Graphviz.fromGraph(graph).render(fileFormat).toOutputStream(output);
         } catch (IOException ioe) {
             throw new ExportationError(ioe.getMessage());
+        } catch (GraphvizException e) {
+            throw new ExportationError("cannot find dot natively installed");
         }
 
         logger.trace("End of exportation [" + j.name() + "]");
@@ -51,5 +55,3 @@ public class DiagramExporter implements Exportation<JustificationDiagram> {
         };
     }
 }
-
-
