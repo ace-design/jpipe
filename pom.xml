@@ -65,6 +65,12 @@
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>2.21.1</version>
         </dependency>
+        <!-- JSON (for error messages and LSP) -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
     </dependencies>
 
     <build>
