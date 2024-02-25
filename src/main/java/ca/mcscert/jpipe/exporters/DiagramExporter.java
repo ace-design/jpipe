@@ -7,6 +7,7 @@ import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,10 +23,10 @@ public class DiagramExporter implements Exportation<JustificationDiagram> {
      * run the exportation to image.
      *
      * @param j the diagram to export.
-     * @param outputFile the output file to use.
+     * @param output the output stream to use.
      */
     @Override
-    public void export(JustificationDiagram j, String outputFile, String format) {
+    public void export(JustificationDiagram j, OutputStream output, String format) {
         logger.trace("Exporting justification [" + j.name() + "]");
         ToGraph visitor = new ToGraph();
         j.accept(visitor);
@@ -34,7 +35,7 @@ public class DiagramExporter implements Exportation<JustificationDiagram> {
 
         try {
             Format fileFormat = getFormatFromString(format);
-            Graphviz.fromGraph(graph).render(fileFormat).toFile(new File(outputFile));
+            Graphviz.fromGraph(graph).render(fileFormat).toOutputStream(output);
         } catch (IOException ioe) {
             throw new ExportationError(ioe.getMessage());
         }

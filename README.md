@@ -6,9 +6,10 @@ The jPipe environment is a experimental framework used to create pipelines that 
 It's an extension of so-called Justification Diagrams to support the notion of pipelines.
 
 ## General Information
-- Version: 23.07.03
+- Version: 24.02
 - Contributors:
   - Sébastien Mosser, McMaster University (Hamilton, Canada)
+  - Nirmal Chaudhari, McMaster University (Hamilton, Canada)
   - Corinne Pulgar, École de Technologie Supérieure (Montréal, Canada)
   - Deesha Patel, McMaster University (Hamilton, Canada)
   - Aaron Loh, McMaster University (Hamilton, Canada)
@@ -37,20 +38,20 @@ version of the jPipe compiler.
 
 ### Using the command-line interface
 
-Soon, you'll find some help about using the compiler by invoking `java -jar jpipe.jar --help`. In the meanwhile... 
-be patient :)
+You'll find a complete description of the compiler's options by invoking `java -jar jpipe.jar --help`. 
 
-In the MVP version, running the compiler on a file will produce one PNG file per justification diagram, in the same 
-directory. Assume the file `my_input.jd` contains two diagrams, names "J1" and "J2".
+Here is a list of the main options for end-users:
 
-```
-$ java -jar jpipe.jar my_input.jd
-```
-
-Will produce two png files: `my_input_J1.png` and `my_input_J2.png`
-
+- `-i`, `--input`: Specify the filename to be used as input (default is `stdin`)
+- `-d`, `--diagram`: Specify the name of the diagram to compile.
+    - If there is only one diagram in the compilation unit, it will default to this one.
+- `-o`, `--output`: Specify the output filename to use as output (default is `stdout`)
+- `-f`, `--format`: Specify the output format (PNG or SVG). Default is PNG.
+- `--all`: Flush all diagrams in the directory provided as argument.
 
 ## How to contribute?
 
-Feel free to fork this repository and send a pull request.
+Found a bug, or want to add a cool feature? Feel free to fork this repository and send a pull request. 
+
+If you're interested in contributing to the research effort related to jPipe, feel free to contact the PI: [Dr. Sébastien Mosser](mossers@mcmaster.ca). We do have undergrad summer internships available to contribute to the compiler, as well as MASc and PhD positions in Software Engineering at Mac.
 
