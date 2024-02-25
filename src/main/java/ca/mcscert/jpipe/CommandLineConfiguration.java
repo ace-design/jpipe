@@ -62,9 +62,8 @@ public class CommandLineConfiguration {
      *
      * @param args the arguments provided by the user
      * @return true if the option is found
-     * @throws ParseException is Apache CLI cannot parse the arguments
      */
-    private boolean checkForHelp(String[] args) throws ParseException {
+    private boolean checkForHelp(String[] args) {
         Set<String> arguments = new HashSet<>(Arrays.asList(args));
         return (arguments.contains("-h") || arguments.contains("--help"));
     }
@@ -82,19 +81,19 @@ public class CommandLineConfiguration {
         options.addOption(help);
 
         Option input = new Option("i", "input", true,
-                "input file path");
-        input.setRequired(true);
+                "input file path (default: stdin)");
+        input.setRequired(false);
         options.addOption(input);
 
         Option output = new Option("o", "output", true,
-                "output file(s) directory\n(default: .)");
+                "output file path (default: stdout)");
         output.setRequired(false);
         options.addOption(output);
 
 
         Option diagram = new Option("d", "diagram", true,
-                "diagram names\n(use multiple -d if needed. Default: all)");
-        diagram.setArgs(Option.UNLIMITED_VALUES);
+                "diagram name (default if only one)");
+        diagram.setRequired(false);
         options.addOption(diagram);
 
         Option format = new Option("f", "format", true,
@@ -102,11 +101,15 @@ public class CommandLineConfiguration {
         format.setRequired(false);
         options.addOption(format);
 
+        Option all = new Option(null, "all", true,
+                "Flush all diagrams into the provided directory");
+        all.setRequired(false);
+        options.addOption(all);
+
         Option logLvl = new Option(null, "log-level", true,
                 "log level for Java logging API\n(default: ERROR)");
         format.setRequired(false);
         options.addOption(logLvl);
-
 
         return options;
     }
