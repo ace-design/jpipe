@@ -18,6 +18,7 @@ import ca.mcscert.jpipe.model.justification.SubConclusion;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -254,7 +255,7 @@ public class ModelCreationListener extends JPipeBaseListener {
           justifications.put(j.name(), j);
         }
         result.merge(unit);
-      } catch (FileNotFoundException e) {
+      } catch (IOException e) {
         throw new RuntimeException(e);
       }
     }
