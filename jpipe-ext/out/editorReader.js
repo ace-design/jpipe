@@ -84,23 +84,29 @@ class editorReader {
         const execPromise = node_util_1.default.promisify(exec);
         // Waits for the result
         try {
-            const { stdout, stderr } = await execPromise('java -jar ' + jarExt + ' -i ' + fileExt + ' --format svg -o ' + this.context.extensionUri.path.toString() + '/output');
-            editorReader.output_channel.appendLine(stdout.toString());
-        }
-        catch (error) {
-            editorReader.output_channel.appendLine(error.toString());
-            // vscode.window.showErrorMessage(error.toString());
-        }
-        editorReader.output_channel.appendLine("Executed Jar");
-        try {
-            const { stdout, stderr } = await execPromise('cat ' + this.context.extensionUri.path.toString() + '/output' + '/simple_prove_models.svg');
+            const { stdout, stderr } = await execPromise('java -jar ' + jarExt + ' -i ' + fileExt + ' --format SVG');
             editorReader.data = stdout;
         }
         catch (error) {
             editorReader.output_channel.appendLine(error.toString());
             // vscode.window.showErrorMessage(error.toString());
         }
-        editorReader.output_channel.appendLine("Catting output");
+        editorReader.output_channel.appendLine("Executed Jar");
+        // try{
+        // 	const {stdout, stderr} = await execPromise('cat '+this.context.extensionUri.path.toString()+'/output'+'/*.svg');
+        // 	editorReader.data = stdout;
+        // } catch (error: any){
+        // 	editorReader.output_channel.appendLine(error.toString())
+        // 	// vscode.window.showErrorMessage(error.toString());
+        // }
+        // editorReader.output_channel.appendLine("Catting output")
+        // try{
+        // 	const {stdout, stderr} = await execPromise('rm -r '+this.context.extensionUri.path.toString()+'/output');
+        // } catch (error: any){
+        // 	editorReader.output_channel.appendLine(error.toString())
+        // 	// vscode.window.showErrorMessage(error.toString());
+        // }
+        // editorReader.output_channel.appendLine("Deleting Files")
     }
     getHtmlForWebview() {
         return /* html */ `
