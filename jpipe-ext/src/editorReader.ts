@@ -13,6 +13,8 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	private static viewType = "jpipe.vis";
 	private static data = "NO DATA";
 	private static output_channel = vscode.window.createOutputChannel("output_channel");
+	private static updating = false;
+	private static start_time = 0;
 
     public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		vscode.commands.registerCommand(editorReader.viewType, () => {});
@@ -35,14 +37,15 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 			{} // Webview options. More on these later.
 		  );
 
-		this.updateSVG(webviewPanel.webview, document);
-		webviewPanel.webview.html = this.getHtmlForWebview();
+		// this.updateSVG(webviewPanel.webview, document);
+		// webviewPanel.webview.html = this.getHtmlForWebview();
 
 		const updateWebview = async () => {
+			editorReader.updating = true;
 			await this.updateSVG(webviewPanel.webview, document);
-			// editorReader.output_channel.appendLine("Updated SVG")
 			webviewPanel.webview.html = this.getHtmlForWebview();
-			editorReader.output_channel.appendLine("Updated HTML")
+			editorReader.output_channel.appendLine("Updated HTML to most recent code")
+			editorReader.updating = false;
 
 		}
 
@@ -54,10 +57,14 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		// Remember that a single text document can also be shared between multiple custom
 		// editors (this happens for example when you split a custom editor)
 
-		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
+		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(async e => {
 			if (e.document.uri.toString() === document.uri.toString()) {
-				editorReader.output_channel.appendLine("Document Changed! Will update now")
-				updateWebview();
+				if (editorReader.updating==false){
+					editorReader.output_channel.appendLine("Document Changed! Will execute jar file again.")
+					this.startTimer();
+					await updateWebview();
+					editorReader.output_channel.appendLine("Execution Time: "+this.endTimer().toString()+"s");
+				}
 			}
 		});
 
@@ -69,6 +76,16 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		updateWebview();
 	}
 
+	private startTimer(){
+		let date = new Date();
+		editorReader.start_time = date.getSeconds()+(date.getMilliseconds()/1000);
+	}
+
+	private endTimer(): number {
+		let date = new Date();
+		let end_time = date.getSeconds()+(date.getMilliseconds()/1000);
+		return (end_time-editorReader.start_time);
+	}
 
 	private async updateSVG(webview: vscode.Webview, document: vscode.TextDocument): Promise<void> {
 		const jarExt = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, '../jpipe.jar')).path.toString()
@@ -82,9 +99,10 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 		try{
 			const {stdout, stderr} = await execPromise('java -jar '+jarExt+' -i '+fileExt+ ' --format SVG');
+			// editorReader.output_channel.appendLine(stdout.toString());
 			editorReader.data = stdout;
 		} catch (error: any){
-			editorReader.output_channel.appendLine(error.toString())
+			editorReader.output_channel.appendLine(error.toString());
 			// vscode.window.showErrorMessage(error.toString());
 		}
 
