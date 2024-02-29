@@ -81,8 +81,8 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		// Waits for the result
 
 		try{
-			const {stdout, stderr} = await execPromise('java -jar '+jarExt+' -i '+fileExt+ ' --format svg -o '+this.context.extensionUri.path.toString()+'/output');
-			editorReader.output_channel.appendLine(stdout.toString())
+			const {stdout, stderr} = await execPromise('java -jar '+jarExt+' -i '+fileExt+ ' --format SVG');
+			editorReader.data = stdout;
 		} catch (error: any){
 			editorReader.output_channel.appendLine(error.toString())
 			// vscode.window.showErrorMessage(error.toString());
@@ -90,14 +90,22 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 		editorReader.output_channel.appendLine("Executed Jar")
 
-		try{
-			const {stdout, stderr} = await execPromise('cat '+this.context.extensionUri.path.toString()+'/output'+'/simple_prove_models.svg');
-			editorReader.data = stdout;
-		} catch (error: any){
-			editorReader.output_channel.appendLine(error.toString())
-			// vscode.window.showErrorMessage(error.toString());
-		}
-		editorReader.output_channel.appendLine("Catting output")
+		// try{
+		// 	const {stdout, stderr} = await execPromise('cat '+this.context.extensionUri.path.toString()+'/output'+'/*.svg');
+		// 	editorReader.data = stdout;
+		// } catch (error: any){
+		// 	editorReader.output_channel.appendLine(error.toString())
+		// 	// vscode.window.showErrorMessage(error.toString());
+		// }
+		// editorReader.output_channel.appendLine("Catting output")
+
+		// try{
+		// 	const {stdout, stderr} = await execPromise('rm -r '+this.context.extensionUri.path.toString()+'/output');
+		// } catch (error: any){
+		// 	editorReader.output_channel.appendLine(error.toString())
+		// 	// vscode.window.showErrorMessage(error.toString());
+		// }
+		// editorReader.output_channel.appendLine("Deleting Files")
 
 
 	}
