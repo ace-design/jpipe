@@ -21,7 +21,8 @@
             "filenamePattern": "*.jd"
           }
         ],
-        "priority": "default"
+        "priority": "default",
+        "preview": "true"
       }
     ],
     "commands": [
