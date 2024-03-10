@@ -14,7 +14,6 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	private static data = "NO DATA";
 	private static output_channel = vscode.window.createOutputChannel("output_channel");
 	private static updating = false;
-	private static start_time = 0;
 
     public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		vscode.commands.registerCommand(editorReader.viewType, () => {});
@@ -27,13 +26,16 @@ export class editorReader implements vscode.CustomTextEditorProvider {
     public async resolveCustomTextEditor(
 		document: vscode.TextDocument,
 		webviewPanel: vscode.WebviewPanel,
-		_token: vscode.CancellationToken
+		_token: vscode.CancellationToken,
 	): Promise<void> {
 		// Setup initial content for the webview
+		let textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
+
+
 		webviewPanel = vscode.window.createWebviewPanel(
-			'VisCoding', // Identifies the type of the webview. Used internally
+			'SVG', // Identifies the type of the webview. Used internally
 			'VisCoding', // Title of the panel displayed to the user
-			vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
+			vscode.ViewColumn.Beside, // Editor column to show the new webview panel in.
 			{} // Webview options. More on these later.
 		  );
 
@@ -42,7 +44,8 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 		const updateWebview = async () => {
 			editorReader.updating = true;
-			await this.updateSVG(webviewPanel.webview, document);
+			let curr_line = (await textPanel).selection.active.line+1
+			await this.updateSVG(webviewPanel.webview, document, curr_line);
 			webviewPanel.webview.html = this.getHtmlForWebview();
 			editorReader.output_channel.appendLine("Updated HTML to most recent code")
 			editorReader.updating = false;
@@ -61,9 +64,9 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 			if (e.document.uri.toString() === document.uri.toString()) {
 				if (editorReader.updating==false){
 					editorReader.output_channel.appendLine("Document Changed! Will execute jar file again.")
-					this.startTimer();
+					// this.startTimer();
 					await updateWebview();
-					editorReader.output_channel.appendLine("Execution Time: "+this.endTimer().toString()+"s");
+					// editorReader.output_channel.appendLine("Execution Time: "+this.endTimer().toString()+"s");
 				}
 			}
 		});
@@ -76,30 +79,58 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		updateWebview();
 	}
 
-	private startTimer(){
-		let date = new Date();
-		editorReader.start_time = date.getSeconds()+(date.getMilliseconds()/1000);
-	}
+	// private startTimer(){
+	// 	let date = new Date();
+	// 	editorReader.start_time = date.getSeconds()+(date.getMilliseconds()/1000);
+	// }
 
-	private endTimer(): number {
-		let date = new Date();
-		let end_time = date.getSeconds()+(date.getMilliseconds()/1000);
-		return (end_time-editorReader.start_time);
-	}
+	// private endTimer(): number {
+	// 	let date = new Date();
+	// 	let end_time = date.getSeconds()+(date.getMilliseconds()/1000);
+	// 	return (end_time-editorReader.start_time);
+	// }
 
-	private async updateSVG(webview: vscode.Webview, document: vscode.TextDocument): Promise<void> {
+	private async updateSVG(webview: vscode.Webview, document: vscode.TextDocument, curr_line: number): Promise<void> {
 		const jarExt = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, '../jpipe.jar')).path.toString()
 		const fileExt = document.uri.path.toString()
 
 		const { exec } = require('node:child_process');
 		const execPromise = util.promisify(exec);
 
+		// let match = /justification .*/i.exec(document.getText());
+		// if (!(match === null)){
+		// 	editorReader.output_channel.appendLine(match.toString());
+		// }else{
+		// 	editorReader.output_channel.appendLine("ITS NULL");
+		// }
+
+		let command = 'java -jar '+jarExt+' -i '+fileExt+ ' --format SVG --log-level all'
+		let diagram_name = null;
+
+		let lines = document.getText().split("\n");
+		const match = null;
+
+		for (let i = 0; i < lines.length; i++)
+		{
+			const match = /justification .*/i.exec(lines[i]) || /pattern .*/i.exec(lines[i]);
+			if (match && (i<curr_line || diagram_name===null))
+			{
+				diagram_name = match[0].split(' ')[1]
+				command = 'java -jar '+jarExt+' -i '+fileExt+ ' -d '+diagram_name+' --format SVG --log-level all'
+				editorReader.output_channel.appendLine("NAMEEEEE"+diagram_name);
+				editorReader.output_channel.appendLine("LINEEEE"+curr_line);
+			}
+			if (i>=curr_line && diagram_name!==null){
+				break;
+			}
+		}
+
 
 		// Waits for the result
 
 		try{
-			const {stdout, stderr} = await execPromise('java -jar '+jarExt+' -i '+fileExt+ ' --format SVG');
-			// editorReader.output_channel.appendLine(stdout.toString());
+			const {stdout, stderr} = await execPromise(command);
+			editorReader.output_channel.appendLine(stderr.toString());
 			editorReader.data = stdout;
 		} catch (error: any){
 			editorReader.output_channel.appendLine(error.toString());
