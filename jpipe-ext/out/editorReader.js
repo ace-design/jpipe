@@ -158,8 +158,8 @@ class editorReader {
     }
     changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async (e) => {
         if (e !== undefined) {
-            editorReader.activeEditor = e.document;
-            vscode.window.showInformationMessage(e.document.toString());
+            let token = new vscode.CancellationTokenSource();
+            this.resolveCustomTextEditor(e.document, editorReader.webviewPanel, token.token);
         }
     });
 }

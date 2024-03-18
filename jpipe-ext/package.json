@@ -9,12 +9,6 @@
   "categories": [
     "Other"
   ],
-  "files.associations": {
-    "*.jd": "jpipe"
-  },
-  "activationEvents": [
-    "onLanguage:jpipe"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "customEditors": [
@@ -27,7 +21,7 @@
           }
         ],
         "priority": "default",
-        "preview": "true"
+        "preview": "false"
       }
     ],
     "commands": [
