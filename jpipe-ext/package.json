@@ -21,7 +21,7 @@
           }
         ],
         "priority": "default",
-        "preview": "false"
+        "preview": "true"
       }
     ],
     "commands": [
@@ -30,7 +30,16 @@
 				"title": "Create new jpipe visualization",
 				"category": "jPipe Visualizer"
 			}
-		]
+		],
+    "menus": {
+      "editor/title": [
+          {
+              "command": "jpipe.vis",
+              "when": "true",
+              "group": "navigation"
+          }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

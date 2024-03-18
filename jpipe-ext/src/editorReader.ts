@@ -40,6 +40,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	): Promise<void> {
 		// Setup initial content for the webview
 		editorReader.textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
+		// this.updateLineNum();
 
 
 		// If previous webview was disposed, create a new one. 
@@ -157,6 +158,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 			}
 		}
 
+
 		return diagram_name;
 	}
 
@@ -198,6 +200,17 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 			editorReader.webviewPanel.webview.html=this.getLoadingHTMLWebview();
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
 			this.resolveCustomTextEditor(e.document, editorReader.webviewPanel, token.token)
+		}
+	});
+
+	changeDocumentSelection = vscode.window.onDidChangeTextEditorSelection(async e => {
+		if (e !== undefined){
+			editorReader.line_num = (await editorReader.textPanel).selection.active.line+1;
+			let new_diagram = this.getDiagramName(e.textEditor.document)
+			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
+			if (new_diagram!=editorReader.webviewPanel.title){
+				this.resolveCustomTextEditor(e.textEditor.document, editorReader.webviewPanel, token.token)
+			}
 		}
 	});
 
