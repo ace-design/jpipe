@@ -16,6 +16,8 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	private static updating = false;
 	private static webviewPanel: vscode.WebviewPanel;
 	private static webviewDisposed: boolean;
+	private static textPanel: Thenable<vscode.TextEditor>;
+	private static line_num: number; 
 
     public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		vscode.commands.registerCommand(editorReader.viewType, () => {});
@@ -37,9 +39,8 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		_token: vscode.CancellationToken,
 	): Promise<void> {
 		// Setup initial content for the webview
-		let textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
+		editorReader.textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
 
-		// document = editorReader.activeEditor;
 
 		// If previous webview was disposed, create a new one. 
 		if (editorReader.webviewDisposed){
@@ -55,13 +56,11 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		// Set the webview of the custom text editor to be the global webview. 
 		webviewPanel = editorReader.webviewPanel;
 
-		// this.updateSVG(webviewPanel.webview, document);
-		// webviewPanel.webview.html = this.getHtmlForWebview();
 
 		const updateWebview = async () => {
 			editorReader.updating = true;
-			let curr_line = (await textPanel).selection.active.line+1
-			await this.updateSVG(webviewPanel.webview, document, curr_line);
+			editorReader.line_num = (await editorReader.textPanel).selection.active.line+1
+			await this.updateSVG(webviewPanel.webview, document);
 			webviewPanel.webview.html = this.getHtmlForWebview();
 			editorReader.output_channel.appendLine("Updated HTML to most recent code")
 			editorReader.updating = false;
@@ -109,7 +108,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	// 	return (end_time-editorReader.start_time);
 	// }
 
-	private async updateSVG(webview: vscode.Webview, document: vscode.TextDocument, curr_line: number): Promise<void> {
+	private async updateSVG(webview: vscode.Webview, document: vscode.TextDocument): Promise<void> {
 		const jarExt = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, '../jpipe.jar')).path.toString()
 		const fileExt = document.uri.path.toString()
 
@@ -117,7 +116,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		const execPromise = util.promisify(exec);
 
 
-		let diagram_name = this.getDiagramName(document, curr_line);
+		let diagram_name = this.getDiagramName(document);
 		editorReader.webviewPanel.title=diagram_name || "visCoding";
 		let command = 'java -jar '+jarExt+' -i '+fileExt+' -d '+diagram_name+ ' --format SVG --log-level all'
 
@@ -138,7 +137,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	}
 
 
-	private getDiagramName(document: vscode.TextDocument, curr_line: number): string | null{
+	private getDiagramName(document: vscode.TextDocument): string | null{
 		let diagram_name = null;
 		let match = null;
 
@@ -147,13 +146,13 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		for (let i = 0; i < lines.length; i++)
 		{
 			match = /justification .*/i.exec(lines[i]) || /pattern .*/i.exec(lines[i]);
-			if (match && (i<curr_line || diagram_name===null))
+			if (match && (i<editorReader.line_num || diagram_name===null))
 			{
 				diagram_name = match[0].split(' ')[1]
 				// editorReader.output_channel.appendLine("NAMEEEEE"+diagram_name);
 				// editorReader.output_channel.appendLine("LINEEEE"+curr_line);
 			}
-			if (i>=curr_line && diagram_name!==null){
+			if (i>=editorReader.line_num && diagram_name!==null){
 				break;
 			}
 		}
@@ -194,6 +193,8 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 	changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
 		if (e !== undefined){
+			editorReader.textPanel = vscode.window.showTextDocument(e.document, vscode.ViewColumn.One, false);
+			editorReader.line_num = (await editorReader.textPanel).selection.active.line+1
 			editorReader.webviewPanel.webview.html=this.getLoadingHTMLWebview();
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
 			this.resolveCustomTextEditor(e.document, editorReader.webviewPanel, token.token)
