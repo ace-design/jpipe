@@ -39,6 +39,8 @@ class editorReader {
     static output_channel = vscode.window.createOutputChannel("output_channel");
     static updating = false;
     static webviewPanel;
+    static webviewDisposed;
+    static activeEditor;
     static register(context) {
         vscode.commands.registerCommand(editorReader.viewType, () => { });
         const provider = new editorReader(context);
@@ -48,11 +50,23 @@ class editorReader {
         vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
         {} // Webview options. More on these later.
         );
+        editorReader.webviewDisposed = false;
         return providerRegistration;
     }
     async resolveCustomTextEditor(document, webviewPanel, _token) {
         // Setup initial content for the webview
         let textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
+        // document = editorReader.activeEditor;
+        // If previous webview was disposed, create a new one. 
+        if (editorReader.webviewDisposed) {
+            editorReader.webviewPanel = vscode.window.createWebviewPanel('SVG', // Identifies the type of the webview. Used internally
+            'VisCoding', // Title of the panel displayed to the user
+            vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
+            {} // Webview options. More on these later.
+            );
+            editorReader.webviewDisposed = false;
+        }
+        // Set the webview of the custom text editor to be the global webview. 
         webviewPanel = editorReader.webviewPanel;
         // this.updateSVG(webviewPanel.webview, document);
         // webviewPanel.webview.html = this.getHtmlForWebview();
@@ -84,6 +98,7 @@ class editorReader {
         // Make sure we get rid of the listener when our editor is closed.
         webviewPanel.onDidDispose(() => {
             changeDocumentSubscription.dispose();
+            editorReader.webviewDisposed = true;
         });
         updateWebview();
     }
@@ -143,6 +158,7 @@ class editorReader {
     }
     changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async (e) => {
         if (e !== undefined) {
+            editorReader.activeEditor = e.document;
             vscode.window.showInformationMessage(e.document.toString());
         }
     });

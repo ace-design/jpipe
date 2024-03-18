@@ -15,6 +15,8 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	private static output_channel = vscode.window.createOutputChannel("output_channel");
 	private static updating = false;
 	private static webviewPanel: vscode.WebviewPanel;
+	private static webviewDisposed: boolean;
+	private static activeEditor: vscode.TextDocument; 
 
     public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		vscode.commands.registerCommand(editorReader.viewType, () => {});
@@ -26,6 +28,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 			vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
 			{} // Webview options. More on these later.
 		  );
+		editorReader.webviewDisposed = false;
 		return providerRegistration;
 	}
 	
@@ -37,6 +40,20 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		// Setup initial content for the webview
 		let textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
 
+		// document = editorReader.activeEditor;
+
+		// If previous webview was disposed, create a new one. 
+		if (editorReader.webviewDisposed){
+			editorReader.webviewPanel = vscode.window.createWebviewPanel(
+				'SVG', // Identifies the type of the webview. Used internally
+				'VisCoding', // Title of the panel displayed to the user
+				vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
+				{} // Webview options. More on these later.
+			);
+			editorReader.webviewDisposed = false;
+		}
+
+		// Set the webview of the custom text editor to be the global webview. 
 		webviewPanel = editorReader.webviewPanel;
 
 		// this.updateSVG(webviewPanel.webview, document);
@@ -75,6 +92,8 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		// Make sure we get rid of the listener when our editor is closed.
 		webviewPanel.onDidDispose(() => {
 			changeDocumentSubscription.dispose();
+			editorReader.webviewDisposed=true;
+
 		});
 
 		updateWebview();
@@ -157,6 +176,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 	changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
 		if (e !== undefined){
+			editorReader.activeEditor = e.document;
 			vscode.window.showInformationMessage(e.document.toString())
 		}
 	});
