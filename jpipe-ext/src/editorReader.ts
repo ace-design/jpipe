@@ -16,7 +16,6 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	private static updating = false;
 	private static webviewPanel: vscode.WebviewPanel;
 	private static webviewDisposed: boolean;
-	private static activeEditor: vscode.TextDocument; 
 
     public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		vscode.commands.registerCommand(editorReader.viewType, () => {});
@@ -52,7 +51,6 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 			);
 			editorReader.webviewDisposed = false;
 		}
-
 
 		// Set the webview of the custom text editor to be the global webview. 
 		webviewPanel = editorReader.webviewPanel;
@@ -120,6 +118,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 
 		let diagram_name = this.getDiagramName(document, curr_line);
+		editorReader.webviewPanel.title=diagram_name || "visCoding";
 		let command = 'java -jar '+jarExt+' -i '+fileExt+' -d '+diagram_name+ ' --format SVG --log-level all'
 
 
@@ -167,19 +166,84 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 
 		return /* html */`
-			<!DOCTYPE html>
-			<html lang="en">
-			<body>
-				${editorReader.data}
-			</body>
-			</html>`;	 
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+		  <meta charset="UTF-8">
+		  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		  <title>Loading Page</title>
+		  <style>
+			body {
+			  margin: 0;
+			  padding: 0;
+			  position: relative; /* Add this line */
+			  display: flex;
+			  justify-content: center;
+			  align-items: center;
+			  height: 100vh;
+			  background-color: #f0f0f0;
+			}
+		  </style>
+		</head>
+		<body>
+		  <div>${editorReader.data}</div>
+		</body>
+		</html>
+		`;	 
     }
 
 	changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
 		if (e !== undefined){
+			editorReader.webviewPanel.webview.html=this.getLoadingHTMLWebview();
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
 			this.resolveCustomTextEditor(e.document, editorReader.webviewPanel, token.token)
 		}
 	});
+
+
+	private getLoadingHTMLWebview(): string {
+		return `
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+		  <meta charset="UTF-8">
+		  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		  <title>Loading Page</title>
+		  <style>
+			body {
+			  margin: 0;
+			  padding: 0;
+			  position: relative; /* Add this line */
+			  display: flex;
+			  justify-content: center;
+			  align-items: center;
+			  height: 100vh;
+			  background-color: #f0f0f0;
+			}
+			.loader {
+			  position: absolute; /* Add this line */
+			  top: 50%; /* Add this line */
+			  left: 50%; /* Add this line */
+			  transform: translate(-50%, -50%); /* Add this line */
+			  border: 8px solid #f3f3f3;
+			  border-top: 8px solid #3498db;
+			  border-radius: 50%;
+			  width: 50px;
+			  height: 50px;
+			  animation: spin 1s linear infinite;
+			}
+			@keyframes spin {
+			  0% { transform: rotate(0deg); }
+			  100% { transform: rotate(360deg); }
+			}
+		  </style>
+		</head>
+		<body>
+		  <div class="loader"></div>
+		  <div>${editorReader.data}</div>
+		</body>
+		</html>		
+		`
+	}
 
 }
