@@ -53,6 +53,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 			editorReader.webviewDisposed = false;
 		}
 
+
 		// Set the webview of the custom text editor to be the global webview. 
 		webviewPanel = editorReader.webviewPanel;
 
@@ -176,8 +177,8 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 	changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
 		if (e !== undefined){
-			editorReader.activeEditor = e.document;
-			vscode.window.showInformationMessage(e.document.toString())
+			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
+			this.resolveCustomTextEditor(e.document, editorReader.webviewPanel, token.token)
 		}
 	});
 
