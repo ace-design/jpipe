@@ -38,20 +38,22 @@ class editorReader {
     static data = "NO DATA";
     static output_channel = vscode.window.createOutputChannel("output_channel");
     static updating = false;
+    static webviewPanel;
     static register(context) {
         vscode.commands.registerCommand(editorReader.viewType, () => { });
         const provider = new editorReader(context);
         const providerRegistration = vscode.window.registerCustomEditorProvider(editorReader.viewType, provider);
+        editorReader.webviewPanel = vscode.window.createWebviewPanel('SVG', // Identifies the type of the webview. Used internally
+        'VisCoding', // Title of the panel displayed to the user
+        vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
+        {} // Webview options. More on these later.
+        );
         return providerRegistration;
     }
     async resolveCustomTextEditor(document, webviewPanel, _token) {
         // Setup initial content for the webview
         let textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
-        webviewPanel = vscode.window.createWebviewPanel('SVG', // Identifies the type of the webview. Used internally
-        'VisCoding', // Title of the panel displayed to the user
-        vscode.ViewColumn.Beside, // Editor column to show the new webview panel in.
-        {} // Webview options. More on these later.
-        );
+        webviewPanel = editorReader.webviewPanel;
         // this.updateSVG(webviewPanel.webview, document);
         // webviewPanel.webview.html = this.getHtmlForWebview();
         const updateWebview = async () => {
@@ -99,28 +101,8 @@ class editorReader {
         const fileExt = document.uri.path.toString();
         const { exec } = require('node:child_process');
         const execPromise = node_util_1.default.promisify(exec);
-        // let match = /justification .*/i.exec(document.getText());
-        // if (!(match === null)){
-        // 	editorReader.output_channel.appendLine(match.toString());
-        // }else{
-        // 	editorReader.output_channel.appendLine("ITS NULL");
-        // }
-        let command = 'java -jar ' + jarExt + ' -i ' + fileExt + ' --format SVG --log-level all';
-        let diagram_name = null;
-        let lines = document.getText().split("\n");
-        const match = null;
-        for (let i = 0; i < lines.length; i++) {
-            const match = /justification .*/i.exec(lines[i]) || /pattern .*/i.exec(lines[i]);
-            if (match && (i < curr_line || diagram_name === null)) {
-                diagram_name = match[0].split(' ')[1];
-                command = 'java -jar ' + jarExt + ' -i ' + fileExt + ' -d ' + diagram_name + ' --format SVG --log-level all';
-                editorReader.output_channel.appendLine("NAMEEEEE" + diagram_name);
-                editorReader.output_channel.appendLine("LINEEEE" + curr_line);
-            }
-            if (i >= curr_line && diagram_name !== null) {
-                break;
-            }
-        }
+        let diagram_name = this.getDiagramName(document, curr_line);
+        let command = 'java -jar ' + jarExt + ' -i ' + fileExt + ' -d ' + diagram_name + ' --format SVG --log-level all';
         // Waits for the result
         try {
             const { stdout, stderr } = await execPromise(command);
@@ -132,21 +114,23 @@ class editorReader {
             // vscode.window.showErrorMessage(error.toString());
         }
         editorReader.output_channel.appendLine("Executed Jar");
-        // try{
-        // 	const {stdout, stderr} = await execPromise('cat '+this.context.extensionUri.path.toString()+'/output'+'/*.svg');
-        // 	editorReader.data = stdout;
-        // } catch (error: any){
-        // 	editorReader.output_channel.appendLine(error.toString())
-        // 	// vscode.window.showErrorMessage(error.toString());
-        // }
-        // editorReader.output_channel.appendLine("Catting output")
-        // try{
-        // 	const {stdout, stderr} = await execPromise('rm -r '+this.context.extensionUri.path.toString()+'/output');
-        // } catch (error: any){
-        // 	editorReader.output_channel.appendLine(error.toString())
-        // 	// vscode.window.showErrorMessage(error.toString());
-        // }
-        // editorReader.output_channel.appendLine("Deleting Files")
+    }
+    getDiagramName(document, curr_line) {
+        let diagram_name = null;
+        let match = null;
+        let lines = document.getText().split("\n");
+        for (let i = 0; i < lines.length; i++) {
+            match = /justification .*/i.exec(lines[i]) || /pattern .*/i.exec(lines[i]);
+            if (match && (i < curr_line || diagram_name === null)) {
+                diagram_name = match[0].split(' ')[1];
+                // editorReader.output_channel.appendLine("NAMEEEEE"+diagram_name);
+                // editorReader.output_channel.appendLine("LINEEEE"+curr_line);
+            }
+            if (i >= curr_line && diagram_name !== null) {
+                break;
+            }
+        }
+        return diagram_name;
     }
     getHtmlForWebview() {
         return /* html */ `
@@ -157,6 +141,11 @@ class editorReader {
 			</body>
 			</html>`;
     }
+    changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async (e) => {
+        if (e !== undefined) {
+            vscode.window.showInformationMessage(e.document.toString());
+        }
+    });
 }
 exports.editorReader = editorReader;
 //# sourceMappingURL=editorReader.js.map

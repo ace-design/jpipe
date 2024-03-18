@@ -9,7 +9,12 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "files.associations": {
+    "*.jd": "jpipe"
+  },
+  "activationEvents": [
+    "onLanguage:jpipe"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "customEditors": [
