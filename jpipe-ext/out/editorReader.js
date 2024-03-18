@@ -57,6 +57,7 @@ class editorReader {
     async resolveCustomTextEditor(document, webviewPanel, _token) {
         // Setup initial content for the webview
         editorReader.textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
+        // this.updateLineNum();
         // If previous webview was disposed, create a new one. 
         if (editorReader.webviewDisposed) {
             editorReader.webviewPanel = vscode.window.createWebviewPanel('SVG', // Identifies the type of the webview. Used internally
@@ -180,6 +181,16 @@ class editorReader {
             editorReader.webviewPanel.webview.html = this.getLoadingHTMLWebview();
             let token = new vscode.CancellationTokenSource();
             this.resolveCustomTextEditor(e.document, editorReader.webviewPanel, token.token);
+        }
+    });
+    changeDocumentSelection = vscode.window.onDidChangeTextEditorSelection(async (e) => {
+        if (e !== undefined) {
+            editorReader.line_num = (await editorReader.textPanel).selection.active.line + 1;
+            let new_diagram = this.getDiagramName(e.textEditor.document);
+            let token = new vscode.CancellationTokenSource();
+            if (new_diagram != editorReader.webviewPanel.title) {
+                this.resolveCustomTextEditor(e.textEditor.document, editorReader.webviewPanel, token.token);
+            }
         }
     });
     getLoadingHTMLWebview() {
