@@ -7,8 +7,13 @@ import { editorReader } from './editorReader';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(editorReader.register(context));
-	vscode.window.showInformationMessage('Done!');
 }
+
+// const changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
+// 	if (e !== undefined){
+// 		vscode.window.showInformationMessage(e.document.toString())
+// 	}
+// });
 
 // This method is called when your extension is deactivated
 export function deactivate() {}

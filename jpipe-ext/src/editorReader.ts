@@ -14,13 +14,19 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	private static data = "NO DATA";
 	private static output_channel = vscode.window.createOutputChannel("output_channel");
 	private static updating = false;
+	private static webviewPanel: vscode.WebviewPanel;
 
     public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		vscode.commands.registerCommand(editorReader.viewType, () => {});
 		const provider = new editorReader(context);
 		const providerRegistration = vscode.window.registerCustomEditorProvider(editorReader.viewType, provider);
+		editorReader.webviewPanel = vscode.window.createWebviewPanel(
+			'SVG', // Identifies the type of the webview. Used internally
+			'VisCoding', // Title of the panel displayed to the user
+			vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
+			{} // Webview options. More on these later.
+		  );
 		return providerRegistration;
-
 	}
 	
     public async resolveCustomTextEditor(
@@ -31,13 +37,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		// Setup initial content for the webview
 		let textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
 
-
-		webviewPanel = vscode.window.createWebviewPanel(
-			'SVG', // Identifies the type of the webview. Used internally
-			'VisCoding', // Title of the panel displayed to the user
-			vscode.ViewColumn.Beside, // Editor column to show the new webview panel in.
-			{} // Webview options. More on these later.
-		  );
+		webviewPanel = editorReader.webviewPanel;
 
 		// this.updateSVG(webviewPanel.webview, document);
 		// webviewPanel.webview.html = this.getHtmlForWebview();
@@ -70,6 +70,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 				}
 			}
 		});
+	
 
 		// Make sure we get rid of the listener when our editor is closed.
 		webviewPanel.onDidDispose(() => {
@@ -97,33 +98,9 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		const { exec } = require('node:child_process');
 		const execPromise = util.promisify(exec);
 
-		// let match = /justification .*/i.exec(document.getText());
-		// if (!(match === null)){
-		// 	editorReader.output_channel.appendLine(match.toString());
-		// }else{
-		// 	editorReader.output_channel.appendLine("ITS NULL");
-		// }
 
-		let command = 'java -jar '+jarExt+' -i '+fileExt+ ' --format SVG --log-level all'
-		let diagram_name = null;
-
-		let lines = document.getText().split("\n");
-		const match = null;
-
-		for (let i = 0; i < lines.length; i++)
-		{
-			const match = /justification .*/i.exec(lines[i]) || /pattern .*/i.exec(lines[i]);
-			if (match && (i<curr_line || diagram_name===null))
-			{
-				diagram_name = match[0].split(' ')[1]
-				command = 'java -jar '+jarExt+' -i '+fileExt+ ' -d '+diagram_name+' --format SVG --log-level all'
-				editorReader.output_channel.appendLine("NAMEEEEE"+diagram_name);
-				editorReader.output_channel.appendLine("LINEEEE"+curr_line);
-			}
-			if (i>=curr_line && diagram_name!==null){
-				break;
-			}
-		}
+		let diagram_name = this.getDiagramName(document, curr_line);
+		let command = 'java -jar '+jarExt+' -i '+fileExt+' -d '+diagram_name+ ' --format SVG --log-level all'
 
 
 		// Waits for the result
@@ -139,24 +116,30 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 		editorReader.output_channel.appendLine("Executed Jar")
 
-		// try{
-		// 	const {stdout, stderr} = await execPromise('cat '+this.context.extensionUri.path.toString()+'/output'+'/*.svg');
-		// 	editorReader.data = stdout;
-		// } catch (error: any){
-		// 	editorReader.output_channel.appendLine(error.toString())
-		// 	// vscode.window.showErrorMessage(error.toString());
-		// }
-		// editorReader.output_channel.appendLine("Catting output")
-
-		// try{
-		// 	const {stdout, stderr} = await execPromise('rm -r '+this.context.extensionUri.path.toString()+'/output');
-		// } catch (error: any){
-		// 	editorReader.output_channel.appendLine(error.toString())
-		// 	// vscode.window.showErrorMessage(error.toString());
-		// }
-		// editorReader.output_channel.appendLine("Deleting Files")
+	}
 
 
+	private getDiagramName(document: vscode.TextDocument, curr_line: number): string | null{
+		let diagram_name = null;
+		let match = null;
+
+		let lines = document.getText().split("\n");
+
+		for (let i = 0; i < lines.length; i++)
+		{
+			match = /justification .*/i.exec(lines[i]) || /pattern .*/i.exec(lines[i]);
+			if (match && (i<curr_line || diagram_name===null))
+			{
+				diagram_name = match[0].split(' ')[1]
+				// editorReader.output_channel.appendLine("NAMEEEEE"+diagram_name);
+				// editorReader.output_channel.appendLine("LINEEEE"+curr_line);
+			}
+			if (i>=curr_line && diagram_name!==null){
+				break;
+			}
+		}
+
+		return diagram_name;
 	}
 
 
@@ -172,8 +155,10 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 			</html>`;	 
     }
 
-
-    
-
+	changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
+		if (e !== undefined){
+			vscode.window.showInformationMessage(e.document.toString())
+		}
+	});
 
 }
