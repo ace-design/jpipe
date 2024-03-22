@@ -9,8 +9,36 @@
   "categories": [
     "Other"
   ],
+  "activationEvents": [
+    "onCommand:jpipe.vis"
+  ],
+  
   "main": "./out/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "jpipe",
+        "extensions": [
+          ".jd"
+        ]
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorLangId == jpipe",
+          "command": "jpipe.vis",
+          "group": "jPipeVis"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "jpipe.vis",
+          "when": "resourceLangId==jpipe",
+          "group": "navigation"
+        }
+      ]
+    },
     "customEditors": [
       {
         "viewType": "jpipe.vis",
@@ -27,19 +55,11 @@
     "commands": [
 			{
 				"command": "jpipe.vis",
-				"title": "Create new jpipe visualization",
-				"category": "jPipe Visualizer"
+        "title": "%jpipe.vis.title%",
+				"category": "jPipeVis",
+        "icon": "$(open-preview)"
 			}
-		],
-    "menus": {
-      "editor/title": [
-          {
-              "command": "jpipe.vis",
-              "when": "true",
-              "group": "navigation"
-          }
-      ]
-    }
+		]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

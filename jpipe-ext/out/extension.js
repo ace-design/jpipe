@@ -8,11 +8,6 @@ function activate(context) {
     context.subscriptions.push(editorReader_1.editorReader.register(context));
 }
 exports.activate = activate;
-// const changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
-// 	if (e !== undefined){
-// 		vscode.window.showInformationMessage(e.document.toString())
-// 	}
-// });
 // This method is called when your extension is deactivated
 function deactivate() { }
 exports.deactivate = deactivate;
