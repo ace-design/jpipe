@@ -6,30 +6,52 @@ import util from "node:util";
 
 export class editorReader implements vscode.CustomTextEditorProvider {
 
-    constructor(
-		private readonly context: vscode.ExtensionContext
-	) { }
+	// Defines the command needed to execute the extension. 
+	private static ext_command = "jpipe.vis";
 
-	private static viewType = "jpipe.vis";
-	private static data = "NO DATA";
-	private static output_channel = vscode.window.createOutputChannel("output_channel");
-	private static updating = false;
+	// Stores the svg code to display.
+	private static svg_data: string;
+	
+	// New channel created in vscode terminal for user debugging.
+	private static output_channel: vscode.OutputChannel
+
+	// Used to prevent jar files from executing concurrently.
+	private static updating: boolean;
+
+	// Global webview panel used to display any and all svgs.
 	private static webviewPanel: vscode.WebviewPanel;
+
+	// Used to determine whether webview was closed by user.
 	private static webviewDisposed: boolean;
+
+	// Global text panel used to display the jd code. 
 	private static textPanel: Thenable<vscode.TextEditor>;
+
+	// Global variable determining which line the user is on in the text panel. 
 	private static line_num: number; 
 
-    public static register(context: vscode.ExtensionContext): vscode.Disposable {
-		vscode.commands.registerCommand(editorReader.viewType, () => {});
-		const provider = new editorReader(context);
-		const providerRegistration = vscode.window.registerCustomEditorProvider(editorReader.viewType, provider);
+
+    constructor( private readonly context: vscode.ExtensionContext) {
+		// Without any initial data, must be empty string to prevent null error. 
+		editorReader.svg_data = "";
+		editorReader.output_channel = vscode.window.createOutputChannel("output_channel");
+		editorReader.updating = false;
 		editorReader.webviewPanel = vscode.window.createWebviewPanel(
 			'SVG', // Identifies the type of the webview. Used internally
 			'VisCoding', // Title of the panel displayed to the user
 			vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
-			{} // Webview options. More on these later.
-		  );
+			{}
+		);
 		editorReader.webviewDisposed = false;
+	 }
+
+
+	// Activate an extension instance. The same instance will be used for any jd file that is opened later on.
+    public static register(context: vscode.ExtensionContext): vscode.Disposable {
+		vscode.commands.registerCommand(editorReader.ext_command, () => {});
+		const provider = new editorReader(context);
+		const providerRegistration = vscode.window.registerCustomEditorProvider(editorReader.ext_command, provider);
+
 		return providerRegistration;
 	}
 	
@@ -38,26 +60,27 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		webviewPanel: vscode.WebviewPanel,
 		_token: vscode.CancellationToken,
 	): Promise<void> {
-		// Setup initial content for the webview
+
+		// Open the text of the jd file. Will be fired every time a new text editor is opened.
 		editorReader.textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
-		// this.updateLineNum();
 
 
-		// If previous webview was disposed, create a new one. 
+		// If previous global webview id disposed, create a new one.
 		if (editorReader.webviewDisposed){
 			editorReader.webviewPanel = vscode.window.createWebviewPanel(
 				'SVG', // Identifies the type of the webview. Used internally
 				'VisCoding', // Title of the panel displayed to the user
 				vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
-				{} // Webview options. More on these later.
+				{}
 			);
 			editorReader.webviewDisposed = false;
 		}
 
-		// Set the webview of the custom text editor to be the global webview. 
+		// Set the webview of this custom editor to be the global webview.
 		webviewPanel = editorReader.webviewPanel;
 
 
+		// Facilitates the process of changing the webview on changes. 
 		const updateWebview = async () => {
 			editorReader.updating = true;
 			editorReader.line_num = (await editorReader.textPanel).selection.active.line+1
@@ -68,76 +91,58 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 		}
 
-		// Hook up event handlers so that we can synchronize the webview with the text document.
-		//
-		// The text document acts as our model, so we have to sync change in the document to our
-		// editor and sync changes in the editor back to the document.
-		// 
-		// Remember that a single text document can also be shared between multiple custom
-		// editors (this happens for example when you split a custom editor)
-
+		// Event handler executing update webview every time the text document
 		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(async e => {
 			if (e.document.uri.toString() === document.uri.toString()) {
 				if (editorReader.updating==false){
 					editorReader.output_channel.appendLine("Document Changed! Will execute jar file again.")
-					// this.startTimer();
 					await updateWebview();
-					// editorReader.output_channel.appendLine("Execution Time: "+this.endTimer().toString()+"s");
 				}
 			}
 		});
 	
 
-		// Make sure we get rid of the listener when our editor is closed.
+		// Make sure we get rid of the listener when our editor is closed. 
 		webviewPanel.onDidDispose(() => {
 			changeDocumentSubscription.dispose();
 			editorReader.webviewDisposed=true;
-
 		});
+
 
 		updateWebview();
 	}
 
-	// private startTimer(){
-	// 	let date = new Date();
-	// 	editorReader.start_time = date.getSeconds()+(date.getMilliseconds()/1000);
-	// }
-
-	// private endTimer(): number {
-	// 	let date = new Date();
-	// 	let end_time = date.getSeconds()+(date.getMilliseconds()/1000);
-	// 	return (end_time-editorReader.start_time);
-	// }
-
+	// Executes the jar file for updated SVG
 	private async updateSVG(webview: vscode.Webview, document: vscode.TextDocument): Promise<void> {
+		// Store the path to the jar executable file.
 		const jarExt = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, '../jpipe.jar')).path.toString()
+
+		// Store the path to the jd file that needs to be compiled.
 		const fileExt = document.uri.path.toString()
 
 		const { exec } = require('node:child_process');
 		const execPromise = util.promisify(exec);
 
-
+		
 		let diagram_name = this.getDiagramName(document);
 		editorReader.webviewPanel.title=diagram_name || "visCoding";
 		let command = 'java -jar '+jarExt+' -i '+fileExt+' -d '+diagram_name+ ' --format SVG --log-level all'
 
-
-		// Waits for the result
-
+		// Execute the command, and wait for the result (must be synchronous).
+		// TODO: Validate that this actually executes synchronously. 
 		try{
 			const {stdout, stderr} = await execPromise(command);
 			editorReader.output_channel.appendLine(stderr.toString());
-			editorReader.data = stdout;
+			editorReader.svg_data = stdout;
 		} catch (error: any){
 			editorReader.output_channel.appendLine(error.toString());
-			// vscode.window.showErrorMessage(error.toString());
 		}
 
 		editorReader.output_channel.appendLine("Executed Jar")
 
 	}
 
-
+	// Determine which diagram of the document the user is on. 
 	private getDiagramName(document: vscode.TextDocument): string | null{
 		let diagram_name = null;
 		let match = null;
@@ -150,20 +155,38 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 			if (match && (i<editorReader.line_num || diagram_name===null))
 			{
 				diagram_name = match[0].split(' ')[1]
-				// editorReader.output_channel.appendLine("NAMEEEEE"+diagram_name);
-				// editorReader.output_channel.appendLine("LINEEEE"+curr_line);
 			}
 			if (i>=editorReader.line_num && diagram_name!==null){
 				break;
 			}
 		}
-
-
 		return diagram_name;
 	}
 
 
-    private getHtmlForWebview(): string {
+	// Event handler determining what the next active text editor is (when the user switched tabs).
+	changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
+		if (e !== undefined && e.document.languageId=="jpipe"){
+			editorReader.textPanel = vscode.window.showTextDocument(e.document, vscode.ViewColumn.One, false);
+			editorReader.line_num = (await editorReader.textPanel).selection.active.line+1
+			editorReader.webviewPanel.webview.html=this.getLoadingHTMLWebview();
+			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
+			this.resolveCustomTextEditor(e.document, editorReader.webviewPanel, token.token)
+		}
+	});
+
+	changeDocumentSelection = vscode.window.onDidChangeTextEditorSelection(async e => {
+		if (e !== undefined && e.textEditor.document.languageId=="jpipe"){
+			editorReader.line_num = (await editorReader.textPanel).selection.active.line+1;
+			let new_diagram = this.getDiagramName(e.textEditor.document)
+			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
+			if (new_diagram!=editorReader.webviewPanel.title){
+				this.resolveCustomTextEditor(e.textEditor.document, editorReader.webviewPanel, token.token)
+			}
+		}
+	});
+
+	private getHtmlForWebview(): string {
 
 
 		return /* html */`
@@ -187,33 +210,11 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		  </style>
 		</head>
 		<body>
-		  <div>${editorReader.data}</div>
+		  <div>${editorReader.svg_data}</div>
 		</body>
 		</html>
 		`;	 
     }
-
-	changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
-		if (e !== undefined){
-			editorReader.textPanel = vscode.window.showTextDocument(e.document, vscode.ViewColumn.One, false);
-			editorReader.line_num = (await editorReader.textPanel).selection.active.line+1
-			editorReader.webviewPanel.webview.html=this.getLoadingHTMLWebview();
-			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
-			this.resolveCustomTextEditor(e.document, editorReader.webviewPanel, token.token)
-		}
-	});
-
-	changeDocumentSelection = vscode.window.onDidChangeTextEditorSelection(async e => {
-		if (e !== undefined){
-			editorReader.line_num = (await editorReader.textPanel).selection.active.line+1;
-			let new_diagram = this.getDiagramName(e.textEditor.document)
-			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
-			if (new_diagram!=editorReader.webviewPanel.title){
-				this.resolveCustomTextEditor(e.textEditor.document, editorReader.webviewPanel, token.token)
-			}
-		}
-	});
-
 
 	private getLoadingHTMLWebview(): string {
 		return `
@@ -254,7 +255,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		</head>
 		<body>
 		  <div class="loader"></div>
-		  <div>${editorReader.data}</div>
+		  <div>${editorReader.svg_data}</div>
 		</body>
 		</html>		
 		`
