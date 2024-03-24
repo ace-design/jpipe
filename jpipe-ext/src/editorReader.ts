@@ -115,7 +115,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	// Executes the jar file for updated SVG
 	private async updateSVG(webview: vscode.Webview, document: vscode.TextDocument): Promise<void> {
 		// Store the path to the jar executable file.
-		const jarExt = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, '../jpipe.jar')).path.toString()
+		const jarExt = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'src/utils/jpipe.jar')).path.toString()
 
 		// Store the path to the jd file that needs to be compiled.
 		const fileExt = document.uri.path.toString()
