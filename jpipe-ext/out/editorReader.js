@@ -107,7 +107,7 @@ class editorReader {
     // Executes the jar file for updated SVG
     async updateSVG(webview, document) {
         // Store the path to the jar executable file.
-        const jarExt = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, '../jpipe.jar')).path.toString();
+        const jarExt = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'src/utils/jpipe.jar')).path.toString();
         // Store the path to the jd file that needs to be compiled.
         const fileExt = document.uri.path.toString();
         const { exec } = require('node:child_process');

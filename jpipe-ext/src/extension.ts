@@ -26,7 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     if (!bin_path) {
         window.showInformationMessage(`No language server path specified.`);
-        bin_path = "./jpipe-language-server";
+        bin_path = "./utils/jpipe-language-server";
         await lspConfig.update("path", bin_path, true);
     }
 
