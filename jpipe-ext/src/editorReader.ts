@@ -57,7 +57,10 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 				editorReader.webviewPanel = vscode.window.createWebviewPanel(
 					'SVG', // Identifies the type of the webview. Used internally
 					'VisCoding', // Title of the panel displayed to the user
-					vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
+					{
+						viewColumn: vscode.ViewColumn.Beside,
+						preserveFocus: true
+					},
 					{}
 				);
 				editorReader.webviewPanel.webview.html = this.getHtmlForWebview();
@@ -78,7 +81,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	): Promise<void> {
 
 		// Open the text of the jd file. Will be fired every time a new text editor is opened.
-		editorReader.textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, false);
+		editorReader.textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, true);
 
 
 		// If previous global webview id disposed, create a new one.
@@ -86,7 +89,10 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 			editorReader.webviewPanel = vscode.window.createWebviewPanel(
 				'SVG', // Identifies the type of the webview. Used internally
 				'VisCoding', // Title of the panel displayed to the user
-				vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
+				{
+					viewColumn: vscode.ViewColumn.Beside,
+					preserveFocus: true
+				},
 				{}
 			);
 			editorReader.webviewDisposed = false;
@@ -185,7 +191,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	// Event handler determining what the next active text editor is (when the user switched tabs).
 	changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
 		if (e !== undefined && e.document.languageId=="jpipe" && !editorReader.webviewDisposed){
-			editorReader.textPanel = vscode.window.showTextDocument(e.document, vscode.ViewColumn.One, false);
+			editorReader.textPanel = vscode.window.showTextDocument(e.document, vscode.ViewColumn.One, true);
 			editorReader.line_num = (await editorReader.textPanel).selection.active.line+1
 			editorReader.webviewPanel.webview.html = editorReader.getLoadingHTMLWebview();
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
