@@ -46,13 +46,6 @@
       }
     },
     "menus": {
-      "editor/context": [
-        {
-          "when": "editorLangId == jpipe",
-          "command": "jpipe.vis",
-          "group": "jPipeVis"
-        }
-      ],
       "editor/title": [
         {
           "command": "jpipe.vis",

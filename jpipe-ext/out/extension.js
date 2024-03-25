@@ -11,10 +11,9 @@ async function activate(context) {
     context.subscriptions.push(editorReader_1.editorReader.register(context));
     const lspConfig = vscode_1.workspace.getConfiguration("noname-jpipe.language_server", null);
     let bin_path = lspConfig.get("path", null);
-    // let bin_path = "/Users/nirmalchaudhari/Desktop/lever-jpipe/language-server-jpipe/target/release/jpipe-language-server";
     if (!bin_path) {
         vscode_1.window.showInformationMessage(`No language server path specified.`);
-        bin_path = "./utils/jpipe-language-server";
+        bin_path = "../jpipe-language-server";
         await lspConfig.update("path", bin_path, true);
     }
     const serverOptions = {

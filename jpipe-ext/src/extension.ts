@@ -22,11 +22,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const lspConfig = workspace.getConfiguration("noname-jpipe.language_server", null);
     let bin_path = lspConfig.get<string | null>("path", null);
-    // let bin_path = "/Users/nirmalchaudhari/Desktop/lever-jpipe/language-server-jpipe/target/release/jpipe-language-server";
 
     if (!bin_path) {
         window.showInformationMessage(`No language server path specified.`);
-        bin_path = "./utils/jpipe-language-server";
+        bin_path = "../jpipe-language-server";
         await lspConfig.update("path", bin_path, true);
     }
 
