@@ -63,8 +63,8 @@
             "filenamePattern": "*.jd"
           }
         ],
-        "priority": "default",
-        "preview": "true"
+        "priority": "option",
+        "preview": "false"
       }
     ],
     "commands": [
