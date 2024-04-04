@@ -37,7 +37,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
     constructor( private readonly context: vscode.ExtensionContext) {
 		// Without any initial data, must be empty string to prevent null error. 
 		editorReader.svg_data = "";
-		editorReader.output_channel = vscode.window.createOutputChannel("output_channel");
+		editorReader.output_channel = vscode.window.createOutputChannel("jpipe_console");
 		editorReader.updating = false;
 		editorReader.webviewDisposed = true;
 	 }
