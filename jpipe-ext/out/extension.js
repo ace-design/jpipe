@@ -8,12 +8,11 @@ let client;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 async function activate(context) {
-    context.subscriptions.push(editorReader_1.editorReader.register(context));
     const lspConfig = vscode_1.workspace.getConfiguration("noname-jpipe.language_server", null);
-    let bin_path = lspConfig.get("path", null);
+    let bin_path = context.extensionUri.path + "/jpipe-language-server";
     if (!bin_path) {
         vscode_1.window.showInformationMessage(`No language server path specified.`);
-        bin_path = "../jpipe-language-server";
+        bin_path = context.extensionUri.path + "/jpipe-language-server";
         await lspConfig.update("path", bin_path, true);
     }
     const serverOptions = {
@@ -30,6 +29,7 @@ async function activate(context) {
     };
     // Create the language client and start the client.
     client = new node_1.LanguageClient('language-server-jpipe', 'jpipe Language Server', serverOptions, clientOptions);
+    context.subscriptions.push(editorReader_1.editorReader.register(context));
     // Start the client. This will also launch the server
     return client.start().catch(reason => {
         vscode_1.window.showWarningMessage(`Failed to run language server: ${reason}`);
