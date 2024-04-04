@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:jpipe.vis"
+    "onLanguage:jpipe"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -48,7 +48,7 @@
     "menus": {
       "editor/title": [
         {
-          "command": "jpipe.vis",
+          "command": "jpipe.vis.preview",
           "when": "resourceLangId==jpipe",
           "group": "navigation"
         }
@@ -63,13 +63,19 @@
             "filenamePattern": "*.jd"
           }
         ],
-        "priority": "option",
+        "priority": "default",
         "preview": "false"
       }
     ],
     "commands": [
       {
         "command": "jpipe.vis",
+        "title": "%jpipe.vis.title%",
+        "category": "jPipeVis",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "jpipe.vis.preview",
         "title": "%jpipe.vis.title%",
         "category": "jPipeVis",
         "icon": "$(open-preview)"

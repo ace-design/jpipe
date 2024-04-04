@@ -9,6 +9,9 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	// Defines the command needed to execute the extension. 
 	private static ext_command = "jpipe.vis";
 
+	private static ext_command_preview = "jpipe.vis.preview";
+
+
 	// Stores the svg code to display.
 	private static svg_data: string;
 	
@@ -36,12 +39,6 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		editorReader.svg_data = "";
 		editorReader.output_channel = vscode.window.createOutputChannel("output_channel");
 		editorReader.updating = false;
-		// editorReader.webviewPanel = vscode.window.createWebviewPanel(
-		// 	'SVG', // Identifies the type of the webview. Used internally
-		// 	'VisCoding', // Title of the panel displayed to the user
-		// 	vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
-		// 	{}
-		// );
 		editorReader.webviewDisposed = true;
 	 }
 
@@ -51,7 +48,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		const provider = new editorReader(context);
 		const providerRegistration = vscode.window.registerCustomEditorProvider(editorReader.ext_command, provider);
 
-		vscode.commands.registerCommand(editorReader.ext_command, () => {
+		vscode.commands.registerCommand(editorReader.ext_command_preview, () => {
 			// If previous global webview id disposed, create a new one.
 			if (editorReader.webviewDisposed){
 				editorReader.webviewPanel = vscode.window.createWebviewPanel(
@@ -70,6 +67,8 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 				editorReader.webviewDisposed = true;
 			}
 		});
+
+		vscode.commands.registerCommand(editorReader.ext_command, () => {})
 
 		return providerRegistration;
 	}
@@ -137,7 +136,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 	}
 
 	// Executes the jar file for updated SVG
-	private async updateSVG(webview: vscode.Webview, document: vscode.TextDocument): Promise<void> {
+	public async updateSVG(webview: vscode.Webview, document: vscode.TextDocument): Promise<void> {
 		// Store the path to the jar executable file.
 		const jarExt = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, './jpipe.jar')).path.toString()
 
@@ -210,35 +209,52 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		}
 	});
 
-	private static getHtmlForWebview(): string {
 
+private static getHtmlForWebview(): string {
+    const svgContent = editorReader.svg_data || ''; // Ensure svg_data is not null or undefined
 
-		return /* html */`
-		<!DOCTYPE html>
-		<html lang="en">
-		<head>
-		  <meta charset="UTF-8">
-		  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		  <title>Loading Page</title>
-		  <style>
-			body {
-			  margin: 0;
-			  padding: 0;
-			  position: relative; /* Add this line */
-			  display: flex;
-			  justify-content: center;
-			  align-items: center;
-			  height: 100vh;
-			  background-color: #f0f0f0;
-			}
-		  </style>
-		</head>
-		<body>
-		  <div>${editorReader.svg_data}</div>
-		</body>
-		</html>
-		`;	 
-    }
+    return /* html */`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>SVG Viewer</title>
+            <style>
+                body {
+                    margin: 0;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    background-color: #f0f0f0;
+                }
+                #svg-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                    height: 100%;
+                }
+                svg {
+                    max-width: 100%;
+                    max-height: 100%;
+                    width: auto;
+                    height: auto;
+                }
+            </style>
+        </head>
+        <body>
+            <div id="svg-container">
+                ${svgContent}
+            </div>
+        </body>
+        </html>
+    `;
+}
+
+	
 
 	private static getLoadingHTMLWebview(): string {
 		return `

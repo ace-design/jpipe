@@ -33,6 +33,7 @@ class editorReader {
     context;
     // Defines the command needed to execute the extension. 
     static ext_command = "jpipe.vis";
+    static ext_command_preview = "jpipe.vis.preview";
     // Stores the svg code to display.
     static svg_data;
     // New channel created in vscode terminal for user debugging.
@@ -53,19 +54,13 @@ class editorReader {
         editorReader.svg_data = "";
         editorReader.output_channel = vscode.window.createOutputChannel("output_channel");
         editorReader.updating = false;
-        // editorReader.webviewPanel = vscode.window.createWebviewPanel(
-        // 	'SVG', // Identifies the type of the webview. Used internally
-        // 	'VisCoding', // Title of the panel displayed to the user
-        // 	vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
-        // 	{}
-        // );
         editorReader.webviewDisposed = true;
     }
     // Activate an extension instance. The same instance will be used for any jd file that is opened later on.
     static register(context) {
         const provider = new editorReader(context);
         const providerRegistration = vscode.window.registerCustomEditorProvider(editorReader.ext_command, provider);
-        vscode.commands.registerCommand(editorReader.ext_command, () => {
+        vscode.commands.registerCommand(editorReader.ext_command_preview, () => {
             // If previous global webview id disposed, create a new one.
             if (editorReader.webviewDisposed) {
                 editorReader.webviewPanel = vscode.window.createWebviewPanel('SVG', // Identifies the type of the webview. Used internally
@@ -82,6 +77,7 @@ class editorReader {
                 editorReader.webviewDisposed = true;
             }
         });
+        vscode.commands.registerCommand(editorReader.ext_command, () => { });
         return providerRegistration;
     }
     async resolveCustomTextEditor(document, webviewPanel, _token) {
@@ -186,31 +182,46 @@ class editorReader {
         }
     });
     static getHtmlForWebview() {
+        const svgContent = editorReader.svg_data || ''; // Ensure svg_data is not null or undefined
         return /* html */ `
-		<!DOCTYPE html>
-		<html lang="en">
-		<head>
-		  <meta charset="UTF-8">
-		  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		  <title>Loading Page</title>
-		  <style>
-			body {
-			  margin: 0;
-			  padding: 0;
-			  position: relative; /* Add this line */
-			  display: flex;
-			  justify-content: center;
-			  align-items: center;
-			  height: 100vh;
-			  background-color: #f0f0f0;
-			}
-		  </style>
-		</head>
-		<body>
-		  <div>${editorReader.svg_data}</div>
-		</body>
-		</html>
-		`;
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>SVG Viewer</title>
+            <style>
+                body {
+                    margin: 0;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    background-color: #f0f0f0;
+                }
+                #svg-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                    height: 100%;
+                }
+                svg {
+                    max-width: 100%;
+                    max-height: 100%;
+                    width: auto;
+                    height: auto;
+                }
+            </style>
+        </head>
+        <body>
+            <div id="svg-container">
+                ${svgContent}
+            </div>
+        </body>
+        </html>
+    `;
     }
     static getLoadingHTMLWebview() {
         return `
