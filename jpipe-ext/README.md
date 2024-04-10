@@ -8,6 +8,7 @@ This visualizer was developed using the extension api provided by vscode: https:
 - Features
 - Installation
 - Usage
+- Contributions
 
 ## Features
 
