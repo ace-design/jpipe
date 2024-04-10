@@ -11,7 +11,6 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 
 	private static ext_command_preview = "jpipe.vis.preview";
 
-
 	// Stores the svg code to display.
 	private static svg_data: string;
 	
@@ -198,6 +197,7 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		}
 	});
 
+	// Event handler for determinining which diagram the user is on in the text editor. 
 	changeDocumentSelection = vscode.window.onDidChangeTextEditorSelection(async e => {
 		if (e !== undefined && e.textEditor.document.languageId=="jpipe" && !editorReader.webviewDisposed){
 			editorReader.line_num = (await editorReader.textPanel).selection.active.line+1;
@@ -209,6 +209,9 @@ export class editorReader implements vscode.CustomTextEditorProvider {
 		}
 	});
 
+
+
+// HTML Code for the webview.
 
 private static getHtmlForWebview(): string {
     const svgContent = editorReader.svg_data || ''; // Ensure svg_data is not null or undefined

@@ -171,6 +171,7 @@ class editorReader {
             this.resolveCustomTextEditor(e.document, editorReader.webviewPanel, token.token);
         }
     });
+    // Event handler for determinining which diagram the user is on in the text editor. 
     changeDocumentSelection = vscode.window.onDidChangeTextEditorSelection(async (e) => {
         if (e !== undefined && e.textEditor.document.languageId == "jpipe" && !editorReader.webviewDisposed) {
             editorReader.line_num = (await editorReader.textPanel).selection.active.line + 1;
@@ -181,6 +182,7 @@ class editorReader {
             }
         }
     });
+    // HTML Code for the webview.
     static getHtmlForWebview() {
         const svgContent = editorReader.svg_data || ''; // Ensure svg_data is not null or undefined
         return /* html */ `
