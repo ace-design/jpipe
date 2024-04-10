@@ -5,10 +5,10 @@ const editorReader_1 = require("./editorReader");
 const vscode_1 = require("vscode");
 const node_1 = require("vscode-languageclient/node");
 let client;
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 async function activate(context) {
+    // Get the lsp configuration from the package.json file.
     const lspConfig = vscode_1.workspace.getConfiguration("noname-jpipe.language_server", null);
+    // Determine what the bin path is. Since lsp binary is packaged with the extension, it is in the main directory of the extension.
     let bin_path = context.extensionUri.path + "/jpipe-language-server";
     if (!bin_path) {
         vscode_1.window.showInformationMessage(`No language server path specified.`);
@@ -37,7 +37,7 @@ async function activate(context) {
     });
 }
 exports.activate = activate;
-// This method is called when your extension is deactivated
+// This method is called when extension is deactivated
 function deactivate() {
     if (!client) {
         return undefined;

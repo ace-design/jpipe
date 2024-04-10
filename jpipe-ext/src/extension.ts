@@ -1,10 +1,7 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { editorReader } from './editorReader';
 
 import { workspace, ExtensionContext, window, ProgressLocation } from 'vscode';
-import * as fs from "fs";
 
 import {
     LanguageClient,
@@ -14,11 +11,14 @@ import {
 
 let client: LanguageClient | null;
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+
 export async function activate(context: vscode.ExtensionContext) {
 
+
+    // Get the lsp configuration from the package.json file.
 	const lspConfig = workspace.getConfiguration("noname-jpipe.language_server", null);
+
+    // Determine what the bin path is. Since lsp binary is packaged with the extension, it is in the main directory of the extension.
     let bin_path = context.extensionUri.path+"/jpipe-language-server";
 
     if (!bin_path) {
@@ -59,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 }
 
-// This method is called when your extension is deactivated
+// This method is called when extension is deactivated
 export function deactivate() {
 	if (!client) {
         return undefined;
