@@ -1,7 +1,8 @@
 {
   "name": "vs-extension",
   "displayName": "vs-extension",
-  "description": "",
+  "publisher": "mcscert",
+  "description": "Visualization tool for the jpipe language.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.85.0"

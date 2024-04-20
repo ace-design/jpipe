@@ -4,12 +4,12 @@ name: Release extension
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*.*.*.EXT"
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     strategy:
       matrix:
@@ -23,12 +23,13 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: cd vs-extension
     - run: npm install -g @vscode/vsce
     - run: npm install
     - run: vsce package
     
     - name: Publish
-      run: vsce publish -p ${{ secrets.VSCE_PAT }}
+      run: vsce publish -p ${{ secrets.VS_MARKETPLACE_MGMT_TOKEN }}
 
     - name: Release
       uses: softprops/action-gh-release@v1
