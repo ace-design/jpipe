@@ -1,0 +1,30 @@
+=====
+Implementation
+=====
+
+implementation I1 of prove_model {
+    implements Su1 {
+      probe is count_files('./models/*.ndr')
+      expectation is result > 1
+    }
+}
+
+---
+
+(source_file
+  (implementation
+    (ID)
+    (ID)
+    (impl_body
+      (ID)
+      (probe
+        (command
+          (ID)
+          (command_args
+            (STRING))))
+      (expectation
+        (expression
+          (boolean_expr
+            (ID)
+            (ARITH_OP)
+            (INTEGER)))))))
