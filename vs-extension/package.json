@@ -1,7 +1,11 @@
 {
-  "name": "vs-extension",
-  "displayName": "vs-extension",
+  "name": "jpipe-extension",
+  "displayName": "jpipe-extension",
   "publisher": "mcscert",
+  "repository": {
+		"type": "git",
+		"url": "https://github.com/ace-design/jpipe/tree/main"
+	},
   "description": "Visualization tool for the jpipe language.",
   "version": "0.0.1",
   "engines": {
