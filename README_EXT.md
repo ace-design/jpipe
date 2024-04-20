@@ -48,4 +48,3 @@ Contributions can be made by modifying the code in the [src/](src/) directory.
 
 *Note: For testing while coding, just run the extension manually rather than packaing it each time. Packaging should only be done if testing a release of the extension.*
 
-
