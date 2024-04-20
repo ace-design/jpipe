@@ -2,7 +2,9 @@ name: Release extension
 
 
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*.EXT"
 
 jobs:
   build:
