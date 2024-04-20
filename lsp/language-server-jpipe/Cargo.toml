@@ -1,0 +1,9 @@
+[package]
+name = "jpipe-language-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ls_framework = { git = "https://github.com/ace-design/lever-framework" }
+tokio = "1.29.1"
+tree-sitter-jpipe = { path ="../tree-sitter-jpipe"}

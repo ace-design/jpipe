@@ -1,8 +1,0 @@
-justification keyword_missing {
-
-    evidence Su1 "Evidence 1"
-    conclusion C is "Conclusion 1"
-
-    Su1 supports C
-
-}

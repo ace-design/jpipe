@@ -1,0 +1,41 @@
+pattern well_built {
+    conclusion C is "Notebook is well built"
+    strategy s1 is "((AND))"
+    @support op is "operational practice"
+    op supports s1
+    s1 supports C
+}
+
+justification linear-order {
+    evidence Su1 is "notebook file is ready"
+    strategy St1 is "Verify notebook has linear execution order"
+    Su1 supports St1
+
+    conclusion C is "notebook execution is reproducible"
+    St1 supports C
+}
+
+justification dependencies {
+    evidence Su1 is "Requirement file exist"
+    strategy St1 is "Verify dependencies version are correctly pinned"
+    Su1 supports St1
+
+    conclusion C is "notebook execution environment is reproducible"
+    St1 supports C
+
+}
+
+composition {
+
+    justification j1 instantiates well_built with {
+        well_built.op is linear-order.C
+    }
+
+    justification j2 instantiates well_built with {
+        well_built.op is dependencies.C
+    }
+
+    justification final is j1 + j2
+
+}
+
