@@ -10,6 +10,9 @@ jobs:
   build:
 
     runs-on: macos-latest
+    defaults:
+       run:
+         working-directory: ./vs-extension/
 
     strategy:
       matrix:
@@ -17,13 +20,14 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
+    - run: cd vs-extension
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: cd vs-extension
+        cache-dependency-path: ./vs-extension/package-lock.json
     - run: npm install -g @vscode/vsce
     - run: npm install
     - run: vsce package
@@ -34,4 +38,4 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-        files: p4lsp-*.vsix
+        files: jpipe-*.vsix
