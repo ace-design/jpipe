@@ -53,6 +53,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    defaults: 
+      run:
+        working-directory: ./compiler/
     needs: [build]
     steps:
       - name: Checkout repository
@@ -69,6 +72,9 @@ jobs:
 
   integration-test:
     runs-on: ubuntu-latest
+    defaults: 
+      run:
+        working-directory: ./compiler/
     needs: [ test ]
     steps:
       - name: Checkout repository
@@ -85,6 +91,9 @@ jobs:
 
   linter:
     runs-on: ubuntu-latest
+    defaults: 
+      run:
+        working-directory: ./compiler/
     needs: [build]
     steps:
       - name: Checkout repository
