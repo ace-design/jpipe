@@ -1,0 +1,32 @@
+
+load "./patterns.jd"
+
+implementation I1 of prove_model {
+
+    implements Su1 {
+      probe is count_files('./models/*.ndr')
+      expectation is result > 1
+    }
+
+    implements St1 {
+      operation is run('./scripts/merge.sh')
+      expectation is success and exists('./models/_merged.ndr')
+    }
+
+    implements Su2 {
+      probe is can_execute('tina')
+      expectation is success
+    }
+
+    implements Su3 {
+      probe is count_files('./scenarios/*.txt')
+      expectation is result > 0
+    }
+
+    implements St2 {
+      operation is run('prove.sh /models/_merged.ndr ./scenarios/*.txt')
+      expectation is success and exists('./models/_merged.ndr')
+    }
+
+}
+

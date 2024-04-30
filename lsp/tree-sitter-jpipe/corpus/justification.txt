@@ -1,0 +1,18 @@
+=====
+Justification + Evidence
+=====
+
+justification prove_models {
+    evidence Su1 is "Atomic Petri Nets are available"
+}
+
+---
+
+(source_file
+  (justification
+    (ID)
+    (justif_body
+      (evidence
+        (identified_element
+          (ID)
+          (STRING))))))

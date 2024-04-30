@@ -1,0 +1,73 @@
+@startuml class_diagram
+
+!include ./commons.style
+
+
+' ********************
+' * Compilation Unit *
+' ********************
+
+class Unit {
+    + fileName: String
+    --
+    + this(fileName: String)
+    --
+    + absorb(that: Unit)
+}
+
+' *************************
+' * Justification Diagram *
+' *************************
+
+Unit *--> JustificationDiagram
+
+class JustificationDiagram {
+    + name: String
+}
+
+
+JustificationDiagram *--> "1" Conclusion
+
+abstract class JustificationElement {
+    - identifier: Symbol
+    + label: String
+}
+
+class Expectation
+JustificationElement *-> "0..1" Expectation
+
+class Conclusion
+JustificationElement <|-- Conclusion
+
+Conclusion --> "1..n" Strategy
+
+
+abstract class Support
+class Probe
+
+Support *-> "0..1" Probe
+
+
+class Evidence
+class SubConclusion
+Support <|-- Evidence
+Support <|-- SubConclusion
+
+class Strategy
+class Operation
+Operation "0..1" <-* Strategy
+JustificationElement <|-- Strategy
+Strategy -> "1..n" Support
+Strategy "1..*" <-- SubConclusion
+
+JustificationElement <|-- Support
+
+' ******************
+' * Implementation *
+' ******************
+
+
+
+
+
+@enduml
