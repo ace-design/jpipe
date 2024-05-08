@@ -11,16 +11,16 @@ The jPipe environment supports the definition of justification to support softwa
 ## General Information
 - Version: 24.02
 - Architect and main developer:
-  - Sébastien Mosser, McSCert, McMaster University.
+  - [Sébastien Mosser](https://mosser.github.io/), McSCert, McMaster University.
 - Main Contributors:
-  - Cass Braun, McSCert, McMaster University. Developer.
-  - Nirmal Chaudhari, McSCert, McMaster University. Developer.
-  - Aaron Loh, McSCert, McMaster University. Developer.
-  - Deesha Patel, McSCert, McMaster University. Developer.
-  - Corinne Pulgar, École de Technologie Supérieure. Developer
+  - [Cass Braun](https://www.linkedin.com/in/cass-braun/), McSCert, McMaster University. Developer.
+  - [Nirmal Chaudhari](https://www.linkedin.com/in/nirmal2003/), McSCert, McMaster University. Developer.
+  - [Aaron Loh](https://www.linkedin.com/in/aaron-loh26/), McSCert, McMaster University. Developer.
+  - [Deesha Patel](https://www.linkedin.com/in/deeshupatel/), McSCert, McMaster University. Developer.
+  - [Corinne Pulgar](https://www.linkedin.com/in/corinne-pulgar-12a58190/), École de Technologie Supérieure (ETS). Developer
 - Advisors:
-  - Jean-Michel Bruel, Université de Toulouse. Language design.
-  - Mireille Blay Fornarino, Université Côte d'Azur. Composition mechanisms.
+  - [Jean-Michel Bruel](https://jmbruel.netlify.app/), Université de Toulouse. Language design.
+  - [Mireille Blay-Fornarino](https://mireilleblayfornarino.i3s.unice.fr/), Université Côte d'Azur. Composition mechanisms.
 
 ## Repository organization
 
@@ -28,9 +28,15 @@ The jPipe environment supports the definition of justification to support softwa
   - `lsp`: source code of the language-server
   - `vs-extension`: source code of the Visual Code extension
 
-## License
+## Documentation
 
-This software is provided as is under the MIT license.
+We're using GitHub wiki system to document jPipe: [https://github.com/ace-design/jpipe/wiki](https://github.com/ace-design/jpipe/wiki).
+
+## How to cite?
+
+
+
+
 
 ## How to contribute?
 
