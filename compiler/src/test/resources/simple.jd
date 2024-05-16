@@ -5,7 +5,7 @@ justification prove_models {
     strategy St1 is "Merge atomic models"
     Su1 supports St1
 
-    sub-conclusion SC1 is "Complete model is merged"
+    sub-conclusion SC1 is "Complete model is merged gjhfgjgvfyikh"
     St1 supports SC1
 
     evidence Su2 is "Prover is available"
