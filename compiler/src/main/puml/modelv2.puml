@@ -1,0 +1,26 @@
+@startuml class_diagram
+
+!include ./commons.style
+
+class Unit {
+    + fileName: String
+}
+
+interface Element {
+    + name(): String
+    + clone(): Element
+}
+
+Unit *-> "contents\n*"Element
+
+class Justification implements Element
+
+class Pattern implements Element
+
+Justification -> "realizes\n1" Pattern
+
+
+
+
+
+@enduml
