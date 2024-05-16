@@ -1,0 +1,12 @@
+{
+    "projectName": "Jpipe",
+    "languages": [{
+        "id": "jpipe",
+        "grammar": "src/language/jpipe.langium",
+        "fileExtensions": [".jd"],
+        "textMate": {
+            "out": "syntaxes/jpipe.tmLanguage.json"
+        }
+    }],
+    "out": "src/language/generated"
+}
