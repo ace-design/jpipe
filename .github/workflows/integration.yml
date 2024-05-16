@@ -1,0 +1,11 @@
+
+name: integration
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-compiler:
+    uses: ./.github/workflows/abc.yml

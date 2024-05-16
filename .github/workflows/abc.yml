@@ -1,16 +1,16 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: action-based-compiler (abc)
 
 on:
-  # Triggers the workflow on push and pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  push:           # Triggers the workflow on push but only for the "abc-compiler" folder
+    paths:
+      - 'abc-compiler/**'
+  workflow_call:  # Allow the workflow to be called by others
 
 env:
   JAVA_ENV_VERSION: '21'
+  FOLDER: './abc-compiler/'
 
 jobs:
 
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults: 
       run:
-        working-directory: ./compiler/
+        working-directory: ${{env.FOLDER}}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -37,25 +37,12 @@ jobs:
       # Building the jpipe.jar artefact
       - name: Create executable jar with Maven
         run: mvn clean package -DskipTests -Dcheckstyle.skip
-        
-      # Uploading artifact 
-      - name: Store Artifact - Library
-        uses: actions/upload-artifact@v3
-        with:
-          name: jpipe-lib.jar
-          path: target/jpipe.jar
-      # Uploading artifact - Compiler
-      - name: Store Artifact - compiler
-        uses: actions/upload-artifact@v3
-        with:
-          name: jpipe-compiler.jar
-          path: target/jpipe-jar-with-dependencies.jar
 
   test:
     runs-on: ubuntu-latest
     defaults: 
       run:
-        working-directory: ./compiler/
+        working-directory: ${{env.FOLDER}}
     needs: [build]
     steps:
       - name: Checkout repository
@@ -74,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults: 
       run:
-        working-directory: ./compiler/
+        working-directory: ${{env.FOLDER}}
     needs: [ test ]
     steps:
       - name: Checkout repository
@@ -93,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults: 
       run:
-        working-directory: ./compiler/
+        working-directory: ${{env.FOLDER}}
     needs: [build]
     steps:
       - name: Checkout repository
