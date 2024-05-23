@@ -1,38 +1,16 @@
 grammar Jpipe
 
 entry Model:
-    (class += Class '{' statements+=Statement* '}')*;
+    (class=Class '{' (  declarations+=DeclarativeStatement | supports += SupportingStatement )* '}')*;
 
-Class: types+=ClassType name=ID;
-
-ClassType: 
-    type=('justification' | 'implementation');
-
-DeclarationType: Evidence|Strategy|Conclusion|SubConclusion;
-
-
-Statement:
-    statementType+=(DeclarativeStatement | SupportingStatement)*;
+Class: 
+    type=('justification' | 'implementation') name=ID;
 
 DeclarativeStatement:
-    DeclarationType 'is' information=STRING;
+    type=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion') name=ID 'is' information=STRING;
 
 SupportingStatement:
-    supporter=[DeclarationType:ID] 'supports' supportee=[DeclarationType:ID]; 
-
-    
-Evidence:
-    'evidence' name=ID;
-
-Strategy:
-    'strategy' name=ID;
-    
-Conclusion:
-    'conclusion' name=ID;
-
-SubConclusion:
-    'sub-conclusion' name=ID;
-
+    supporter=[DeclarativeStatement] 'supports' supportee=[DeclarativeStatement]; 
 
 
 hidden terminal WS: /\s+/;

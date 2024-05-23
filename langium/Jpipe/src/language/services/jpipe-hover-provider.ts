@@ -1,25 +1,47 @@
-import type { AstNode, LangiumDocument, MaybePromise, ValidationChecks } from 'langium';
-import type { JpipeAstType} from './generated/ast.js';
-import type { JpipeServices } from './jpipe-module.js';
-import { HoverProvider } from 'langium/lsp';
-import { CancellationToken, Hover, HoverParams } from 'vscode-languageserver';
+import { type AstNode, type MaybePromise, } from 'langium';
 
-/**
- * Register custom validation checks.
- */
-export function registerValidationChecks(services: JpipeServices) {
-    const registry = services.validation.ValidationRegistry;
-    const validator = services.validation.JpipeValidator;
-    const checks: ValidationChecks<JpipeAstType> = {
-    };
-    registry.register(checks, validator);
-}
+import { AstNodeHoverProvider } from 'langium/lsp';
+import { Hover } from 'vscode-languageserver';
+import { isClass, isSupportingStatement } from '../generated/ast.js';
+
+
 
 /**
  * Implementation of custom validations.
  */
-export class JpipeHoverProvider implements HoverProvider{
-    getHoverContent(document: LangiumDocument<AstNode>, params: HoverParams, cancelToken?: CancellationToken | undefined): MaybePromise<Hover | undefined> {
-        throw new Error('Method not implemented.');
+export class JpipeHoverProvider extends AstNodeHoverProvider{
+    protected getAstNodeHoverContent(node: AstNode): MaybePromise<Hover | undefined> {
+        if(isSupportingStatement(node)){
+            return {
+                contents: {
+                    kind: 'markdown',
+                    language: 'Jpipe',
+                    value: `description: ${node.supporter.ref?.information}`
+                }
+            }           
+        }
+        
+        if(isSupportingStatement(node)){
+            return {
+                contents: {
+                    kind: 'markdown',
+                    language: 'Jpipe',
+                    value: `${node.supporter.ref?.information} ${node.supporter.ref?.information}`
+                }
+            }
+
+        }
+        
+        if(isClass(node)){
+            return {
+                contents: {
+                    kind: 'markdown',
+                    language: 'Jpipe',
+                    value: `class type: ${node.type}`
+                }
+            } 
+        }
+        
+        return undefined;     
     }
 }

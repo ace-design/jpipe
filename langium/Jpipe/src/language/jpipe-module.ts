@@ -1,17 +1,15 @@
 import { type Module, inject, } from 'langium';
-import {HoverProvider, createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
+import {createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/module.js';
 import { JpipeValidator, registerValidationChecks } from './services/jpipe-validator.js';
-import { JpipeHoverProvider} from './services/jpipe-hover-provider.js';
+import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
+
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export type JpipeAddedServices = {
     validation: {
         JpipeValidator: JpipeValidator
-    }
-    hoverProvider: {
-        hoverProvider: HoverProvider
     }
 }
 
@@ -30,8 +28,8 @@ export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAd
     validation: {
         JpipeValidator: () => new JpipeValidator()
     },
-    hoverProvider:{
-        hoverProvider: () => new JpipeHoverProvider()
+    lsp:{
+        HoverProvider: (services) => new JpipeHoverProvider(services)
     }
 };
 
