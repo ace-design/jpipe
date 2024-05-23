@@ -1,10 +1,13 @@
 grammar Jpipe
 
 entry Model:
-    (class=Class '{' ( hovers+=Hover | declarations+=DeclarativeStatement | supports += SupportingStatement )* '}')*;
+    (entries+=Body)*;
+
+Body:
+    class=Class '{' ( declarations+=DeclarativeStatement | supports += SupportingStatement )* '}';
 
 Class: 
-    type=('justification' | 'implementation') name=ID;
+    type=('justification') name=ID;
 
 DeclarativeStatement:
     type=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion') name=ID 'is' information=STRING;

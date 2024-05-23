@@ -25,36 +25,40 @@ export class JpipeValidator {
     }
 
     checkNaming(model: Model, accept: ValidationAcceptor): void{
-        model.declarations.forEach((declaration)=>{
-            let variableName =  declaration.name;
-            let pattern = /^[A-Z][a-z]*/;
-            if(!pattern.test(variableName)){
-                accept("warning", "Your name does not match the naming requirements (must start with a capital)", {
-                    node: declaration
-                });
-            };
-        });  
+        model.entries.forEach( (entry) =>{
+            entry.declarations.forEach((declaration)=>{
+                let variableName =  declaration.name;
+                let pattern = /^[A-Z][a-z]*/;
+                if(!pattern.test(variableName)){
+                    accept("warning", "Your name does not match the naming requirements (must start with a capital)", {
+                        node: declaration
+                    });
+                };
+            });
+        });
     }
     checkVariables(model: Model, accept: ValidationAcceptor): void{
-        model.supports.forEach( (support) =>{
-            let supporterType = support.supporter.ref?.type;
-            let supporteeType = support.supportee.ref?.type;
-            if(supporterType === undefined || supporteeType === undefined){
-                if(supporterType === undefined && supporteeType === undefined){
-                    accept("error", `Variables ${support.supporter.$refText} and ${support.supportee.$refText} are undefined.`, {
-                        node:support
-                    });
-                }else if(supporterType === undefined){
-                    accept("error", `Variable ${support.supporter.$refText} is undefined.`, {
-                        node:support
-                    });
-                }else if(supporteeType === undefined){
-                    accept("error", `Variable ${support.supportee.$refText} is undefined.`, {
-                        node:support
-                    });
+        model.entries.forEach( (entry) =>{
+            entry.supports.forEach( (support) =>{
+                let supporterType = support.supporter.ref?.type;
+                let supporteeType = support.supportee.ref?.type;
+                if(supporterType === undefined || supporteeType === undefined){
+                    if(supporterType === undefined && supporteeType === undefined){
+                        accept("error", `Variables ${support.supporter.$refText} and ${support.supportee.$refText} are undefined.`, {
+                            node:support
+                        });
+                    }else if(supporterType === undefined){
+                        accept("error", `Variable ${support.supporter.$refText} is undefined.`, {
+                            node:support
+                        });
+                    }else if(supporteeType === undefined){
+                        accept("error", `Variable ${support.supportee.$refText} is undefined.`, {
+                            node:support
+                        });
+                    }
+    
                 }
-
-            }
+            });
         });
     }
 
@@ -66,19 +70,21 @@ export class JpipeValidator {
         possibleSupports.set('sub-conclusion', ['strategy','conclusion']);
         possibleSupports.set('conclusion', []);
         
-        model.supports.forEach( (support) =>{
-            let supporterType = support.supporter.ref?.type;
-            let supporteeType = support.supportee.ref?.type;
-            let possibleSupportees: string[] | undefined = possibleSupports.get(supporterType);
+        model.entries.forEach( (entry) =>{
+            entry.supports.forEach( (support) =>{
+                let supporterType = support.supporter.ref?.type;
+                let supporteeType = support.supportee.ref?.type;
+                let possibleSupportees: string[] | undefined = possibleSupports.get(supporterType);
 
-            if(supporteeType !== undefined){
-                if (possibleSupportees?.includes(supporteeType)){
-                    return;
+                if(supporteeType !== undefined){
+                    if (possibleSupportees?.includes(supporteeType)){
+                        return;
+                    }
                 }
-            }
-            
-            accept("error", `It is not possible to have ${supporterType} support ${supporteeType}.`, {
-                node:support
+                
+                accept("error", `It is not possible to have ${supporterType} support ${supporteeType}.`, {
+                    node:support
+                });
             });
         });
     }
