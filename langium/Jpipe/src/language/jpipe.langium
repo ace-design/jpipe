@@ -1,7 +1,7 @@
 grammar Jpipe
 
 entry Model:
-    (class=Class '{' (  declarations+=DeclarativeStatement | supports += SupportingStatement )* '}')*;
+    (class=Class '{' ( hovers+=Hover | declarations+=DeclarativeStatement | supports += SupportingStatement )* '}')*;
 
 Class: 
     type=('justification' | 'implementation') name=ID;
@@ -11,7 +11,6 @@ DeclarativeStatement:
 
 SupportingStatement:
     supporter=[DeclarativeStatement] 'supports' supportee=[DeclarativeStatement]; 
-
 
 hidden terminal WS: /\s+/;
 

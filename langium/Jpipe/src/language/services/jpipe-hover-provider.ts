@@ -2,7 +2,7 @@ import { type AstNode, type MaybePromise, } from 'langium';
 
 import { AstNodeHoverProvider } from 'langium/lsp';
 import { Hover } from 'vscode-languageserver';
-import { isClass, isSupportingStatement } from '../generated/ast.js';
+import { isClass, isDeclarativeStatement, isSupportingStatement } from '../generated/ast.js';
 
 
 
@@ -11,16 +11,16 @@ import { isClass, isSupportingStatement } from '../generated/ast.js';
  */
 export class JpipeHoverProvider extends AstNodeHoverProvider{
     protected getAstNodeHoverContent(node: AstNode): MaybePromise<Hover | undefined> {
-        if(isSupportingStatement(node)){
+        if(isDeclarativeStatement(node)){
             return {
                 contents: {
                     kind: 'markdown',
                     language: 'Jpipe',
-                    value: `description: ${node.supporter.ref?.information}`
+                    value: `description: ${node.information}`
                 }
-            }           
+            } 
         }
-        
+
         if(isSupportingStatement(node)){
             return {
                 contents: {
