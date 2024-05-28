@@ -26,12 +26,12 @@ export class JpipeValidator {
 
     checkNaming(model: Model, accept: ValidationAcceptor): void{
         model.entries.forEach( (entry) =>{
-            entry.declarations.forEach((declaration)=>{
-                let variableName =  declaration.name;
+            entry.instructions.forEach((instruction)=>{
+                let variableName =  instruction.name;
                 let pattern = /^[A-Z][a-z]*/;
                 if(!pattern.test(variableName)){
                     accept("warning", "Your name does not match the naming requirements (must start with a capital)", {
-                        node: declaration
+                        node: instruction
                     });
                 };
             });
@@ -40,8 +40,8 @@ export class JpipeValidator {
     checkVariables(model: Model, accept: ValidationAcceptor): void{
         model.entries.forEach( (entry) =>{
             entry.supports.forEach( (support) =>{
-                let supporterType = support.supporter.ref?.type;
-                let supporteeType = support.supportee.ref?.type;
+                let supporterType = support.supporter.ref?.kind;
+                let supporteeType = support.supportee.ref?.kind;
                 if(supporterType === undefined || supporteeType === undefined){
                     if(supporterType === undefined && supporteeType === undefined){
                         accept("error", `Variables ${support.supporter.$refText} and ${support.supportee.$refText} are undefined.`, {
@@ -72,8 +72,8 @@ export class JpipeValidator {
         
         model.entries.forEach( (entry) =>{
             entry.supports.forEach( (support) =>{
-                let supporterType = support.supporter.ref?.type;
-                let supporteeType = support.supportee.ref?.type;
+                let supporterType = support.supporter.ref?.kind;
+                let supporteeType = support.supportee.ref?.kind;
                 let possibleSupportees: string[] | undefined = possibleSupports.get(supporterType);
 
                 if(supporteeType !== undefined){

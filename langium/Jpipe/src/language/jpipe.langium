@@ -4,16 +4,17 @@ entry Model:
     (entries+=Body)*;
 
 Body:
-    class=Class '{' ( declarations+=DeclarativeStatement | supports += SupportingStatement )* '}';
+    Justification;
 
-Class: 
-    type=('justification') name=ID;
+Justification:
+    kind=('justification') name=ID '{' ( instructions+=Instruction | supports += Support )* '}';
 
-DeclarativeStatement:
-    type=(EV | 'strategy' | 'sub-conclusion' | 'conclusion') name=ID 'is' information=STRING;
 
-SupportingStatement:
-    supporter=[DeclarativeStatement] operator='supports' supportee=[DeclarativeStatement]; 
+Instruction:
+    kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion') name=ID 'is' information=STRING;
+
+Support:
+    supporter=[Instruction] 'supports' supportee=[Instruction]; 
 
 hidden terminal WS: /\s+/;
 terminal EV returns string: /evidence/;
