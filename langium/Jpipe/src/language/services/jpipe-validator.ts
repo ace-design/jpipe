@@ -10,7 +10,7 @@ export function registerValidationChecks(services: JpipeServices) {
     const registry = services.validation.ValidationRegistry;
     const validator = services.validation.JpipeValidator;
     const checks: ValidationChecks<JpipeAstType> = {
-        Model: [validator.checkNaming, validator.checkVariables, validator.checkSupportingStatements]
+        Model: [validator.allChecks]
     };
     registry.register(checks, validator);
 }
@@ -20,8 +20,10 @@ export function registerValidationChecks(services: JpipeServices) {
  */
 export class JpipeValidator {
     //implements the checking hierarchy (no duplicate statements)
-    allChecks(): void{
-
+    allChecks(model: Model, accept: ValidationAcceptor): void{
+        this.checkNaming(model, accept);
+        this.checkVariables(model, accept);
+        this.checkSupportingStatements(model, accept);
     }
 
     checkNaming(model: Model, accept: ValidationAcceptor): void{
