@@ -17,9 +17,10 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
         let newPotentials:AstNodeDescription[] = [];
 
         allPotentials.forEach((potential) =>{
-            if(isInstruction(potential.node)){
-                let potentialKind = potential.node.kind;
-                if(isSupport(_context.node)){
+            if(isSupport(_context.node)){
+                if(isInstruction(potential.node)){
+                    let potentialKind = potential.node.kind;
+                
                     if(_context.node.supporter.ref !== undefined){
                         let firstKind=_context.node.supporter.ref.kind;                    
                         let allowableTypes: string[] | undefined = [];

@@ -40,24 +40,27 @@ export class JpipeValidator {
     checkVariables(model: Model, accept: ValidationAcceptor): void{
         model.entries.forEach( (entry) =>{
             entry.supports.forEach( (support) =>{
-                let supporterType = support.supporter.ref?.kind;
-                let supporteeType = support.supportee.ref?.kind;
-                if(supporterType === undefined || supporteeType === undefined){
-                    if(supporterType === undefined && supporteeType === undefined){
-                        accept("error", `Variables ${support.supporter.$refText} and ${support.supportee.$refText} are undefined.`, {
-                            node:support
-                        });
-                    }else if(supporterType === undefined){
-                        accept("error", `Variable ${support.supporter.$refText} is undefined.`, {
-                            node:support
-                        });
-                    }else if(supporteeType === undefined){
-                        accept("error", `Variable ${support.supportee.$refText} is undefined.`, {
-                            node:support
-                        });
+                if(support.supporter.ref !== undefined && support.supportee.ref !==undefined){
+                    let supporterType = support.supporter.ref?.kind;
+                    let supporteeType = support.supportee.ref?.kind;
+                    if(supporterType === undefined || supporteeType === undefined){
+                        if(supporterType === undefined && supporteeType === undefined){
+                            accept("error", `Variables ${support.supporter.$refText} and ${support.supportee.$refText} are undefined.`, {
+                                node:support
+                            });
+                        }else if(supporterType === undefined){
+                            accept("error", `Variable ${support.supporter.$refText} is undefined.`, {
+                                node:support
+                            });
+                        }else if(supporteeType === undefined){
+                            accept("error", `Variable ${support.supportee.$refText} is undefined.`, {
+                                node:support
+                            });
+                        }
+        
                     }
-    
                 }
+
             });
         });
     }
@@ -72,19 +75,22 @@ export class JpipeValidator {
         
         model.entries.forEach( (entry) =>{
             entry.supports.forEach( (support) =>{
-                let supporterType = support.supporter.ref?.kind;
-                let supporteeType = support.supportee.ref?.kind;
-                let possibleSupportees: string[] | undefined = possibleSupports.get(supporterType);
-
-                if(supporteeType !== undefined){
-                    if (possibleSupportees?.includes(supporteeType)){
-                        return;
+                if(support.supporter.ref !== undefined && support.supportee.ref !==undefined){
+                    let supporterType = support.supporter.ref?.kind;
+                    let supporteeType = support.supportee.ref?.kind;
+                    let possibleSupportees: string[] | undefined = possibleSupports.get(supporterType);
+                        
+                    if(supporteeType !== undefined){
+                        if (possibleSupportees?.includes(supporteeType)){
+                            return;
+                        }
                     }
+                    
+                    accept("error", `It is not possible to have ${supporterType} support ${supporteeType}.`, {
+                        node:support
+                    });
                 }
                 
-                accept("error", `It is not possible to have ${supporterType} support ${supporteeType}.`, {
-                    node:support
-                });
             });
         });
     }
