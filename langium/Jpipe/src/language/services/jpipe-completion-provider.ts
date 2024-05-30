@@ -34,10 +34,3 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
     }
 
 }
-
-export const Variable = {
-    evidence: {name: 'evidence', values: ['strategy']},
-    strategy: {name: 'strategy', values: ['sub-conclusion', 'conclusion']},
-    subConclusion: {name: 'subConclusion', values: ['strategy', 'conclusion']},
-    conclusion: {name: 'conclusion', values: []}
-}
