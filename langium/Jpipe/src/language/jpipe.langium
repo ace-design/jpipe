@@ -16,7 +16,7 @@ Instruction:
     Variable 'is' information=STRING;
 
 Support:
-    supporter=[Variable:ID] 'supports' supportee=[Variable:ID];
+    left=[Variable:ID] 'supports' right=[Variable:ID];
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;

@@ -5,10 +5,7 @@ import { Hover } from 'vscode-languageserver';
 import { isJustification, isVariable } from '../generated/ast.js';
 
 
-
-/**
- * Implementation of custom validations.
- */
+//provides hover for variables and class types
 export class JpipeHoverProvider extends AstNodeHoverProvider{
     protected getAstNodeHoverContent(node: AstNode): MaybePromise<Hover | undefined> {
         if(isVariable(node)){

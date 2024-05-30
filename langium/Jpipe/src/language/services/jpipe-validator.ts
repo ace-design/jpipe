@@ -15,17 +15,16 @@ export function registerValidationChecks(services: JpipeServices) {
     registry.register(checks, validator);
 }
 
-/**
- * Implementation of custom validations.
- */
 export class JpipeValidator {
-    //implements the checking hierarchy (no duplicate statements)
+
+    //edit to implement validation hierarchy (no duplicate statements)
     allChecks(model: Model, accept: ValidationAcceptor): void{
-        this.checkNaming(model, accept);
+        //this.checkNaming(model, accept);
         this.checkVariables(model, accept);
         this.checkSupportingStatements(model, accept);
     }
 
+    //verifies variable naming
     checkNaming(model: Model, accept: ValidationAcceptor): void{
         model.entries.forEach( (entry) =>{
             entry.variables.forEach((variable)=>{
@@ -39,23 +38,25 @@ export class JpipeValidator {
             });
         });
     }
+
+    //theoretically checks that variables are defined
     checkVariables(model: Model, accept: ValidationAcceptor): void{
         model.entries.forEach( (entry) =>{
             entry.supports.forEach( (support) =>{
-                if(support.supporter.ref !== undefined && support.supportee.ref !==undefined){
-                    let supporterType = support.supporter.ref?.kind;
-                    let supporteeType = support.supportee.ref?.kind;
-                    if(supporterType === undefined || supporteeType === undefined){
-                        if(supporterType === undefined && supporteeType === undefined){
-                            accept("error", `Variables ${support.supporter.$refText} and ${support.supportee.$refText} are undefined.`, {
+                if(support.left.ref !== undefined && support.right.ref !==undefined){
+                    let leftKind = support.left.ref?.kind;
+                    let rightKind = support.right.ref?.kind;
+                    if(leftKind === undefined || rightKind === undefined){
+                        if(leftKind === undefined && rightKind === undefined){
+                            accept("error", `Variables ${support.left.$refText} and ${support.right.$refText} are undefined.`, {
                                 node:support
                             });
-                        }else if(supporterType === undefined){
-                            accept("error", `Variable ${support.supporter.$refText} is undefined.`, {
+                        }else if(leftKind === undefined){
+                            accept("error", `Variable ${support.left.$refText} is undefined.`, {
                                 node:support
                             });
-                        }else if(supporteeType === undefined){
-                            accept("error", `Variable ${support.supportee.$refText} is undefined.`, {
+                        }else if(rightKind === undefined){
+                            accept("error", `Variable ${support.right.$refText} is undefined.`, {
                                 node:support
                             });
                         }
@@ -67,28 +68,29 @@ export class JpipeValidator {
         });
     }
 
+    //checks if support statements follow proper typing convention
     checkSupportingStatements(model: Model, accept: ValidationAcceptor): void{
-        //Lookup map to identify what a supporter can support
-        let possibleSupports: Map<string | undefined, string[]> = new Map<string, string[]>();
-        possibleSupports.set('evidence', ['strategy']);
-        possibleSupports.set('strategy', ['sub-conclusion', 'conclusion']);
-        possibleSupports.set('sub-conclusion', ['strategy','conclusion']);
-        possibleSupports.set('conclusion', []);
+        let possibleSupports: Map<string, string[]> = new Map<string,string[]>([
+            ['evidence', ['strategy']],
+            ['strategy', ['sub-conclusion', 'conclusion']],
+            ['sub-conclusion', ['strategy', 'conclusion']],
+            ['conclusion', []] 
+        ]);
         
         model.entries.forEach( (entry) =>{
             entry.supports.forEach( (support) =>{
-                if(support.supporter.ref !== undefined && support.supportee.ref !==undefined){
-                    let supporterType = support.supporter.ref?.kind;
-                    let supporteeType = support.supportee.ref?.kind;
-                    let possibleSupportees: string[] | undefined = possibleSupports.get(supporterType);
+                if(support.left.ref !== undefined && support.right.ref !==undefined){
+                    let leftKind = support.left.ref?.kind;
+                    let rightKind = support.right.ref?.kind;
+                    let possibleRights: string[] | undefined = possibleSupports.get(leftKind);
                         
-                    if(supporteeType !== undefined){
-                        if (possibleSupportees?.includes(supporteeType)){
+                    if(rightKind !== undefined){
+                        if (possibleRights?.includes(rightKind)){
                             return;
                         }
                     }
                     
-                    accept("error", `It is not possible to have ${supporterType} support ${supporteeType}.`, {
+                    accept("error", `It is not possible to have ${leftKind} support ${rightKind}.`, {
                         node:support
                     });
                 }

@@ -29,7 +29,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
 
         //if the current context is of a supporting statement, determines which variables should appear for autocomplete
         if(isSupport(_context.node)){
-            if(_context.node.supporter.ref !== undefined){
+            if(_context.node.left.ref !== undefined){
                 this.getRightVariables(allVariables,_context).forEach((v)=>{
                     newPotentials.push(v);
                 });
@@ -48,8 +48,8 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
     getRightVariables(allVariables: AstNodeDescription[], _context: CompletionContext): AstNodeDescription[]{
         let rightVariables: AstNodeDescription[] = [];
         if(isSupport(_context.node)){
-            if(_context.node.supporter.ref !== undefined){
-                let supporter_kind = _context.node.supporter.ref.kind;
+            if(_context.node.left.ref !== undefined){
+                let supporter_kind = _context.node.left.ref.kind;
                 let allowable_types = this.typeMap.get(supporter_kind);
 
                 allVariables.forEach((variable)=>{
