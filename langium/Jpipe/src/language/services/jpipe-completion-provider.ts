@@ -1,6 +1,6 @@
 import { AstNodeDescription, ReferenceInfo, Stream } from "langium";
 import { CompletionContext, DefaultCompletionProvider } from "langium/lsp";
-import { isInstruction, isSupport } from "../generated/ast.js";
+import { isSupport, isVariable } from "../generated/ast.js";
 import { stream } from "../../../node_modules/langium/src/utils/stream.js"
 
 export class JpipeCompletionProvider extends DefaultCompletionProvider{
@@ -17,25 +17,27 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
         let newPotentials:AstNodeDescription[] = [];
 
         allPotentials.forEach((potential) =>{
-            if(isSupport(_context.node)){
-                if(isInstruction(potential.node)){
-                    let potentialKind = potential.node.kind;
-                
-                    if(_context.node.supporter.ref !== undefined){
-                        let firstKind=_context.node.supporter.ref.kind;                    
-                        let allowableTypes: string[] | undefined = [];
-                        
-                        allowableTypes=typeMap.get(firstKind);
-
-                        if(allowableTypes?.includes(potentialKind)){
-                            newPotentials.push(potential);
-                        }                    
-                    }else{
+            if(isSupport(_context.node) && isVariable(potential.node)){
+                if(_context.node.supporter.ref !== undefined){
+                    let potential_kind = potential.node.kind;
+                    let supporter_kind = _context.node.supporter.ref.kind;                    
+                    let allowable_types = typeMap.get(supporter_kind);
+                    if(allowable_types?.includes(potential_kind)){
                         newPotentials.push(potential);
-                    }
+                    }                    
+                }else{
+                    newPotentials.push(potential);
                 }
             }
         });
         return stream(newPotentials);
     }
+
+}
+
+export const Variable = {
+    evidence: {name: 'evidence', values: ['strategy']},
+    strategy: {name: 'strategy', values: ['sub-conclusion', 'conclusion']},
+    subConclusion: {name: 'subConclusion', values: ['strategy', 'conclusion']},
+    conclusion: {name: 'conclusion', values: []}
 }

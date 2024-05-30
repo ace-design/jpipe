@@ -28,12 +28,12 @@ export class JpipeValidator {
 
     checkNaming(model: Model, accept: ValidationAcceptor): void{
         model.entries.forEach( (entry) =>{
-            entry.instructions.forEach((instruction)=>{
-                let variableName =  instruction.name;
+            entry.variables.forEach((variable)=>{
+                let variableName = variable.name;
                 let pattern = /^[A-Z][a-z]*/;
                 if(!pattern.test(variableName)){
                     accept("warning", "Your name does not match the naming requirements (must start with a capital)", {
-                        node: instruction
+                        node: variable
                     });
                 };
             });
