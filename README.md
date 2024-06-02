@@ -40,9 +40,9 @@ We're using GitHub wiki system to document jPipe: [https://github.com/ace-design
 
 ## How to contribute?
 
-Found a bug, or want to add a cool feature? Feel free to fork this repository and send a pull request. 
+Found a bug, or want to add a cool feature? Feel free to fork this repository and send a pull request.
 
-If you're interested in contributing to the research effort related to jPipe, feel free to contact the PI: [Dr. Sébastien Mosser](mossers@mcmaster.ca). We do have undergrad summer internships available to contribute to the compiler, as well as MASc and PhD positions in Software Engineering at Mac.
+If you're interested in contributing to the research effort related to jPipe, feel free to contact the PI: [Dr. Sébastien Mosser](mailto:mossers@mcmaster.ca). We do have undergrad summer internships available to contribute to the compiler, as well as MASc and PhD positions in Software Engineering at Mac.
 
 
 ## Sponsors
