@@ -4,12 +4,12 @@ on:
         branches:
             - 'langium'
 jobs:
-  check-bats-version:
+  compile-language:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm run langium:generate
-      - run: npm run build
+      - run: npm install
+      - run: /bin/bash '-c' 'npm run langium:generate && npm run build'

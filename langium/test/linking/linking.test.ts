@@ -35,7 +35,8 @@ describe('Linking tests', () => {
             // and then evaluate the cross references we're interested in by checking
             //  the referenced AST element as well as for a potential error message;
             checkDocumentValid(document)
-                || document.parseResult.value.greetings.map(g => g.person.ref?.name || g.person.error?.message).join('\n')
+                || 
+                document.parseResult.value.greetings.map(g => g.person.ref?.name || g.person.error?.message).join('\n')
         ).toBe(s`
             Langium
         `);
