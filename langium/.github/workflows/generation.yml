@@ -13,3 +13,8 @@ jobs:
           node-version: '20'
       - run: npm install
       - run: /bin/bash '-c' 'npm run langium:generate && npm run build'
+      - run: npm install -g @vscode/vsce
+      - run: rm vsce
+      - run: ln -s ./node_modules/@vscode/vsce/vsce ./vsce
+      - run: ./vsce package
+      - run: find . -name \*.vsix
