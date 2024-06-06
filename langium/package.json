@@ -70,7 +70,7 @@
     "activationEvents": [
         "onLanguage:jpipe"
     ],
-    "main": "./out/extension/main.js",
+    "main": "./out/extension/main.cjs",
     "bin": {
         "jpipe-cli": "./bin/cli.js"
     },
