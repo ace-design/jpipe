@@ -65,7 +65,20 @@
                 "scopeName": "source.jpipe",
                 "path": "syntaxes/jpipe.tmLanguage.json"
             }
-        ]
+        ],
+        "commands": [
+            {
+                "command": "jpipe.sayHello",
+                "title": "Say Hello"
+            }
+        ],
+        "menus": {
+            "editor/context": [{
+                "command": "jpipe.sayHello",
+                "group": "navigation",
+                "when": "true"
+            }]
+        }
     },
     "activationEvents": [
         "onLanguage:jpipe"
