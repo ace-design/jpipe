@@ -14,33 +14,62 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
 
     //filters reference candidates for variables in support statements for autocompletion
     protected override getReferenceCandidates(refInfo: ReferenceInfo, _context: CompletionContext): Stream<AstNodeDescription> {
-        let allPotentials = this.scopeProvider.getScope(refInfo).getAllElements();
-        let newPotentials:AstNodeDescription[] = [];
-        let allVariables:AstNodeDescription[] = [];
+        let potential_references = this.scopeProvider.getScope(refInfo).getAllElements();
+        //let references: AstNodeDescription[] = [];
+        //let variables: AstNodeDescription[] = [];
+        let references = this.findKeywords(potential_references);
+        let variables = this.findVariables(potential_references);
 
         //tracking which are variables vs keywords
-        allPotentials.forEach((potential) =>{
+        /*
+        potential_references.forEach((potential) =>{
             if(isVariable(potential.node)){
-                allVariables.push(potential);
+                variables.push(potential);
             }else{
-                newPotentials.push(potential);
+                references.push(potential);
             }
         });
+        */
 
         //if the current context is of a supporting statement, determines which variables should appear for autocomplete
         if(isSupport(_context.node)){
             if(_context.node.left.ref !== undefined){
-                this.getRightVariables(allVariables,_context).forEach((v)=>{
-                    newPotentials.push(v);
+                this.getRightVariables(variables,_context).forEach((v)=>{
+                    references.push(v);
                 });
             }else{
-                this.getLeftVariables(allVariables,_context).forEach((v)=>{
-                    newPotentials.push(v);
+                this.getLeftVariables(variables,_context).forEach((v)=>{
+                    references.push(v);
                 });
             }
         }
-        return stream(newPotentials);
+        return stream(references);
     }
+
+    //helper function for filtering references
+    findVariables(potential_references:Stream<AstNodeDescription>): AstNodeDescription[]{
+        let variables: AstNodeDescription[]=[]
+        potential_references.forEach((potential) =>{
+            if(isVariable(potential.node)){
+                variables.push(potential);
+            }
+        });
+        return variables;
+    }
+
+    //helper function for finding non-variable keywords
+    findKeywords(potential_references:Stream<AstNodeDescription>): AstNodeDescription[]{
+        let keywords: AstNodeDescription[] = [];
+
+        potential_references.forEach(potential =>{
+            if(!isVariable(potential.node)){
+                keywords.push(potential);
+            }
+        });
+
+        return keywords;
+    }
+
     
     //autocompletes right-side variables so that only those which fit the format are shown
     //ex. if your JD defines evidence 'e1', strategy 'e2' and conclusion e3', when starting the statement:
