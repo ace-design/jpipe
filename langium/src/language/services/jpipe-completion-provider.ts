@@ -71,7 +71,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
     onRightSide(context_node: Support){
         return context_node.left.ref !== undefined;
     }
-
+   
     
     //autocompletes right-side variables so that only those which fit the format are shown
     //ex. if your JD defines evidence 'e1', strategy 'e2' and conclusion e3', when starting the statement:
