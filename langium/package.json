@@ -76,7 +76,7 @@
             "editor/context": [{
                 "command": "jpipe.sayHello",
                 "group": "navigation",
-                "when": "true"
+                "when": "jpipe.atJustification"
             }]
         }
     },
