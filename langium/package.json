@@ -70,14 +70,43 @@
             {
                 "command": "jpipe.sayHello",
                 "title": "Say Hello"
+            },
+            {
+                "command": "jpipe.vis",
+                "title": "jpipe.vis"
+            },
+            {
+                "command": "jpipe.vis.preview",
+                "title": "jpipe.vis.preview"
+            },
+            {
+                "command": "jpipe.downloadImage",
+                "title": "Download Image"
             }
         ],
         "menus": {
-            "editor/context": [{
-                "command": "jpipe.sayHello",
-                "group": "navigation",
-                "when": "jpipe.atJustification"
-            }]
+            "editor/context": [
+                {
+                    "command": "jpipe.sayHello",
+                    "group": "navigation",
+                    "when": "true"
+                },
+                {
+                    "command": "jpipe.downloadImage",
+                    "group": "navigation",
+                    "when": "jpipe.atJustification"
+                },
+                {
+                    "command": "jpipe.vis",
+                    "group": "navigation",
+                    "when": "jpipe.atJustification"
+                },
+                {
+                    "command": "jpipe.vis.preview",
+                    "group": "navigation",
+                    "when": "jpipe.atJustification"
+                }
+            ]
         }
     },
     "activationEvents": [
