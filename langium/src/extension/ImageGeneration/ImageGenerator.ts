@@ -2,26 +2,28 @@ import * as vscode from 'vscode';
 import util from "node:util";
 import { Disposable } from 'vscode-languageserver';
 
-export class ImageGenerator{
+export abstract class ImageGenerator{
 
 	// Defines the command needed to execute the extension. 
-	private static exe_command = "jpipe.downloadImage";
+	protected abstract exe_command: string;
+
+	//defines the file type being used
+	protected abstract format: Format;
 	
 	// New channel created in vscode terminal for user debugging.
-	private static output_channel: vscode.OutputChannel
+	private static output_channel = vscode.window.createOutputChannel("jpipe_image");
 
     constructor( private readonly context: vscode.ExtensionContext) {
-		ImageGenerator.output_channel = vscode.window.createOutputChannel("jpipe_image");
-	 }
+	}
 
-	 public register(): Disposable{
-		vscode.commands.registerCommand(ImageGenerator.exe_command, () => {
+	public register(): Disposable{
+		vscode.commands.registerCommand(this.exe_command, () => {
 			this.createImage();
 		});
 		return {
 			dispose: function (){}
 		};
-	 }
+	}
 
 
 	//Generates an image for the selected justification diagram
@@ -62,11 +64,10 @@ export class ImageGenerator{
 
 		let diagram_name = this.getDiagramName(document);
 
-		let output_file = "smurf.png";
+		let output_file = diagram_name + "." + this.format.toLowerCase();
 		let log_level = "all";
-		let format="PNG";
 
-		let command = 'java -jar ' + jar_file + ' -i ' + input_file + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level + ' -o ' + directory + output_file;
+		let command = 'java -jar ' + jar_file + ' -i ' + input_file + ' -d '+ diagram_name + ' --format ' + this.format + ' --log-level ' + log_level + ' -o ' + directory + output_file;
 		return command;
 	}
 
@@ -106,4 +107,9 @@ export class ImageGenerator{
 
 		return diagram_name;
 	}
+}
+
+export enum Format{
+	PNG = "PNG",
+	SVG = "SVG"
 }

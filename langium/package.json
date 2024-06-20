@@ -80,21 +80,39 @@
                 "title": "jpipe.vis.preview"
             },
             {
-                "command": "jpipe.downloadImage",
-                "title": "Download Image"
+                "command": "jpipe.downloadPNG",
+                "title": ".png"
+            },
+            {
+                "command": "jpipe.downloadSVG",
+                "title": ".svg"
+            }
+        ],
+        "submenus":[
+            {
+                "id": "jpipe.submenu.downloadImage",
+                "label": "Download as"
             }
         ],
         "menus": {
+            "jpipe.submenu.downloadImage":[
+                {
+                    "command": "jpipe.downloadSVG"
+                },
+                {
+                    "command": "jpipe.downloadPNG"
+                }
+            ],
             "editor/context": [
+                {
+                    "submenu": "jpipe.submenu.downloadImage",
+                    "group": "navigation",
+                    "when": "jpipe.atJustification"
+                },
                 {
                     "command": "jpipe.sayHello",
                     "group": "navigation",
                     "when": "true"
-                },
-                {
-                    "command": "jpipe.downloadImage",
-                    "group": "navigation",
-                    "when": "jpipe.atJustification"
                 },
                 {
                     "command": "jpipe.vis",

@@ -4,7 +4,7 @@ import {window, commands, Range} from 'vscode';
 import * as path from 'node:path';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
 import * as editorReader from "../../../vs-extension/src/editorReader.js";
-import { ImageGenerator } from './imageGenerator.js';
+import { pngGenerator } from './ImageGeneration/PNGGenerator.js';
 let client: LanguageClient;
 
 
@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
     context.subscriptions.push(editorReader.editorReader.register(context));
     
-    let image = new ImageGenerator(context);
+    let image = new pngGenerator(context);
     context.subscriptions.push(image.register());
 }
 
