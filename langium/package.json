@@ -65,7 +65,40 @@
                 "scopeName": "source.jpipe",
                 "path": "syntaxes/jpipe.tmLanguage.json"
             }
-        ]
+        ],
+        "commands": [
+            {
+                "command": "jpipe.downloadPNG",
+                "title": ".png"
+            },
+            {
+                "command": "jpipe.downloadSVG",
+                "title": ".svg"
+            }
+        ],
+        "submenus":[
+            {
+                "id": "jpipe.submenu.downloadImage",
+                "label": "Download as"
+            }
+        ],
+        "menus": {
+            "jpipe.submenu.downloadImage":[
+                {
+                    "command": "jpipe.downloadSVG"
+                },
+                {
+                    "command": "jpipe.downloadPNG"
+                }
+            ],
+            "editor/context": [
+                {
+                    "submenu": "jpipe.submenu.downloadImage",
+                    "group": "navigation",
+                    "when": "jpipe.atJustification"
+                }
+            ]
+        }
     },
     "activationEvents": [
         "onLanguage:jpipe"

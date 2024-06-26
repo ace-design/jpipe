@@ -1,10 +1,10 @@
 import { type Module, inject, } from 'langium';
-import {createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
+import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/module.js';
 import { JpipeValidator, registerValidationChecks } from './services/jpipe-validator.js';
 import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
 import { JpipeCompletionProvider } from './services/jpipe-completion-provider.js';
-
+import { JpipeExecuteCommandHandler } from './services/jpipe-command-handler.js';
 /**
  * Declaration of custom services - add your own service classes here.
  */
@@ -31,9 +31,12 @@ export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAd
     },
     lsp:{
         CompletionProvider: (services) => new JpipeCompletionProvider(services),
-        HoverProvider: (services) => new JpipeHoverProvider(services)
+        HoverProvider: (services) => new JpipeHoverProvider(services),
+        
     }
 };
+
+
 
 /**
  * Create the full set of services required by Langium.
@@ -64,8 +67,10 @@ export function createJpipeServices(context: DefaultSharedModuleContext): {
         JpipeGeneratedModule,
         JpipeModule
     );
+    shared.lsp.ExecuteCommandHandler = new JpipeExecuteCommandHandler();
     shared.ServiceRegistry.register(Jpipe);
     registerValidationChecks(Jpipe);
+    
     return { shared, Jpipe };
 }
 
