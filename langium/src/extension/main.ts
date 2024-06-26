@@ -4,7 +4,8 @@ import {window, commands, Range} from 'vscode';
 import * as path from 'node:path';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
 import * as editorReader from "../../../vs-extension/src/editorReader.js";
-import { pngGenerator } from './ImageGeneration/PNGGenerator.js';
+import { SaveImageCommand } from './ImageGeneration/SaveImageCommand.js';
+import { ImageGenerator } from './ImageGeneration/ImageGenerator.js';
 let client: LanguageClient;
 
 
@@ -13,14 +14,19 @@ let client: LanguageClient;
 export function activate(context: vscode.ExtensionContext): void {
     client = startLanguageClient(context);
     
+    const save_image_command = new SaveImageCommand(context);
+    let imageGenerator = new ImageGenerator(save_image_command, context);
+    imageGenerator.register();
+
+    context.subscriptions.push(editorReader.editorReader.register(context));
+
     window.onDidChangeTextEditorSelection(()=>{
         commands.executeCommand('setContext','jpipe.atJustification', cursorAt("justification"));        
     });
-
-    context.subscriptions.push(editorReader.editorReader.register(context));
     
-    let image = new pngGenerator(context);
-    context.subscriptions.push(image.register());
+    window.onDidChangeActiveTextEditor((editor)=>{
+        save_image_command.registerEditor(editor);
+    });
 }
 
 // This function is called when the extension is deactivated.
