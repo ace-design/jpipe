@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(PreviewProvider.register(context, save_image_command));
 
     window.onDidChangeTextEditorSelection((changes)=>{
-        context_monitor.updateTextSelection(changes.selections);
+        context_monitor.updateTextSelection(changes);
     });
 
     window.onDidChangeActiveTextEditor((editor)=>{

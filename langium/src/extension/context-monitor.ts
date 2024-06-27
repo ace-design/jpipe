@@ -27,9 +27,9 @@ export class ContextMonitor{
     }
 
     //updates the context keys when the selection changes
-    public async updateTextSelection(selections: readonly vscode.Selection[]){
-        if(selections.length === 1){
-            this.selection = selections[0];
+    public async updateTextSelection(changes: vscode.TextEditorSelectionChangeEvent){
+        if(changes.selections.length === 1){
+            this.selection = changes.selections[0];
         }
 
         this.contexts.forEach((context)=>{
