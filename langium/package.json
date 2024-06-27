@@ -1,5 +1,5 @@
 {
-    "name": "Jpipe",
+    "name": "jpipe",
     "description": "Please enter a brief description here",
     "version": "0.0.1",
     "files": [
@@ -74,6 +74,14 @@
             {
                 "command": "jpipe.downloadSVG",
                 "title": ".svg"
+            },
+            {
+                "command": "jpipe.vis.preview",
+                "title": "Preview Diagram"
+            },
+            {
+                "command": "jpipe.vis",
+                "title": "Visualize Jpipe"
             }
         ],
         "submenus":[
@@ -94,6 +102,11 @@
             "editor/context": [
                 {
                     "submenu": "jpipe.submenu.downloadImage",
+                    "group": "navigation",
+                    "when": "jpipe.atJustification"
+                },
+                {
+                    "command": "jpipe.vis.preview",
                     "group": "navigation",
                     "when": "jpipe.atJustification"
                 }

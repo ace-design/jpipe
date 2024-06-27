@@ -28,20 +28,20 @@ export class ImageGenerator{
 	public register(){
 		this.types.forEach( (t)=>{
 			this.context.subscriptions.push(vscode.commands.registerCommand(t.exe_command, () => {
-				this.createImage(t.format);
+				this.saveImage(t.format);
 			}));
 		});
 	}
 
 	//Generates an image for the selected justification diagram
-	public async createImage(format: Format): Promise<void> {
+	public async saveImage(format: Format): Promise<void> {
 		const { exec } = require('node:child_process');
 		const execPromise = util.promisify(exec);
 
 		// Execute the command, and wait for the result (must be synchronous).
 		// TODO: Validate that this actually executes synchronously. 
 		try{
-			let command  = await this.save_image_command.makeCommand(format);
+			let command  = this.save_image_command.makeCommand({ format: format, save_image: true});
 			const {stdout, stderr} = await execPromise(command);
 
 			ImageGenerator.output_channel.appendLine(stdout.toString());
@@ -61,3 +61,5 @@ export enum Format{
 	PNG = "PNG",
 	SVG = "SVG",
 }
+
+

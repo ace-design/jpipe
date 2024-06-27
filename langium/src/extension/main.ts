@@ -3,10 +3,10 @@ import type * as vscode from 'vscode';
 import {window} from 'vscode';
 import * as path from 'node:path';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
-import * as editorReader from "../../../vs-extension/src/editorReader.js";
 import { SaveImageCommand } from './image-generation/save-image-command.js';
 import { ImageGenerator } from './image-generation/image-generator.js';
 import { ContextMonitor } from './context-monitor.js';
+import { PreviewProvider } from './image-generation/preview-provider.js';
 let client: LanguageClient;
 
 // This function is called when the extension is activated.
@@ -18,13 +18,13 @@ export function activate(context: vscode.ExtensionContext): void {
     const save_image_command = new SaveImageCommand(context, window.activeTextEditor);
     let imageGenerator = new ImageGenerator(save_image_command, context);
     imageGenerator.register();
-
-    context.subscriptions.push(editorReader.editorReader.register(context));
+    
+    context.subscriptions.push(PreviewProvider.register(context, save_image_command));
 
     window.onDidChangeTextEditorSelection((changes)=>{
         context_monitor.updateTextSelection(changes.selections);
     });
-    
+
     window.onDidChangeActiveTextEditor((editor)=>{
         save_image_command.updateEditor(editor);
         context_monitor.updateEditor(editor);

@@ -10,6 +10,8 @@ export class SaveImageCommand{
     private document!: vscode.TextDocument;
     private directory!: vscode.WorkspaceFolder;
 
+	private diagram_name!: string;
+
 	constructor(context: vscode.ExtensionContext, editor: vscode.TextEditor | undefined){
         //the extension context should not change
         this.jar_file = vscode.Uri.joinPath(context.extensionUri, 'jar', 'jpipe.jar');
@@ -35,20 +37,28 @@ export class SaveImageCommand{
             this.directory = directory;
         }
     }
-
-	public async makeCommand(format: Format): Promise<string>{
-		// Store the path to the jd file that needs to be compiled.
+	
+	public async makeCommand(command_settings: CommandSettings): Promise<string>{
 		let input_file = this.document.uri;
+		let diagram_name = this.findDiagramName();
+		let format = this.getFormat(command_settings);
 		
-		let diagram_name = this.getDiagramName();
+		let command = 'java -jar ' + this.jar_file.path + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + this.log_level;
+		
+		if(command_settings.save_image){
+			let output_file = await this.makeOutputPath(diagram_name, command_settings);
+			command += ' -o ' + output_file.path;
+		}
+		
+		return command;
+	}
 
-		let output_file = await this.makeOutputPath(diagram_name, format);
-		
-		return 'java -jar ' + this.jar_file.path + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + this.log_level + ' -o ' + output_file.path;
+	public getDiagramName(): string{
+		return Object.assign("", this.diagram_name);
 	}
 
 	//helper function to get the diagram name from the document
-	private getDiagramName(): string{
+	private findDiagramName(): string{
 		let diagram_name: string | undefined;
 		let match: RegExpExecArray | null;
 		let i = 0;
@@ -69,12 +79,29 @@ export class SaveImageCommand{
 		if(diagram_name === undefined){
 			throw new Error("Diagram name not found");
 		}
-
+		
+		this.diagram_name = diagram_name;
 		return diagram_name;
 	}
 
-    private async makeOutputPath(diagram_name: string, format: Format): Promise<vscode.Uri>{
-        let default_output_file =vscode.Uri.joinPath(this.directory.uri, diagram_name + "." + format.toLowerCase());
+	private getFormat(command_settings: CommandSettings): Format{
+		let format = command_settings.format;
+		if(format === undefined){
+			format = Format.PNG;
+		}
+		return format;
+	}
+
+    private async makeOutputPath(diagram_name: string, command_settings: CommandSettings): Promise<vscode.Uri>{
+		if(command_settings.format === undefined){
+			command_settings.format = Format.PNG;
+		}
+
+		if(command_settings.save_image){
+			
+		}
+
+		let default_output_file =vscode.Uri.joinPath(this.directory.uri, diagram_name + "." + command_settings.format.toLowerCase());
 
 		let save_dialog_options: vscode.SaveDialogOptions = {
 			defaultUri:  default_output_file,
@@ -92,4 +119,11 @@ export class SaveImageCommand{
         
         return output_file;
     }
+
+
+}
+
+type CommandSettings = {
+	format?: Format,
+	save_image: boolean
 }
