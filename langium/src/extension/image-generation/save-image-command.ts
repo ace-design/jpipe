@@ -1,15 +1,16 @@
 import * as vscode from 'vscode';
-import { Format } from './ImageGenerator.js';
+import { Format } from './image-generator.js';
 
+//creates the command required to run to generate the image
 export class SaveImageCommand{
-	private jar_file: vscode.Uri;
-	private log_level: string;
+	private jar_file: vscode.Uri; //location of the jar file
+	private log_level: string; //log level setting
 
     private editor!: vscode.TextEditor;
     private document!: vscode.TextDocument;
     private directory!: vscode.WorkspaceFolder;
 
-	constructor(context: vscode.ExtensionContext){
+	constructor(context: vscode.ExtensionContext, editor: vscode.TextEditor | undefined){
         //the extension context should not change
         this.jar_file = vscode.Uri.joinPath(context.extensionUri, 'jar', 'jpipe.jar');
         
@@ -17,11 +18,11 @@ export class SaveImageCommand{
         this.log_level = "all";
 
         //automatically registers to start
-        this.registerEditor(vscode.window.activeTextEditor);
+        this.updateEditor(editor);
 	}
 
     //updates each time the editor changes
-    public registerEditor(editor: vscode.TextEditor | undefined){
+    public updateEditor(editor: vscode.TextEditor | undefined){
         if(!editor){
             return;
         }
@@ -91,6 +92,4 @@ export class SaveImageCommand{
         
         return output_file;
     }
-
-
 }

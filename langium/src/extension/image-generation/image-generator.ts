@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import util from "node:util";
-import { SaveImageCommand } from './SaveImageCommand.js';
+import { SaveImageCommand } from './save-image-command.js';
 
 export class ImageGenerator{
 	// Defines the command needed to execute the extension. 
@@ -30,7 +30,6 @@ export class ImageGenerator{
 			this.context.subscriptions.push(vscode.commands.registerCommand(t.exe_command, () => {
 				this.createImage(t.format);
 			}));
-			ImageGenerator.output_channel.appendLine("registering command : " + t.exe_command + "\tformat: " + t.format.toLowerCase());
 		});
 	}
 

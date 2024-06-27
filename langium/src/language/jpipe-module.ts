@@ -4,7 +4,6 @@ import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/mo
 import { JpipeValidator, registerValidationChecks } from './services/jpipe-validator.js';
 import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
 import { JpipeCompletionProvider } from './services/jpipe-completion-provider.js';
-import { JpipeExecuteCommandHandler } from './services/jpipe-command-handler.js';
 /**
  * Declaration of custom services - add your own service classes here.
  */
@@ -67,7 +66,6 @@ export function createJpipeServices(context: DefaultSharedModuleContext): {
         JpipeGeneratedModule,
         JpipeModule
     );
-    shared.lsp.ExecuteCommandHandler = new JpipeExecuteCommandHandler();
     shared.ServiceRegistry.register(Jpipe);
     registerValidationChecks(Jpipe);
     
