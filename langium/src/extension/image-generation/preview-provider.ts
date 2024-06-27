@@ -85,10 +85,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 		webviewPanel: vscode.WebviewPanel,
 		_token: vscode.CancellationToken,
 	): Promise<void> {
-		PreviewProvider.output_channel.appendLine("Resolving custom text editor");
 		// Open the text of the jd file. Will be fired every time a new text editor is opened.
 		PreviewProvider.textPanel = vscode.window.showTextDocument(document, vscode.ViewColumn.One, true);
-		PreviewProvider.output_channel.appendLine("displaying text document");
 
 		// If previous global webview id disposed, create a new one.
 		if (PreviewProvider.webviewDisposed){
@@ -106,9 +104,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 
 		// Set the webview of this custom editor to be the global webview.
 		webviewPanel = PreviewProvider.webviewPanel;
-		PreviewProvider.output_channel.appendLine("webview panel set")
 
-		PreviewProvider.output_channel.appendLine("")
 		// Facilitates the process of changing the webview on changes. 
 		const updateWebview = async () => {
 			PreviewProvider.updating = true;
@@ -149,7 +145,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 		const execPromise = util.promisify(exec);
 
         PreviewProvider.webviewPanel.title = PreviewProvider.save_image_command.getDiagramName();
-        PreviewProvider.output_channel.appendLine("Awaiting save image command");
+
 		let command = await PreviewProvider.save_image_command.makeCommand({format: Format.SVG, save_image: false});
         
         try{
@@ -185,32 +181,39 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 	}
 
 	
-	// Event handler determining what the next active text editor is (when the user switched tabs).
-	changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
-		if (e !== undefined && e.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
-			PreviewProvider.textPanel = vscode.window.showTextDocument(e.document, vscode.ViewColumn.One, true);
+	public async updateEditor(editor: vscode.TextEditor | undefined){
+		if (editor !== undefined && editor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
+			PreviewProvider.textPanel = vscode.window.showTextDocument(editor.document, vscode.ViewColumn.One, true);
 			PreviewProvider.line_num = (await PreviewProvider.textPanel).selection.active.line+1
 			PreviewProvider.webviewPanel.webview.html = PreviewProvider.getLoadingHTMLWebview();
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
-			this.resolveCustomTextEditor(e.document, PreviewProvider.webviewPanel, token.token)
+			this.resolveCustomTextEditor(editor.document, PreviewProvider.webviewPanel, token.token)
 		}
-	});
+	}
 
-	// Event handler for determinining which diagram the user is on in the text editor. 
-	changeDocumentSelection = vscode.window.onDidChangeTextEditorSelection(async e => {
-		if (e !== undefined && e.textEditor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
-			PreviewProvider.output_channel.appendLine("awaiting textPanel");
+
+	public async updateTextSelection(event: vscode.TextEditorSelectionChangeEvent){
+		if (event !== undefined && event.textEditor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
 			PreviewProvider.line_num = (await PreviewProvider.textPanel).selection.active.line+1;
-			PreviewProvider.output_channel.appendLine("received text panel");
 
-			let new_diagram = this.getDiagramName(e.textEditor.document);
+			let new_diagram = this.getDiagramName(event.textEditor.document);
 			
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
 			
 			if (new_diagram!=PreviewProvider.webviewPanel.title){
-				this.resolveCustomTextEditor(e.textEditor.document, PreviewProvider.webviewPanel, token.token)
+				this.resolveCustomTextEditor(event.textEditor.document, PreviewProvider.webviewPanel, token.token)
 			}
 		}
+	}
+	
+	// Event handler determining what the next active text editor is (when the user switched tabs).
+	changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
+		this.updateEditor(e);
+	});
+
+	// Event handler for determinining which diagram the user is on in the text editor. 
+	changeDocumentSelection = vscode.window.onDidChangeTextEditorSelection(async e => {
+		this.updateTextSelection(e);
 	});
 
 // HTML Code for the webview.
@@ -220,9 +223,7 @@ private static getHtmlForWebview(): string {
 		PreviewProvider.textPanel = vscode.window.showTextDocument(vscode.window.activeTextEditor.document, vscode.ViewColumn.One, true);
 	}
 
-    PreviewProvider.output_channel.appendLine("creating HTML");
     const svgContent = PreviewProvider.svg_data || ''; // Ensure svg_data is not null or undefined
-    PreviewProvider.output_channel.appendLine(svgContent);
     return /* html */`
         <!DOCTYPE html>
         <html lang="en">
@@ -311,5 +312,3 @@ private static getHtmlForWebview(): string {
 	}
 
 }
-
-

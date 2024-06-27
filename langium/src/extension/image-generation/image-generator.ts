@@ -41,7 +41,7 @@ export class ImageGenerator{
 		// Execute the command, and wait for the result (must be synchronous).
 		// TODO: Validate that this actually executes synchronously. 
 		try{
-			let command  = this.save_image_command.makeCommand({ format: format, save_image: true});
+			let command  = await this.save_image_command.makeCommand({ format: format, save_image: true});
 			const {stdout, stderr} = await execPromise(command);
 
 			ImageGenerator.output_channel.appendLine(stdout.toString());

@@ -19,7 +19,7 @@ export class ContextMonitor{
     }
 
     //updates the current editor
-    public updateEditor(editor: vscode.TextEditor | undefined){
+    public async updateEditor(editor: vscode.TextEditor | undefined){
         if(!editor){
             return;
         }
@@ -27,7 +27,7 @@ export class ContextMonitor{
     }
 
     //updates the context keys when the selection changes
-    public updateTextSelection(selections: readonly vscode.Selection[]){
+    public async updateTextSelection(selections: readonly vscode.Selection[]){
         if(selections.length === 1){
             this.selection = selections[0];
         }

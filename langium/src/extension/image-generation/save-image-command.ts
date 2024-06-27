@@ -24,7 +24,7 @@ export class SaveImageCommand{
 	}
 
     //updates each time the editor changes
-    public updateEditor(editor: vscode.TextEditor | undefined){
+    public async updateEditor(editor: vscode.TextEditor | undefined){
         if(!editor){
             return;
         }
