@@ -22,8 +22,10 @@ export function activate(context: vscode.ExtensionContext): void {
     let image_generator = new ImageGenerator(context, save_image_command);
     let preview_provider = new PreviewProvider(context, save_image_command);
 
-    command_manager.registerCommands(image_generator);
-    command_manager.registerCommands(preview_provider);
+    command_manager.register([
+        image_generator,
+        preview_provider
+    ]);
     
     window.onDidChangeTextEditorSelection((changes)=>{
         context_monitor.updateTextSelection(changes);
