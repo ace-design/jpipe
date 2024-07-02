@@ -55,7 +55,7 @@ export class SaveImageCommand{
 	}
 
 	public getDiagramName(): string{
-		return this.diagram_name;
+		return this.findDiagramName(this.document,this.editor);
 	}
 
 	//helper function to get the diagram name from the document

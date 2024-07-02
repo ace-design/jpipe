@@ -29,9 +29,6 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 	// Global text panel used to display the jd code. 
 	private static textPanel: Thenable<vscode.TextEditor>;
 
-	// Global variable determining which line the user is on in the text panel. 
-	private static line_num: number; 
-
     private static save_image_command: SaveImageCommand;
 
 
@@ -108,7 +105,6 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 		// Facilitates the process of changing the webview on changes. 
 		const updateWebview = async () => {
 			PreviewProvider.updating = true;
-			PreviewProvider.line_num = (await PreviewProvider.textPanel).selection.active.line+1
 			await this.updateSVG();
 			
 			webviewPanel.webview.html = PreviewProvider.getHtmlForWebview();
@@ -159,32 +155,10 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 		PreviewProvider.output_channel.appendLine("Executed Jar");
     }
 
-	// Determine which diagram of the document the user is on. 
-	private getDiagramName(document: vscode.TextDocument): string | null{
-		let diagram_name = null;
-		let match = null;
-
-		let lines = document.getText().split("\n");
-
-		for (let i = 0; i < lines.length; i++)
-		{
-			match = /justification .*/i.exec(lines[i]) || /pattern .*/i.exec(lines[i]);
-			if (match && (i<PreviewProvider.line_num || diagram_name===null))
-			{
-				diagram_name = match[0].split(' ')[1]
-			}
-			if (i>=PreviewProvider.line_num && diagram_name!==null){
-				break;
-			}
-		}
-		return diagram_name;
-	}
-
 	
 	public async updateEditor(editor: vscode.TextEditor | undefined){
 		if (editor !== undefined && editor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
 			PreviewProvider.textPanel = vscode.window.showTextDocument(editor.document, vscode.ViewColumn.One, true);
-			PreviewProvider.line_num = (await PreviewProvider.textPanel).selection.active.line+1
 			PreviewProvider.webviewPanel.webview.html = PreviewProvider.getLoadingHTMLWebview();
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
 			this.resolveCustomTextEditor(editor.document, PreviewProvider.webviewPanel, token.token)
@@ -194,8 +168,6 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 
 	public async updateTextSelection(event: vscode.TextEditorSelectionChangeEvent){
 		if (event !== undefined && event.textEditor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
-			PreviewProvider.line_num = (await PreviewProvider.textPanel).selection.active.line+1;
-
 			let new_diagram = PreviewProvider.save_image_command.getDiagramName();
 			
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
