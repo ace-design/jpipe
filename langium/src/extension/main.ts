@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext): void {
     const context_monitor = new ContextMonitor(window.activeTextEditor);
     
     const save_image_command = new SaveImageCommand(context, window.activeTextEditor);
-    let image_generator = new ImageGenerator(save_image_command, context);
+    let image_generator = new ImageGenerator(context, save_image_command);
     let preview_provider = new PreviewProvider(context, save_image_command);
 
     command_manager.registerCommands(image_generator);
