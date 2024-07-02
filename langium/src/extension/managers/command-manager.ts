@@ -5,17 +5,14 @@ export class CommandManager{
     constructor(private readonly context:vscode.ExtensionContext){
     }
 
+    //register which classes need their commands registered
     public register(...command_users: CommandUser[]): void{
-        if(Array.isArray(command_users)){
-            command_users.forEach((command_user) => {
-                this.registerCommands(command_user);
-            });
-        }else{
-            this.registerCommands(command_users);
-        }
-
+        command_users.forEach((command_user) => {
+            this.registerCommands(command_user);
+        });
     }
 
+    //helper function to actually register the commands
     private registerCommands(command_user: CommandUser){
         let command_list = command_user.getCommands();
 
@@ -23,7 +20,6 @@ export class CommandManager{
             command_list.forEach((command) =>{
                 this.context.subscriptions.push(vscode.commands.registerCommand(command.command, command.callback, command.thisArg));
             });
-            
         }else{
             this.context.subscriptions.push(vscode.commands.registerCommand(command_list.command, command_list.callback, command_list.thisArg));
         }

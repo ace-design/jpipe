@@ -6,11 +6,9 @@ export class SaveImageCommand{
 	private jar_file: vscode.Uri; //location of the jar file
 	private log_level: string; //log level setting
 
-    private editor!: vscode.TextEditor;
-    private document!: vscode.TextDocument;
-    private directory!: vscode.WorkspaceFolder;
-
-	private diagram_name!: string;
+    private editor!: vscode.TextEditor; //current editor
+    private document!: vscode.TextDocument; //current document
+    private directory!: vscode.WorkspaceFolder; //current directory
 
 	constructor(context: vscode.ExtensionContext, editor: vscode.TextEditor | undefined){
         //the extension context should not change
@@ -38,6 +36,7 @@ export class SaveImageCommand{
         }
     }
 	
+	//creates the command based on command settings
 	public async makeCommand(command_settings: CommandSettings): Promise<string>{
 		let input_file = this.document.uri;
 		let diagram_name = this.findDiagramName(this.document,this.editor);
@@ -53,8 +52,9 @@ export class SaveImageCommand{
 		return command;
 	}
 
+	//returns the current diagram name
 	public getDiagramName(): string{
-		return this.findDiagramName(this.document,this.editor);
+		return this.findDiagramName(this.document, this.editor);
 	}
 
 	//helper function to get the diagram name from the document
@@ -80,11 +80,10 @@ export class SaveImageCommand{
 			throw new Error("Diagram name not found");
 		}
 		
-		this.diagram_name = diagram_name;
-		
 		return diagram_name;
 	}
 
+	//helper function to set default format
 	private getFormat(command_settings: CommandSettings): Format{
 		let format = command_settings.format;
 		if(format === undefined){
@@ -93,13 +92,10 @@ export class SaveImageCommand{
 		return format;
 	}
 
+	//creates the output filepath by asking for user input
     private async makeOutputPath(diagram_name: string, command_settings: CommandSettings): Promise<vscode.Uri>{
 		if(command_settings.format === undefined){
 			command_settings.format = Format.PNG;
-		}
-
-		if(command_settings.save_image){
-			
 		}
 
 		let default_output_file =vscode.Uri.joinPath(this.directory.uri, diagram_name + "." + command_settings.format.toLowerCase());
@@ -120,8 +116,6 @@ export class SaveImageCommand{
         
         return output_file;
     }
-
-
 }
 
 type CommandSettings = {

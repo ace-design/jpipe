@@ -3,8 +3,13 @@ import { EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent } from 
 
 //monitors and updates any context keys
 export class ContextMonitor implements EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.TextEditorSelectionChangeEvent>{
+    //keeps track of which contexts need to be monitored
     private contexts: Context[];
+
+    //current text document
     private document!: vscode.TextDocument;
+
+    //current text selection
     private selection!: vscode.Selection;
 
     constructor(editor: vscode.TextEditor | undefined){
@@ -19,7 +24,7 @@ export class ContextMonitor implements EventSubscriber<vscode.TextEditor | undef
         this.update(editor);
     }
 
-    //updates the current editor
+    //updates the current text document/text selection
     public async update(editor: vscode.TextEditor | undefined): Promise<void>;
     public async update(changes: vscode.TextEditorSelectionChangeEvent): Promise<void>;
     public async update(data: (vscode.TextEditor | undefined) | vscode.TextEditorSelectionChangeEvent): Promise<void>{
@@ -33,10 +38,9 @@ export class ContextMonitor implements EventSubscriber<vscode.TextEditor | undef
             });
         }
         else if(isTextEditor(data)){
-            if(!data){
-                return;
+            if(data !== undefined){
+                this.document = data.document;
             }
-            this.document = data.document;
         }
     }
     
@@ -60,9 +64,11 @@ export class ContextMonitor implements EventSubscriber<vscode.TextEditor | undef
 
     //helper function to determine if the class type of a selected word is correct
     private isClassCorrect(word_range: vscode.Range, document: vscode.TextDocument, class_type: string): boolean{
+        //determine that the cursor is selected on the diagram title
         let class_name = document.getText(word_range);
         let class_name_correct = class_name !== class_type;
 
+        //determine that the class type (ex. justification) is correct
         let class_range = document.getWordRangeAtPosition(word_range.start.translate(0, -1));
         let class_type_correct = document.getText(class_range) === class_type;
         
@@ -71,7 +77,7 @@ export class ContextMonitor implements EventSubscriber<vscode.TextEditor | undef
 
     //helper function for the class type verification process
     private diagramStarts(word_range: vscode.Range, document: vscode.TextDocument): boolean{
-        let new_end = word_range.end.translate(0,2);
+        let new_end = word_range.end.translate(0,2); 
         let search_range = new vscode.Range(word_range.end, new_end);
         let search_text = document.getText(search_range);
         

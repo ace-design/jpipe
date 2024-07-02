@@ -7,7 +7,7 @@ export class ImageGenerator implements CommandUser{
 	// Defines the command needed to execute the extension. 
 	private save_image_command: SaveImageCommand;
 
-	private types: ImageType[];
+	private types: ImageType[]; //possible image types and associated commands
 	
 	// New channel created in vscode terminal for user debugging.
 	private static output_channel = vscode.window.createOutputChannel("jpipe_image");
@@ -26,6 +26,7 @@ export class ImageGenerator implements CommandUser{
 		];
 	}
 
+	//used to register commands with command manager
 	public getCommands(): Command[] | Command{
 		let command_list: Command[] = [];
 		this.types.forEach( (type) =>{
@@ -36,14 +37,6 @@ export class ImageGenerator implements CommandUser{
 		});
 
 		return command_list;
-	}
-
-	public register(){
-		this.types.forEach( (t)=>{
-			this.context.subscriptions.push(vscode.commands.registerCommand(t.exe_command, () => {
-				this.saveImage(t.format);
-			}));
-		});
 	}
 
 	//Generates an image for the selected justification diagram

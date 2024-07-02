@@ -1,9 +1,11 @@
 import { Event, TextEditor, TextEditorSelectionChangeEvent } from 'vscode';
 
+//event subscribers update their information based on their event type
 export interface EventSubscriber<T>{
     update(data: T): void;
 }
 
+//Class to store events and their subscribers, follows observer design pattern
 export class EventRunner<T>{
     private event: Event<T>;
     private event_subscribers: EventSubscriber<T>[];
@@ -13,6 +15,7 @@ export class EventRunner<T>{
         this.event_subscribers = [];
     }
     
+    //add a subscriber who wants to update when a given event is run
     public addSubscribers(...subscribers: EventSubscriber<T>[]){
         subscribers.forEach((subscriber)=>{
             if(!this.event_subscribers.includes(subscriber)){
@@ -21,6 +24,7 @@ export class EventRunner<T>{
         })
     }
 
+    //activate listening for events
     public listen(){
         this.event_subscribers.forEach((subscriber)=>{
             this.event.call(this, (e) => subscriber.update(e));
@@ -28,6 +32,7 @@ export class EventRunner<T>{
     }
 }
 
+//class to hold more than one type of event runner
 export class EventManager{
     private events: EventRunner<any>[];
 
@@ -35,6 +40,7 @@ export class EventManager{
         this.events = [];
     }
 
+    //register an event runner with its subscribers to be listened to
     public register(event: EventRunner<any>, ...subscribers: EventSubscriber<any>[]){
         if(this.events.includes(event)){
             this.addToExisting(event, subscribers);
@@ -43,12 +49,14 @@ export class EventManager{
         }
     }
 
+    //activate listening
     public listen(){
         this.events.forEach((event)=> {
             event.listen();
         });
     }
 
+    //helper function to add subscribers to an existing event
     private addToExisting(event: EventRunner<any>, subscribers: EventSubscriber<any>[]): void{
         let new_event = this.events[this.events.indexOf(event)];
         subscribers.forEach((subscriber) =>{
@@ -56,6 +64,7 @@ export class EventManager{
         })   
     }
 
+    //helper function to add a new registered event (previously unregistered)
     private addNewEvent(event: EventRunner<any>, subscribers: EventSubscriber<any>[]): void{
         subscribers.forEach((subscriber) =>{
             event.addSubscribers(subscriber);
@@ -64,7 +73,7 @@ export class EventManager{
     }
 }
 
-//improve if necessary
+//Checks if a value is a text editor (rudimentary, only use for event updating purposes)
 export function isTextEditor(value: unknown): value is TextEditor | undefined{
     if(value === undefined) return true;
     
@@ -89,7 +98,7 @@ export function isTextEditor(value: unknown): value is TextEditor | undefined{
     return true;
 }
 
-//improve if necessary
+//Checks if a value is a text editor selection change event (rudimentary, only use for event updating purposes)
 export function isTextEditorSelectionChangeEvent(value: unknown): value is TextEditorSelectionChangeEvent{
     if(!(value && typeof value === 'object' && !Array.isArray(value))) return false;
     if(!Object.hasOwn(value, "textEditor")) return false;
