@@ -2,9 +2,10 @@ import * as vscode from 'vscode'
 import util from "node:util";
 import { SaveImageCommand } from './save-image-command.js';
 import { Format } from './image-generator.js';
+import { Command, CommandUser } from '../command-management/command-manager.js';
 
 //altered from editorReader
-export class PreviewProvider implements vscode.CustomTextEditorProvider {
+export class PreviewProvider implements vscode.CustomTextEditorProvider, CommandUser {
 
 	// Defines the command needed to execute the extension. 
 	private static ext_command = "jpipe.vis";
@@ -31,7 +32,6 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 
     private static save_image_command: SaveImageCommand;
 
-
     constructor( private readonly context: vscode.ExtensionContext, save_image_command: SaveImageCommand) {
 		// Without any initial data, must be empty string to prevent null error. 
 		PreviewProvider.svg_data = "";
@@ -39,16 +39,12 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 		PreviewProvider.updating = false;
 		PreviewProvider.webviewDisposed = true;
         PreviewProvider.save_image_command = save_image_command;
+
+		vscode.window.registerCustomEditorProvider(PreviewProvider.ext_command, this);
 	}
 
-
-	// Activate an extension instance. The same instance will be used for any jd file that is opened later on.
-    public static register(context: vscode.ExtensionContext, save_image_command: SaveImageCommand): vscode.Disposable {
-		const provider = new PreviewProvider(context, save_image_command);
-		const providerRegistration = vscode.window.registerCustomEditorProvider(PreviewProvider.ext_command, provider);
-		vscode.commands.registerCommand(PreviewProvider.ext_command_preview, () => provider.createWebview());
-
-		return providerRegistration;
+	public getCommands(): Command[] | Command{
+		return {command: PreviewProvider.ext_command_preview, callback: () => this.createWebview()};
 	}
 
 	private async createWebview(): Promise<void>{

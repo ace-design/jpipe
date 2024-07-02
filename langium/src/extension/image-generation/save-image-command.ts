@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { Format } from './image-generator.js';
-import { PreviewProvider } from './preview-provider.js';
 
 //creates the command required to run to generate the image
 export class SaveImageCommand{
