@@ -15,7 +15,7 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "rootDir": "../../jpipe",
+        "rootDir": ".",
         "noEmit": true
     },
     "include": [
