@@ -67,13 +67,13 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 				{}
 			);
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
+			PreviewProvider.webviewDisposed = false;
+
 			if(vscode.window.activeTextEditor){
 				await this.resolveCustomTextEditor(vscode.window.activeTextEditor.document, PreviewProvider.webviewPanel, token.token)
 			}
 			
 			PreviewProvider.webviewPanel.webview.html = PreviewProvider.getHtmlForWebview();
-			PreviewProvider.webviewDisposed = false;
-		
 		} else {
 			PreviewProvider.webviewPanel.dispose();
 			PreviewProvider.webviewDisposed = true;
