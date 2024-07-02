@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import util from "node:util";
 import { SaveImageCommand } from './save-image-command.js';
+import { Command, CommandUser } from '../command-management/command-manager.js';
 
-export class ImageGenerator{
+export class ImageGenerator implements CommandUser{
 	// Defines the command needed to execute the extension. 
 	private save_image_command: SaveImageCommand;
 
@@ -11,7 +12,7 @@ export class ImageGenerator{
 	// New channel created in vscode terminal for user debugging.
 	private static output_channel = vscode.window.createOutputChannel("jpipe_image");
     
-	constructor(save_image_command: SaveImageCommand, private readonly context: vscode.ExtensionContext) {
+	constructor(private readonly context: vscode.ExtensionContext, save_image_command: SaveImageCommand) {
 		this.save_image_command = save_image_command;
 		this.types = [
 			{
@@ -23,6 +24,18 @@ export class ImageGenerator{
 				format: Format.SVG
 			}
 		];
+	}
+
+	public getCommands(): Command[] | Command{
+		let command_list: Command[] = [];
+		this.types.forEach( (type) =>{
+			command_list.push({
+				command: type.exe_command,
+				callback: () => {this.saveImage(type.format)}
+			});
+		});
+
+		return command_list;
 	}
 
 	public register(){

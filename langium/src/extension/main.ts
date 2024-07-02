@@ -1,27 +1,33 @@
 import type { LanguageClientOptions, ServerOptions} from 'vscode-languageclient/node.js';
-import * as vscode from 'vscode';
-import {window} from 'vscode';
+import type * as vscode from 'vscode';
+import {window, commands} from 'vscode';
 import * as path from 'node:path';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
 import { SaveImageCommand } from './image-generation/save-image-command.js';
 import { ImageGenerator } from './image-generation/image-generator.js';
 import { ContextMonitor } from './context-monitor.js';
 import { PreviewProvider } from './image-generation/preview-provider.js';
+import { CommandManager } from './command-management/command-manager.js';
 import { EventManager, EventRunner } from './event-management/event-manager.js';
 let client: LanguageClient;
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
     client = startLanguageClient(context);
+
+    const command_manager = new CommandManager(context);
     
     const context_monitor = new ContextMonitor(window.activeTextEditor);
     
     const save_image_command = new SaveImageCommand(context, window.activeTextEditor);
-    let imageGenerator = new ImageGenerator(save_image_command, context);
-    imageGenerator.register();
-    
-    context.subscriptions.push(PreviewProvider.register(context, save_image_command));
+    let image_generator = new ImageGenerator(context, save_image_command);
+    let preview_provider = new PreviewProvider(context, save_image_command);
 
+    command_manager.register([
+        image_generator,
+        preview_provider
+    ]);
+    
     const event_manager = new EventManager();
     event_manager.register(new EventRunner<vscode.TextEditorSelectionChangeEvent>(window.onDidChangeTextEditorSelection), context_monitor);
     event_manager.register(new EventRunner<vscode.TextEditor | undefined>(window.onDidChangeActiveTextEditor), save_image_command, context_monitor);
