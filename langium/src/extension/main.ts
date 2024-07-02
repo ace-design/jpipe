@@ -1,5 +1,5 @@
 import type { LanguageClientOptions, ServerOptions} from 'vscode-languageclient/node.js';
-import type * as vscode from 'vscode';
+import * as vscode from 'vscode';
 import {window} from 'vscode';
 import * as path from 'node:path';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
@@ -7,6 +7,7 @@ import { SaveImageCommand } from './image-generation/save-image-command.js';
 import { ImageGenerator } from './image-generation/image-generator.js';
 import { ContextMonitor } from './context-monitor.js';
 import { PreviewProvider } from './image-generation/preview-provider.js';
+import { EventManager, EventRunner } from './event-management/event-manager.js';
 let client: LanguageClient;
 
 // This function is called when the extension is activated.
@@ -21,14 +22,11 @@ export function activate(context: vscode.ExtensionContext): void {
     
     context.subscriptions.push(PreviewProvider.register(context, save_image_command));
 
-    window.onDidChangeTextEditorSelection((changes)=>{
-        context_monitor.updateTextSelection(changes);
-    });
-
-    window.onDidChangeActiveTextEditor((editor)=>{
-        save_image_command.updateEditor(editor);
-        context_monitor.updateEditor(editor);
-    });
+    const event_manager = new EventManager();
+    event_manager.register(new EventRunner<vscode.TextEditorSelectionChangeEvent>(window.onDidChangeTextEditorSelection), context_monitor);
+    event_manager.register(new EventRunner<vscode.TextEditor | undefined>(window.onDidChangeActiveTextEditor), save_image_command, context_monitor);
+    
+    event_manager.listen();
 }
 
 // This function is called when the extension is deactivated.

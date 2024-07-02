@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
+import { EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent } from './event-management/event-manager.js';
 
 //monitors and updates any context keys
-export class ContextMonitor{
+export class ContextMonitor implements EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.TextEditorSelectionChangeEvent>{
     private contexts: Context[];
     private document!: vscode.TextDocument;
     private selection!: vscode.Selection;
@@ -15,26 +16,28 @@ export class ContextMonitor{
             }
         ];
 
-        this.updateEditor(editor);
+        this.update(editor);
     }
 
     //updates the current editor
-    public async updateEditor(editor: vscode.TextEditor | undefined){
-        if(!editor){
-            return;
+    public async update(editor: vscode.TextEditor | undefined): Promise<void>;
+    public async update(changes: vscode.TextEditorSelectionChangeEvent): Promise<void>;
+    public async update(data: (vscode.TextEditor | undefined) | vscode.TextEditorSelectionChangeEvent): Promise<void>{
+        if(isTextEditorSelectionChangeEvent(data)){
+            if(data.selections.length === 1){
+                this.selection = data.selections[0];
+            }
+    
+            this.contexts.forEach((context)=>{
+                vscode.commands.executeCommand('setContext',context.context_key, context.function.call(this, context.params));  
+            });
         }
-        this.document = editor.document;
-    }
-
-    //updates the context keys when the selection changes
-    public async updateTextSelection(changes: vscode.TextEditorSelectionChangeEvent){
-        if(changes.selections.length === 1){
-            this.selection = changes.selections[0];
+        else if(isTextEditor(data)){
+            if(!data){
+                return;
+            }
+            this.document = data.document;
         }
-
-        this.contexts.forEach((context)=>{
-            vscode.commands.executeCommand('setContext',context.context_key, context.function.call(this, context.params));  
-        });
     }
     
     //helper function which checks if the cursor is at a certain class type

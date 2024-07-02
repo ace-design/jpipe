@@ -21,11 +21,11 @@ export class SaveImageCommand{
         this.log_level = "all";
 
         //automatically registers to start
-        this.updateEditor(editor);
+        this.update(editor);
 	}
 
     //updates each time the editor changes
-    public async updateEditor(editor: vscode.TextEditor | undefined){
+    public async update(editor: vscode.TextEditor | undefined): Promise<void>{
         if(!editor){
             return;
         }
