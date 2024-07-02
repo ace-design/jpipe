@@ -15,7 +15,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 	protected static svg_data: string;
 	
 	// New channel created in vscode terminal for user debugging.
-	protected static output_channel: vscode.OutputChannel
+	static output_channel: vscode.OutputChannel
 
 	// Used to prevent jar files from executing concurrently.
 	private static updating: boolean;
@@ -143,12 +143,12 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 	public async updateSVG(): Promise<void> {
         const { exec } = require('node:child_process');
 		const execPromise = util.promisify(exec);
-
-        PreviewProvider.webviewPanel.title = PreviewProvider.save_image_command.getDiagramName();
-
+		
 		let command = await PreviewProvider.save_image_command.makeCommand({format: Format.SVG, save_image: false});
-        
-        try{
+
+		PreviewProvider.webviewPanel.title = PreviewProvider.save_image_command.getDiagramName();
+		
+		try{
 			const {stdout, stderr} = await execPromise(command);
 			PreviewProvider.output_channel.appendLine(stderr.toString());
 			PreviewProvider.svg_data = stdout;
@@ -196,7 +196,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider {
 		if (event !== undefined && event.textEditor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
 			PreviewProvider.line_num = (await PreviewProvider.textPanel).selection.active.line+1;
 
-			let new_diagram = this.getDiagramName(event.textEditor.document);
+			let new_diagram = PreviewProvider.save_image_command.getDiagramName();
 			
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
 			

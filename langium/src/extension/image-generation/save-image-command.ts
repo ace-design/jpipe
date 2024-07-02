@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { Format } from './image-generator.js';
+import { PreviewProvider } from './preview-provider.js';
 
 //creates the command required to run to generate the image
 export class SaveImageCommand{
@@ -40,7 +41,7 @@ export class SaveImageCommand{
 	
 	public async makeCommand(command_settings: CommandSettings): Promise<string>{
 		let input_file = this.document.uri;
-		let diagram_name = this.findDiagramName();
+		let diagram_name = this.findDiagramName(this.document,this.editor);
 		let format = this.getFormat(command_settings);
 		
 		let command = 'java -jar ' + this.jar_file.path + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + this.log_level;
@@ -54,17 +55,17 @@ export class SaveImageCommand{
 	}
 
 	public getDiagramName(): string{
-		return Object.assign("", this.diagram_name);
+		return this.diagram_name;
 	}
 
 	//helper function to get the diagram name from the document
-	private findDiagramName(): string{
+	private findDiagramName(document: vscode.TextDocument, editor: vscode.TextEditor): string{
 		let diagram_name: string | undefined;
 		let match: RegExpExecArray | null;
 		let i = 0;
 	
-		let lines = this.document.getText().split("\n");
-		let line_num = this.editor.selection.active.line + 1;
+		let lines = document.getText().split("\n");
+		let line_num = editor.selection.active.line + 1;
 
 		while(i < lines.length && (i < line_num || diagram_name===null)){
 			match = /justification .*/i.exec(lines[i]) || /pattern .*/i.exec(lines[i]);
@@ -81,6 +82,7 @@ export class SaveImageCommand{
 		}
 		
 		this.diagram_name = diagram_name;
+		
 		return diagram_name;
 	}
 
