@@ -8,7 +8,7 @@ import { ImageGenerator } from './image-generation/image-generator.js';
 import { ContextMonitor } from './context-monitor.js';
 import { PreviewProvider } from './image-generation/preview-provider.js';
 import { CommandManager } from './managers/command-manager.js';
-import { EventManager, Event } from './managers/event-manager.js';
+import { EventManager, EventRunner } from './managers/event-manager.js';
 let client: LanguageClient;
 
 // This function is called when the extension is activated.
@@ -33,8 +33,8 @@ export function activate(context: vscode.ExtensionContext): void {
     );
     
     //register subscribers for events that need to monitor changes
-    event_manager.register(new Event<vscode.TextEditorSelectionChangeEvent>(window.onDidChangeTextEditorSelection), context_monitor);
-    event_manager.register(new Event<vscode.TextEditor | undefined>(window.onDidChangeActiveTextEditor), save_image_command, context_monitor);
+    event_manager.register(new EventRunner<vscode.TextEditorSelectionChangeEvent>(window.onDidChangeTextEditorSelection), context_monitor);
+    event_manager.register(new EventRunner<vscode.TextEditor | undefined>(window.onDidChangeActiveTextEditor), save_image_command, context_monitor);
     
     event_manager.listen();
 }
