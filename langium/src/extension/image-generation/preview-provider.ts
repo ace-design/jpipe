@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import util from "node:util";
 import { SaveImageCommand } from './save-image-command.js';
 import { Format } from './image-generator.js';
-import { Command, CommandUser } from '../command-management/command-manager.js';
+import { Command, CommandUser } from '../managers/command-manager.js';
 
 //altered from editorReader
 export class PreviewProvider implements vscode.CustomTextEditorProvider, CommandUser {

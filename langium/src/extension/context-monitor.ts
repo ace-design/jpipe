@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent } from './event-management/event-manager.js';
+import { EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent } from './managers/event-manager.js';
 
 //monitors and updates any context keys
 export class ContextMonitor implements EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.TextEditorSelectionChangeEvent>{

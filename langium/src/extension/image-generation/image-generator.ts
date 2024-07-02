@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import util from "node:util";
 import { SaveImageCommand } from './save-image-command.js';
-import { Command, CommandUser } from '../command-management/command-manager.js';
+import { Command, CommandUser } from '../managers/command-manager.js';
 
 export class ImageGenerator implements CommandUser{
 	// Defines the command needed to execute the extension. 

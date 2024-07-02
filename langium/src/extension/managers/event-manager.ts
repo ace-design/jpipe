@@ -36,17 +36,10 @@ export class EventManager{
     }
 
     public register(event: EventRunner<any>, ...subscribers: EventSubscriber<any>[]){
-        if (this.events.includes(event)){
-            let new_event = this.events[this.events.indexOf(event)];
-            subscribers.forEach((subscriber) =>{
-                new_event.addSubscribers(subscriber);
-            })   
-        }
-        else{
-            subscribers.forEach((subscriber) =>{
-                event.addSubscribers(subscriber);
-            });
-            this.events.push(event);  
+        if(this.events.includes(event)){
+            this.addToExisting(event, subscribers);
+        }else{
+            this.addNewEvent(event, subscribers);
         }
     }
 
@@ -54,6 +47,20 @@ export class EventManager{
         this.events.forEach((event)=> {
             event.listen();
         });
+    }
+
+    private addToExisting(event: EventRunner<any>, subscribers: EventSubscriber<any>[]): void{
+        let new_event = this.events[this.events.indexOf(event)];
+        subscribers.forEach((subscriber) =>{
+            new_event.addSubscribers(subscriber);
+        })   
+    }
+
+    private addNewEvent(event: EventRunner<any>, subscribers: EventSubscriber<any>[]): void{
+        subscribers.forEach((subscriber) =>{
+            event.addSubscribers(subscriber);
+        });
+        this.events.push(event);  
     }
 }
 

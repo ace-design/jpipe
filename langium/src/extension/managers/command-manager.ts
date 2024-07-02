@@ -5,9 +5,7 @@ export class CommandManager{
     constructor(private readonly context:vscode.ExtensionContext){
     }
 
-    public register(command_users: CommandUser[]): void;
-    public register(command_users: CommandUser): void;
-    public register(command_users: CommandUser | CommandUser[]): void{
+    public register(...command_users: CommandUser[]): void{
         if(Array.isArray(command_users)){
             command_users.forEach((command_user) => {
                 this.registerCommands(command_user);
