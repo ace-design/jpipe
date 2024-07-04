@@ -41,7 +41,7 @@ export class EventManager{
     }
 
     //register an event runner with its subscribers to be listened to
-    public register(event: EventRunner<any>, ...subscribers: EventSubscriber<any>[]){
+    public register<T>(event: EventRunner<T>, ...subscribers: EventSubscriber<T>[]){
         if(this.events.includes(event)){
             this.addToExisting(event, subscribers);
         }else{

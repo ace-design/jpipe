@@ -22,8 +22,8 @@ export function activate(context: vscode.ExtensionContext): void {
     
     //create needs for image generation
     const save_image_command = new SaveImageCommand(context, window.activeTextEditor);
-    const image_generator = new ImageGenerator(context, save_image_command);
-    const preview_provider = new PreviewProvider(context, save_image_command);
+    const image_generator = new ImageGenerator(save_image_command);
+    const preview_provider = new PreviewProvider(save_image_command);
 
     //register commands from classes
     command_manager.register(
@@ -34,7 +34,8 @@ export function activate(context: vscode.ExtensionContext): void {
     //register subscribers for events that need to monitor changes
     event_manager.register(new EventRunner(window.onDidChangeTextEditorSelection), context_manager);
     event_manager.register(new EventRunner(window.onDidChangeActiveTextEditor), context_manager, save_image_command);
-    
+
+    //activate listening for events
     event_manager.listen();
 }
 

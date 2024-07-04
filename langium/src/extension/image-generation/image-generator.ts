@@ -12,7 +12,7 @@ export class ImageGenerator implements CommandUser{
 	// New channel created in vscode terminal for user debugging.
 	private static output_channel = vscode.window.createOutputChannel("jpipe_image");
     
-	constructor(private readonly context: vscode.ExtensionContext, save_image_command: SaveImageCommand) {
+	constructor(save_image_command: SaveImageCommand) {
 		this.save_image_command = save_image_command;
 		this.types = [
 			{

@@ -32,7 +32,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
     private static save_image_command: SaveImageCommand;
 
-    constructor( private readonly context: vscode.ExtensionContext, save_image_command: SaveImageCommand) {
+    constructor(save_image_command: SaveImageCommand) {
 		// Without any initial data, must be empty string to prevent null error. 
 		PreviewProvider.svg_data = "";
 		PreviewProvider.output_channel = vscode.window.createOutputChannel("jpipe_console");

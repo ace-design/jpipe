@@ -1,7 +1,14 @@
 {
     "name": "jpipe",
-    "description": "Please enter a brief description here",
+    "description": "Language Support for the jpipe language",
+    "author": "McSCert",
     "version": "0.0.1",
+    "license": "MIT",
+    "icon": "images/logo.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ace-design/jpipe"
+    },
     "files": [
         "bin",
         "out",
@@ -119,9 +126,5 @@
     "main": "./out/extension/main.cjs",
     "bin": {
         "jpipe-cli": "./bin/cli.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/ace-design/jpipe"
     }
 }
