@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
 import { SaveImageCommand } from './image-generation/save-image-command.js';
 import { ImageGenerator } from './image-generation/image-generator.js';
-import { ContextMonitor } from './context-monitor.js';
+import { ContextManager } from './managers/context-manager.js';
 import { PreviewProvider } from './image-generation/preview-provider.js';
 import { CommandManager } from './managers/command-manager.js';
 import { EventManager, EventRunner } from './managers/event-manager.js';
@@ -19,10 +19,11 @@ export function activate(context: vscode.ExtensionContext): void {
     const command_manager = new CommandManager(context);
     const event_manager = new EventManager();
 
-    const context_monitor = new ContextMonitor(window.activeTextEditor);
+    const context_manager = new ContextManager(window.activeTextEditor);
     
     //create needs for image generation
     const save_image_command = new SaveImageCommand(context, window.activeTextEditor);
+    
     let image_generator = new ImageGenerator(context, save_image_command);
     let preview_provider = new PreviewProvider(context, save_image_command);
 
@@ -33,8 +34,8 @@ export function activate(context: vscode.ExtensionContext): void {
     );
     
     //register subscribers for events that need to monitor changes
-    event_manager.register(new EventRunner<vscode.TextEditorSelectionChangeEvent>(window.onDidChangeTextEditorSelection), context_monitor);
-    event_manager.register(new EventRunner<vscode.TextEditor | undefined>(window.onDidChangeActiveTextEditor), save_image_command, context_monitor);
+    event_manager.register(new EventRunner(window.onDidChangeTextEditorSelection), context_manager);
+    event_manager.register(new EventRunner(window.onDidChangeActiveTextEditor), save_image_command, context_manager);
     
     event_manager.listen();
 }

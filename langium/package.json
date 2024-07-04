@@ -108,7 +108,7 @@
                 {
                     "command": "jpipe.vis.preview",
                     "group": "navigation",
-                    "when": "jpipe.atJustification"
+                    "when": "jpipe.inJustification || jpipe.atJustification"
                 }
             ]
         }
