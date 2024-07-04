@@ -32,7 +32,7 @@ export class EventRunner<T>{
     }
 }
 
-//class to hold more than one type of event runner
+//manages subscribers of more than one event runner, provides registration service
 export class EventManager{
     private events: EventRunner<any>[];
 
@@ -59,6 +59,7 @@ export class EventManager{
     //helper function to add subscribers to an existing event
     private addToExisting(event: EventRunner<any>, subscribers: EventSubscriber<any>[]): void{
         let new_event = this.events[this.events.indexOf(event)];
+        
         subscribers.forEach((subscriber) =>{
             new_event.addSubscribers(subscriber);
         })   
@@ -69,6 +70,7 @@ export class EventManager{
         subscribers.forEach((subscriber) =>{
             event.addSubscribers(subscriber);
         });
+        
         this.events.push(event);  
     }
 }
@@ -92,8 +94,6 @@ export function isTextEditor(value: unknown): value is TextEditor | undefined{
     if(!Object.hasOwn(value, "revealRange")) return false;
     if(!Object.hasOwn(value, "show")) return false;
     if(!Object.hasOwn(value, "hide")) return false;
-
-
 
     return true;
 }

@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import { Format } from './image-generator.js';
+import { EventSubscriber } from '../managers/event-manager.js';
 
 //creates the command required to run to generate the image
-export class SaveImageCommand{
+export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | undefined>{
 	private jar_file: vscode.Uri; //location of the jar file
 	private log_level: string; //log level setting
 

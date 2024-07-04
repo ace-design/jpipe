@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 
+//this class registers any commands from registered classes
 export class CommandManager{
 
     constructor(private readonly context:vscode.ExtensionContext){
