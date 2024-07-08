@@ -1,4 +1,4 @@
-import { Event, TextEditor, TextEditorSelectionChangeEvent } from 'vscode';
+import { ConfigurationChangeEvent, Event, TextEditor, TextEditorSelectionChangeEvent } from 'vscode';
 
 //event subscribers update their information based on their event type
 export interface EventSubscriber<T>{
@@ -104,6 +104,14 @@ export function isTextEditorSelectionChangeEvent(value: unknown): value is TextE
     if(!Object.hasOwn(value, "textEditor")) return false;
     if(!Object.hasOwn(value, "selections")) return false;
     if(!Object.hasOwn(value, "kind")) return false;
+
+    return true;
+}
+
+//Checks if a value is a configuration change event (rudimentary, only use for event updating purposes)
+export function isConfigurationChangeEvent(value: unknown): value is ConfigurationChangeEvent{
+    if(!(value && typeof value === 'object' && !Array.isArray(value))) return false;
+    if(!Object.keys(value).includes("affectsConfiguration")) return false;
 
     return true;
 }

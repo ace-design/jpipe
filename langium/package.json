@@ -53,6 +53,24 @@
         "Programming Languages"
     ],
     "contributes": {
+        "configuration":{
+            "title": "Jpipe Configuration",
+            "properties": {
+                "jpipe.strictLeftFiltering":{
+                    "type": "boolean",
+                    "scope": "window",
+                    "default": true,
+                    "markdownDescription": "For code completion suggestions on the left variables in supporting statements, consider the scope of all variables previously defined. With strict left filtering on, only variables which can support a pre-defined variable will be suggested."
+                },
+                "jpipe.logLevel":{
+                    "type": "string",
+                    "scope": "window",
+                    "enum": ["all", "error", "trace", "info", "debug"],
+                    "default": "error",
+                    "markdownDescription": "set the log level for compiler."
+                }
+            }
+        },
         "languages": [
             {
                 "id": "jpipe",

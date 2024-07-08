@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import { Format } from './image-generator.js';
-import { EventSubscriber } from '../managers/event-manager.js';
+import { EventSubscriber, isConfigurationChangeEvent, isTextEditor } from '../managers/event-manager.js';
 
 //creates the command required to run to generate the image
-export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | undefined>{
+export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.ConfigurationChangeEvent>{
 	private jar_file: vscode.Uri; //location of the jar file
 	private log_level: string; //log level setting
 
@@ -16,25 +16,34 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
         this.jar_file = vscode.Uri.joinPath(context.extensionUri, 'jar', 'jpipe.jar');
         
         //the log level should only change on configuration change
-        this.log_level = "all";
+		this.log_level = this.getLogLevel();
 
         //automatically registers to start
         this.update(editor);
 	}
 
-    //updates each time the editor changes
-    public async update(editor: vscode.TextEditor | undefined): Promise<void>{
-        if(!editor){
-            return;
-        }
-
-        this.editor = editor;
-        this.document = editor.document;
-        
-        let directory = vscode.workspace.getWorkspaceFolder(this.document.uri);
-        if(directory){
-            this.directory = directory;
-        }
+    //updater functions
+	public async update(change: vscode.ConfigurationChangeEvent): Promise<void>;
+    public async update(editor: vscode.TextEditor | undefined): Promise<void>;
+	public async update(data: vscode.ConfigurationChangeEvent | vscode.TextEditor | undefined): Promise<void>{
+        if(isConfigurationChangeEvent(data)){
+			if(data.affectsConfiguration("jpipe.logLevel")){
+				this.log_level = this.getLogLevel();
+			}
+		}else if(isTextEditor(data)){
+			if(!data){
+				return;
+			}
+	
+			this.editor = data;
+			this.document = data.document;
+			
+			let directory = vscode.workspace.getWorkspaceFolder(this.document.uri);
+			if(directory){
+				this.directory = directory;
+			}
+		}
+		
     }
 	
 	//creates the command based on command settings
@@ -117,6 +126,21 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
         
         return output_file;
     }
+
+	//helper function to fetch the log level on configuration change
+	private getLogLevel(): string{
+		let log_level: string;
+		let configuration = vscode.workspace.getConfiguration().inspect("jpipe.logLevel")?.globalValue;
+			
+		if(typeof configuration === "string"){
+			log_level = configuration;
+			
+		}else{
+			log_level = "error";
+		}
+
+		return log_level;
+	}
 }
 
 type CommandSettings = {

@@ -10,10 +10,11 @@ export class ImageGenerator implements CommandUser{
 	private types: ImageType[]; //possible image types and associated commands
 	
 	// New channel created in vscode terminal for user debugging.
-	private static output_channel = vscode.window.createOutputChannel("jpipe_image");
+	private output_channel: vscode.OutputChannel;
     
-	constructor(save_image_command: SaveImageCommand) {
+	constructor(save_image_command: SaveImageCommand, output_channel: vscode.OutputChannel) {
 		this.save_image_command = save_image_command;
+		this.output_channel = output_channel;
 		this.types = [
 			{
 				exe_command: "jpipe.downloadPNG", 
@@ -50,10 +51,10 @@ export class ImageGenerator implements CommandUser{
 			let command  = await this.save_image_command.makeCommand({ format: format, save_image: true});
 			const {stdout, stderr} = await execPromise(command);
 
-			ImageGenerator.output_channel.appendLine(stdout.toString());
-			ImageGenerator.output_channel.appendLine(stderr.toString());
+			this.output_channel.appendLine(stdout.toString());
+			this.output_channel.appendLine(stderr.toString());
 		} catch (error: any){
-			ImageGenerator.output_channel.appendLine(error.toString());
+			this.output_channel.appendLine(error.toString());
 		}
 	}
 }

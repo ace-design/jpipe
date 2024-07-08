@@ -16,7 +16,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 	protected static svg_data: string;
 	
 	// New channel created in vscode terminal for user debugging.
-	static output_channel: vscode.OutputChannel
+	private output_channel: vscode.OutputChannel
 
 	// Used to prevent jar files from executing concurrently.
 	private static updating: boolean;
@@ -32,10 +32,10 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
     private static save_image_command: SaveImageCommand;
 
-    constructor(save_image_command: SaveImageCommand) {
+    constructor(save_image_command: SaveImageCommand, output_channel: vscode.OutputChannel) {
 		// Without any initial data, must be empty string to prevent null error. 
 		PreviewProvider.svg_data = "";
-		PreviewProvider.output_channel = vscode.window.createOutputChannel("jpipe_console");
+		this.output_channel = output_channel;
 		PreviewProvider.updating = false;
 		PreviewProvider.webviewDisposed = true;
         PreviewProvider.save_image_command = save_image_command;
@@ -104,7 +104,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 			await this.updateSVG();
 			
 			webviewPanel.webview.html = PreviewProvider.getHtmlForWebview();
-			PreviewProvider.output_channel.appendLine("Updated HTML to most recent code");
+			this.output_channel.appendLine("Updated HTML to most recent code");
 			PreviewProvider.updating = false;
 		}
 
@@ -112,7 +112,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(async e => {
 			if (e.document.uri.toString() === document.uri.toString()) {
 				if (PreviewProvider.updating==false){
-					PreviewProvider.output_channel.appendLine("Document Changed! Will execute jar file again.")
+					this.output_channel.appendLine("Document Changed! Will execute jar file again.")
 					await updateWebview();
 				}
 			}
@@ -142,13 +142,13 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 		
 		try{
 			const {stdout, stderr} = await execPromise(command);
-			PreviewProvider.output_channel.appendLine(stderr.toString());
+			this.output_channel.appendLine(stderr.toString());
 			PreviewProvider.svg_data = stdout;
 		} catch (error: any){
-			PreviewProvider.output_channel.appendLine(error.toString());
+			this.output_channel.appendLine(error.toString());
 		}
 
-		PreviewProvider.output_channel.appendLine("Executed Jar");
+		this.output_channel.appendLine("Executed Jar");
     }
 
 	

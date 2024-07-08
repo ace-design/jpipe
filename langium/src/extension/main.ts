@@ -1,5 +1,5 @@
 import type { LanguageClientOptions, ServerOptions} from 'vscode-languageclient/node.js';
-import type * as vscode from 'vscode';
+import * as vscode from 'vscode';
 import {window} from 'vscode';
 import * as path from 'node:path';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
@@ -20,20 +20,28 @@ export function activate(context: vscode.ExtensionContext): void {
     const event_manager = new EventManager();
     const context_manager = new ContextManager(window.activeTextEditor);
     
+    //create universal output channel
+    const output_channel = vscode.window.createOutputChannel("jpipe_console");
+
     //create needs for image generation
     const save_image_command = new SaveImageCommand(context, window.activeTextEditor);
-    const image_generator = new ImageGenerator(save_image_command);
-    const preview_provider = new PreviewProvider(save_image_command);
+    const image_generator = new ImageGenerator(save_image_command, output_channel);
+    const preview_provider = new PreviewProvider(save_image_command, output_channel);
 
     //register commands from classes
     command_manager.register(
         image_generator,
         preview_provider
     );
-    
+
     //register subscribers for events that need to monitor changes
     event_manager.register(new EventRunner(window.onDidChangeTextEditorSelection), context_manager);
     event_manager.register(new EventRunner(window.onDidChangeActiveTextEditor), context_manager, save_image_command);
+    event_manager.register(new EventRunner(vscode.workspace.onDidChangeConfiguration), save_image_command);
+
+    vscode.workspace.onDidChangeConfiguration(() =>{
+        output_channel.appendLine("configuration changed");
+    });
 
     //activate listening for events
     event_manager.listen();
