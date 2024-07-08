@@ -56,6 +56,11 @@
         "configuration":{
             "title": "Jpipe Configuration",
             "properties": {
+                "jpipe.jarFile":{
+                    "type": "string",
+                    "scope": "window",
+                    "markdownDescription": "Set the path to the jar file compiler"
+                },
                 "jpipe.strictLeftFiltering":{
                     "type": "boolean",
                     "scope": "window",
@@ -67,7 +72,7 @@
                     "scope": "window",
                     "enum": ["all", "error", "trace", "info", "debug"],
                     "default": "error",
-                    "markdownDescription": "set the log level for compiler."
+                    "markdownDescription": "Set the log level for compiler."
                 }
             }
         },

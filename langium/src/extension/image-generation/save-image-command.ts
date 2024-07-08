@@ -4,17 +4,17 @@ import { EventSubscriber, isConfigurationChangeEvent, isTextEditor } from '../ma
 
 //creates the command required to run to generate the image
 export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.ConfigurationChangeEvent>{
-	private jar_file: vscode.Uri; //location of the jar file
+	private jar_file: string; //location of the jar file
 	private log_level: string; //log level setting
 
     private editor!: vscode.TextEditor; //current editor
     private document!: vscode.TextDocument; //current document
     private directory!: vscode.WorkspaceFolder; //current directory
 
-	constructor(context: vscode.ExtensionContext, editor: vscode.TextEditor | undefined){
+	constructor(private readonly context: vscode.ExtensionContext, editor: vscode.TextEditor | undefined){
         //the extension context should not change
-        this.jar_file = vscode.Uri.joinPath(context.extensionUri, 'jar', 'jpipe.jar');
-        
+        this.jar_file = this.getJarFile();
+
         //the log level should only change on configuration change
 		this.log_level = this.getLogLevel();
 
@@ -30,20 +30,17 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
 			if(data.affectsConfiguration("jpipe.logLevel")){
 				this.log_level = this.getLogLevel();
 			}
-		}else if(isTextEditor(data)){
-			if(!data){
-				return;
-			}
-	
-			this.editor = data;
-			this.document = data.document;
-			
-			let directory = vscode.workspace.getWorkspaceFolder(this.document.uri);
-			if(directory){
-				this.directory = directory;
+			else if(data.affectsConfiguration("jpipe.jarFile")){
+				this.jar_file = this.getJarFile();
 			}
 		}
-		
+		else if(isTextEditor(data)){
+			this.editor = this.getEditor(data);
+			
+			this.document = this.editor.document;
+			
+			this.directory = this.getDirectory(this.document);
+		}
     }
 	
 	//creates the command based on command settings
@@ -52,7 +49,7 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
 		let diagram_name = this.findDiagramName(this.document,this.editor);
 		let format = this.getFormat(command_settings);
 		
-		let command = 'java -jar ' + this.jar_file.path + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + this.log_level;
+		let command = 'java -jar ' + this.jar_file + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + this.log_level;
 		
 		if(command_settings.save_image){
 			let output_file = await this.makeOutputPath(diagram_name, command_settings);
@@ -140,6 +137,42 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
 		}
 
 		return log_level;
+	}
+
+	//helper function to fetch the input jar file path
+	private getJarFile(): string{
+		let jar_file:string;
+		let configuration = vscode.workspace.getConfiguration().inspect("jpipe.jarFile")?.globalValue;
+
+		if(typeof configuration === "string"){
+			jar_file = configuration;
+			
+		}else{
+			jar_file = vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').path;
+			vscode.workspace.getConfiguration().update("jpipe.jarFile", jar_file);
+		}
+
+		return jar_file;
+	}
+
+	//helper function to get editor for updating
+	private getEditor(editor: vscode.TextEditor | undefined): vscode.TextEditor{
+		if(!editor){
+			throw new Error("Editor not found");
+		}
+		
+		return editor;
+	}
+
+	//helper function to get directory for updating
+	private getDirectory(document: vscode.TextDocument): vscode.WorkspaceFolder{
+		let directory = vscode.workspace.getWorkspaceFolder(document.uri);
+
+		if(!directory){
+			throw new Error("Directory not found");
+		}
+
+		return directory;
 	}
 }
 
