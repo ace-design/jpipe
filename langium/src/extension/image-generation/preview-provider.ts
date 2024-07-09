@@ -202,7 +202,6 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 		}
 	}
 
-	private async updateTextDocument(vscode)
 	// HTML Code for the webview.
 	private static getHtmlForWebview(): string {
 		if(PreviewProvider.textPanel === undefined && vscode.window.activeTextEditor){
