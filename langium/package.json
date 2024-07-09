@@ -59,6 +59,7 @@
                 "jpipe.jarFile":{
                     "type": "string",
                     "scope": "window",
+                    "default": "",
                     "markdownDescription": "Set the path to the jar file compiler"
                 },
                 "jpipe.strictLeftFiltering":{

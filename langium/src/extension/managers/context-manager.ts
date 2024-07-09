@@ -51,8 +51,16 @@ export class ContextManager implements EventSubscriber<vscode.TextEditor | undef
 
     //checks if the cursor is in a diagram (between '{' and '}')
     private cursorIn(class_type: string): boolean{
-        let word_range = this.findDiagramNameRange(this.selection.active, this.document);
-        return this.cursorAt(class_type, word_range);
+        let cursor_at: boolean = false;
+        
+        try{
+            let word_range = this.findDiagramNameRange(this.selection.active, this.document);
+            cursor_at = this.cursorAt(class_type, word_range);
+        }catch(error: any){
+
+        }
+
+        return cursor_at;
     }
 
     //helper function which checks if the cursor is at a certain class type
@@ -100,8 +108,15 @@ export class ContextManager implements EventSubscriber<vscode.TextEditor | undef
 
     //helper function to determine if the diagram ends
     private diagramEnds(word_range: vscode.Range, document: vscode.TextDocument): boolean{
-        let range = this.findRange('}', Direction.FORWARD, word_range, document);
-        let range_text = document.getText(range);
+        let range: vscode.Range;
+        let range_text: string | undefined;
+       
+        try{
+            range = this.findRange('}', Direction.FORWARD, word_range, document);
+            range_text = document.getText(range);
+        }catch(error: any){
+            range_text === undefined;
+        }
 
         return range_text !== undefined;
     }
@@ -110,21 +125,26 @@ export class ContextManager implements EventSubscriber<vscode.TextEditor | undef
     private findDiagramNameRange(position: vscode.Position, document: vscode.TextDocument): vscode.Range{
         let pos: vscode.Position;
         let word_range: vscode.Range | undefined;
-
-        let end_position = this.findRange('{', Direction.BACKWARD, this.getRange(position, document, -1), document).start;
-        let range = this.getRange(end_position, document, -1);
+        let range: vscode.Range;
         
-        if(!range){
-            throw new Error("Text document does not include diagram name or class title");
-        }
+        try{
+            let end_position = this.findRange('{', Direction.BACKWARD, this.getRange(position, document, -1), document).start;
+            range = this.getRange(end_position, document, -1);
 
-        pos = range.start;
-        
-        if(document.getText(range) === ' '){
-            pos = pos.translate(0,-1);
-        }
+            if(!range){
+                throw new Error("Text document does not include diagram name or class title");
+            }
 
-        word_range = document.getWordRangeAtPosition(pos);
+            pos = range.start;
+
+            if(document.getText(range) === ' '){
+                pos = pos.translate(0,-1);
+            }
+    
+            word_range = document.getWordRangeAtPosition(pos);
+        }catch(error: any){
+            
+        }
 
         if(!word_range){
             throw new Error("Range of diagram name cannot be found");

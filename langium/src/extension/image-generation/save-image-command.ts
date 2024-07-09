@@ -4,6 +4,8 @@ import { EventSubscriber, isConfigurationChangeEvent, isTextEditor } from '../ma
 
 //creates the command required to run to generate the image
 export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.ConfigurationChangeEvent>{
+	private output_channel: vscode.OutputChannel
+	
 	private jar_file: string; //location of the jar file
 	private log_level: string; //log level setting
 
@@ -11,8 +13,10 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
     private document!: vscode.TextDocument; //current document
     private directory!: vscode.WorkspaceFolder; //current directory
 
-	constructor(private readonly context: vscode.ExtensionContext, editor: vscode.TextEditor | undefined){
-        //the extension context should not change
+	constructor(private readonly context: vscode.ExtensionContext, editor: vscode.TextEditor | undefined, output_channel: vscode.OutputChannel){
+        this.output_channel = output_channel;
+		
+		//Finding the associated compiler
         this.jar_file = this.getJarFile();
 
         //the log level should only change on configuration change
@@ -104,7 +108,7 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
 			command_settings.format = Format.PNG;
 		}
 
-		let default_output_file =vscode.Uri.joinPath(this.directory.uri, diagram_name + "." + command_settings.format.toLowerCase());
+		let default_output_file = vscode.Uri.joinPath(this.directory.uri, diagram_name + "." + command_settings.format.toLowerCase());
 
 		let save_dialog_options: vscode.SaveDialogOptions = {
 			defaultUri:  default_output_file,
@@ -122,37 +126,6 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
         
         return output_file;
     }
-
-	//helper function to fetch the log level on configuration change
-	private getLogLevel(): string{
-		let log_level: string;
-		let configuration = vscode.workspace.getConfiguration().inspect("jpipe.logLevel")?.globalValue;
-			
-		if(typeof configuration === "string"){
-			log_level = configuration;
-			
-		}else{
-			log_level = "error";
-		}
-
-		return log_level;
-	}
-
-	//helper function to fetch the input jar file path
-	private getJarFile(): string{
-		let jar_file:string;
-		let configuration = vscode.workspace.getConfiguration().inspect("jpipe.jarFile")?.globalValue;
-
-		if(typeof configuration === "string"){
-			jar_file = configuration;
-			
-		}else{
-			jar_file = vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').path;
-			vscode.workspace.getConfiguration().update("jpipe.jarFile", jar_file);
-		}
-
-		return jar_file;
-	}
 
 	//helper function to get editor for updating
 	private getEditor(editor: vscode.TextEditor | undefined): vscode.TextEditor{
@@ -172,6 +145,61 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
 		}
 
 		return directory;
+	}
+
+	//helper function to fetch the log level on configuration change
+	private getLogLevel(): string{
+		let log_level: string;
+		let configuration = vscode.workspace.getConfiguration().inspect("jpipe.logLevel")?.globalValue;
+			
+		if(typeof configuration === "string"){
+			log_level = configuration;
+		}else{
+			log_level = "error";
+		}
+
+		return log_level;
+	}
+
+	//helper function to fetch the input jar file path
+	private getJarFile(): string{
+		let jar_file: string;
+		let default_value = "";//must be kept in sync with the actual default value manually
+		let configuration = vscode.workspace.getConfiguration().inspect("jpipe.jarFile")?.globalValue;
+		
+		if(typeof configuration === "string"){
+			jar_file = configuration;
+		}else{
+			jar_file = default_value;
+		}
+		
+		if(jar_file === default_value){
+			jar_file = vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').path;
+			vscode.workspace.getConfiguration().update("jpipe.jarFile", jar_file);
+		}else if(!this.jarPathExists(jar_file)){
+			throw new Error("Specified jar path does not exist");
+		}
+
+		return jar_file;
+	}
+
+	private jarPathExists(file_path: string): boolean{
+		let jar_path_exists: boolean;
+		
+		try{
+			let file = vscode.Uri.file(file_path);
+			let new_uri =  vscode.Uri.joinPath(this.directory.uri, "example.jar");
+			
+			vscode.workspace.fs.copy(file, new_uri);
+			vscode.workspace.fs.delete(new_uri);
+			
+			jar_path_exists = true;
+		}catch(error: any){
+			this.output_channel.appendLine(error.toString());
+
+			jar_path_exists = false;
+		}
+		return jar_path_exists;
 	}
 }
 

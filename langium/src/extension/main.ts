@@ -24,7 +24,7 @@ export function activate(context: vscode.ExtensionContext): void {
     const output_channel = vscode.window.createOutputChannel("jpipe_console");
 
     //create needs for image generation
-    const save_image_command = new SaveImageCommand(context, window.activeTextEditor);
+    const save_image_command = new SaveImageCommand(context, window.activeTextEditor, output_channel);
     const image_generator = new ImageGenerator(save_image_command, output_channel);
     const preview_provider = new PreviewProvider(save_image_command, output_channel);
 

@@ -136,15 +136,14 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
         const { exec } = require('node:child_process');
 		const execPromise = util.promisify(exec);
 		
-		let command = await PreviewProvider.save_image_command.makeCommand({format: Format.SVG, save_image: false});
-
-		PreviewProvider.webviewPanel.title = PreviewProvider.save_image_command.getDiagramName();
-		
 		try{
+			let command = await PreviewProvider.save_image_command.makeCommand({format: Format.SVG, save_image: false});
+			PreviewProvider.webviewPanel.title = PreviewProvider.save_image_command.getDiagramName();
+	
 			const {stdout, stderr} = await execPromise(command);
 			this.output_channel.appendLine(stderr.toString());
 			PreviewProvider.svg_data = stdout;
-		} catch (error: any){
+		}catch (error: any){
 			this.output_channel.appendLine(error.toString());
 		}
 
@@ -154,10 +153,23 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 	
 	public async updateEditor(editor: vscode.TextEditor | undefined){
 		if (editor !== undefined && editor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
-			PreviewProvider.textPanel = vscode.window.showTextDocument(editor.document, vscode.ViewColumn.One, true);
-			PreviewProvider.webviewPanel.webview.html = PreviewProvider.getLoadingHTMLWebview();
-			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
-			this.resolveCustomTextEditor(editor.document, PreviewProvider.webviewPanel, token.token)
+			try{
+				PreviewProvider.textPanel = vscode.window.showTextDocument(editor.document, vscode.ViewColumn.One, true);
+				PreviewProvider.webviewPanel.webview.html = PreviewProvider.getLoadingHTMLWebview();
+				let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
+				this.resolveCustomTextEditor(editor.document, PreviewProvider.webviewPanel, token.token);
+			}
+			catch(error: any){
+				this.output_channel.appendLine("Image cannot be loaded due to: ");
+				this.output_channel.appendLine(error.toString());
+				
+				PreviewProvider.webviewPanel.webview.html =  `
+				<!DOCTYPE html>
+				<html lang="en">
+				<head>
+				</head>
+				`;
+			}
 		}
 	}
 

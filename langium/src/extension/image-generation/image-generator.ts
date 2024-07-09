@@ -4,13 +4,14 @@ import { SaveImageCommand } from './save-image-command.js';
 import { Command, CommandUser } from '../managers/command-manager.js';
 
 export class ImageGenerator implements CommandUser{
-	// Defines the command needed to execute the extension. 
-	private save_image_command: SaveImageCommand;
-
-	private types: ImageType[]; //possible image types and associated commands
-	
 	// New channel created in vscode terminal for user debugging.
 	private output_channel: vscode.OutputChannel;
+
+	// Defines the command needed to execute the extension. 
+	private save_image_command: SaveImageCommand;
+	
+	//possible image types and associated commands
+	private types: ImageType[]; 
     
 	constructor(save_image_command: SaveImageCommand, output_channel: vscode.OutputChannel) {
 		this.save_image_command = save_image_command;
