@@ -38,11 +38,11 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
 				this.jar_file = this.getJarFile();
 			}
 		}else if(isTextEditor(data)){
-			this.editor = this.getEditor(data);
+			const {editor, document, directory} = this.updateEditor(data);
 			
-			this.document = this.editor.document;
-			
-			this.directory = this.getDirectory(this.document);
+			this.editor = editor;
+			this.document = document;
+			this.directory = directory;
 		}
     }
 	
@@ -129,13 +129,21 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
         return output_file;
     }
 
-	//helper function to get editor for updating
-	private getEditor(editor: vscode.TextEditor | undefined): vscode.TextEditor{
+	//helper function to perform updates related to a new text editor
+	private updateEditor(editor: vscode.TextEditor | undefined): {editor: vscode.TextEditor, document: vscode.TextDocument, directory: vscode.WorkspaceFolder}{
+		let document: vscode.TextDocument;
+		let directory: vscode.WorkspaceFolder;
+
 		if(!editor){
 			editor = this.editor;
+			document = this.document;
+			directory = this.directory;
+		}else{
+			document = editor.document;
+			directory = this.getDirectory(document);
 		}
-		
-		return editor;
+
+		return{editor, document, directory};
 	}
 
 	//helper function to get directory for updating
@@ -143,7 +151,7 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
 		let directory = vscode.workspace.getWorkspaceFolder(document.uri);
 
 		if(!directory){
-			throw new Error("Directory not found");
+			directory = this.directory;
 		}
 
 		return directory;
