@@ -96,9 +96,11 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
 	//helper function to set default format
 	private getFormat(command_settings: CommandSettings): Format{
 		let format = command_settings.format;
+		
 		if(format === undefined){
 			format = Format.PNG;
 		}
+		
 		return format;
 	}
 

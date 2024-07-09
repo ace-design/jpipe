@@ -3,9 +3,10 @@ import util from "node:util";
 import { SaveImageCommand } from './save-image-command.js';
 import { Format } from './image-generator.js';
 import { Command, CommandUser } from '../managers/command-manager.js';
+import { EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent } from '../managers/event-manager.js';
 
 //altered from editorReader
-export class PreviewProvider implements vscode.CustomTextEditorProvider, CommandUser {
+export class PreviewProvider implements vscode.CustomTextEditorProvider, CommandUser, EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.TextEditorSelectionChangeEvent> {
 
 	// Defines the command needed to execute the extension. 
 	private static ext_command = "jpipe.vis";
@@ -46,6 +47,21 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 	public getCommands(): Command[] | Command{
 		return {command: PreviewProvider.ext_command_preview, callback: () => this.createWebview()};
 	}
+
+	public async update(editor: vscode.TextEditor | undefined): Promise<void>;
+    public async update(changes: vscode.TextEditorSelectionChangeEvent): Promise<void>;
+    public async update(data: (vscode.TextEditor | undefined) | vscode.TextEditorSelectionChangeEvent): Promise<void>{
+        if(PreviewProvider.webviewDisposed){
+			return;
+		}
+
+		if(isTextEditorSelectionChangeEvent(data)){
+            this.updateTextSelection(data);
+        }
+        else if(isTextEditor(data)){
+            this.updateEditor(data);
+        }
+    }
 
 	private async createWebview(): Promise<void>{
 		// If previous global webview id disposed, create a new one.
@@ -150,8 +166,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 		this.output_channel.appendLine("Executed Jar");
     }
 
-	
-	public async updateEditor(editor: vscode.TextEditor | undefined){
+	//helper function to update editor
+	private async updateEditor(editor: vscode.TextEditor | undefined){
 		if (editor !== undefined && editor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
 			try{
 				PreviewProvider.textPanel = vscode.window.showTextDocument(editor.document, vscode.ViewColumn.One, true);
@@ -173,8 +189,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 		}
 	}
 
-
-	public async updateTextSelection(event: vscode.TextEditorSelectionChangeEvent){
+	//helper function to update text selection
+	private async updateTextSelection(event: vscode.TextEditorSelectionChangeEvent){
 		if (event !== undefined && event.textEditor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
 			let new_diagram = PreviewProvider.save_image_command.getDiagramName();
 			
@@ -185,65 +201,55 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 			}
 		}
 	}
-	
-	// Event handler determining what the next active text editor is (when the user switched tabs).
-	changeDocumentSubscription = vscode.window.onDidChangeActiveTextEditor(async e => {
-		this.updateEditor(e);
-	});
 
-	// Event handler for determinining which diagram the user is on in the text editor. 
-	changeDocumentSelection = vscode.window.onDidChangeTextEditorSelection(async e => {
-		this.updateTextSelection(e);
-	});
+	private async updateTextDocument(vscode)
+	// HTML Code for the webview.
+	private static getHtmlForWebview(): string {
+		if(PreviewProvider.textPanel === undefined && vscode.window.activeTextEditor){
+			PreviewProvider.textPanel = vscode.window.showTextDocument(vscode.window.activeTextEditor.document, vscode.ViewColumn.One, true);
+		}
 
-// HTML Code for the webview.
-
-private static getHtmlForWebview(): string {
-	if(PreviewProvider.textPanel === undefined && vscode.window.activeTextEditor){
-		PreviewProvider.textPanel = vscode.window.showTextDocument(vscode.window.activeTextEditor.document, vscode.ViewColumn.One, true);
+		const svgContent = PreviewProvider.svg_data || ''; // Ensure svg_data is not null or undefined
+		return /* html */`
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>SVG Viewer</title>
+				<style>
+					body {
+						margin: 0;
+						padding: 0;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						height: 100vh;
+						background-color: #f0f0f0;
+					}
+					#svg-container {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						width: 100%;
+						height: 100%;
+					}
+					svg {
+						max-width: 100%;
+						max-height: 100%;
+						width: auto;
+						height: auto;
+					}
+				</style>
+			</head>
+			<body>
+				<div id="svg-container">
+					${svgContent}
+				</div>
+			</body>
+			</html>
+		`;
 	}
-
-    const svgContent = PreviewProvider.svg_data || ''; // Ensure svg_data is not null or undefined
-    return /* html */`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>SVG Viewer</title>
-            <style>
-                body {
-                    margin: 0;
-                    padding: 0;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100vh;
-                    background-color: #f0f0f0;
-                }
-                #svg-container {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    width: 100%;
-                    height: 100%;
-                }
-                svg {
-                    max-width: 100%;
-                    max-height: 100%;
-                    width: auto;
-                    height: auto;
-                }
-            </style>
-        </head>
-        <body>
-            <div id="svg-container">
-                ${svgContent}
-            </div>
-        </body>
-        </html>
-    `;
-}
 
 
 	private static getLoadingHTMLWebview(): string {

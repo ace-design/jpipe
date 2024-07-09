@@ -35,8 +35,8 @@ export function activate(context: vscode.ExtensionContext): void {
     );
 
     //register subscribers for events that need to monitor changes
-    event_manager.register(new EventRunner(window.onDidChangeTextEditorSelection), context_manager);
-    event_manager.register(new EventRunner(window.onDidChangeActiveTextEditor), context_manager, save_image_command);
+    event_manager.register(new EventRunner(window.onDidChangeTextEditorSelection), context_manager, preview_provider);
+    event_manager.register(new EventRunner(window.onDidChangeActiveTextEditor), context_manager, save_image_command, preview_provider);
     event_manager.register(new EventRunner(vscode.workspace.onDidChangeConfiguration), save_image_command);
 
     vscode.workspace.onDidChangeConfiguration(() =>{
