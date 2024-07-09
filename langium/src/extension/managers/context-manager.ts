@@ -64,8 +64,6 @@ export class ContextManager implements EventSubscriber<vscode.TextEditor | undef
                 let word_range = this.findDiagramNameRange(this.selection.active, this.document);
                 
                 cursor_at = this.cursorAt(class_type, word_range);
-            }else{
-                cursor_at = false;
             }
         }catch(error: any){
 
