@@ -7,7 +7,7 @@ export class ContextManager implements EventSubscriber<vscode.TextEditor | undef
     private contexts: Context[];
 
     //current text document
-    private document!: vscode.TextDocument;
+    private document!: vscode.TextDocument | undefined;
 
     //current text selection
     private selection!: vscode.Selection;
@@ -43,9 +43,15 @@ export class ContextManager implements EventSubscriber<vscode.TextEditor | undef
             });
         }
         else if(isTextEditor(data)){
-            if(data !== undefined){
+            if(data !== undefined && data.document.languageId == "jpipe"){
                 this.document = data.document;
+            }else{
+                this.document = undefined;
             }
+
+            this.contexts.forEach((context)=>{
+                vscode.commands.executeCommand('setContext',context.context_key, context.function.call(this, context.params));  
+            });
         }
     }
 
@@ -54,8 +60,13 @@ export class ContextManager implements EventSubscriber<vscode.TextEditor | undef
         let cursor_at: boolean = false;
         
         try{
-            let word_range = this.findDiagramNameRange(this.selection.active, this.document);
-            cursor_at = this.cursorAt(class_type, word_range);
+            if(this.document && this.selection){
+                let word_range = this.findDiagramNameRange(this.selection.active, this.document);
+                
+                cursor_at = this.cursorAt(class_type, word_range);
+            }else{
+                cursor_at = false;
+            }
         }catch(error: any){
 
         }
@@ -70,15 +81,17 @@ export class ContextManager implements EventSubscriber<vscode.TextEditor | undef
         let class_correct = false;
         let diagram_starts = false;
         let diagram_ends = false;
-
-        if(word_range === undefined){
-            word_range = this.document.getWordRangeAtPosition(this.selection.active);
-        }
-            
-        if(word_range){
-            class_correct = this.isClassCorrect(word_range, this.document, class_type);
-            diagram_starts = this.diagramStarts(word_range, this.document);
-            diagram_ends = this.diagramEnds(word_range, this.document);
+        
+        if(this.document){
+            if(word_range === undefined && this.selection){
+                word_range = this.document.getWordRangeAtPosition(this.selection.active);
+            }
+                
+            if(word_range){
+                class_correct = this.isClassCorrect(word_range, this.document, class_type);
+                diagram_starts = this.diagramStarts(word_range, this.document);
+                diagram_ends = this.diagramEnds(word_range, this.document);
+            }
         }
 
         return class_correct && diagram_starts && diagram_ends;

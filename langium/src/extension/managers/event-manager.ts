@@ -35,7 +35,7 @@ export class EventRunner<T>{
 //manages subscribers of more than one event runner, provides registration service
 export class EventManager{
     private events: EventRunner<any>[];
-
+    
     constructor(){
         this.events = [];
     }
