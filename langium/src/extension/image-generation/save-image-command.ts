@@ -33,8 +33,7 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
 			else if(data.affectsConfiguration("jpipe.jarFile")){
 				this.jar_file = this.getJarFile();
 			}
-		}
-		else if(isTextEditor(data)){
+		}else if(isTextEditor(data)){
 			this.editor = this.getEditor(data);
 			
 			this.document = this.editor.document;
@@ -158,7 +157,7 @@ export class SaveImageCommand implements EventSubscriber<vscode.TextEditor | und
 	//helper function to get editor for updating
 	private getEditor(editor: vscode.TextEditor | undefined): vscode.TextEditor{
 		if(!editor){
-			throw new Error("Editor not found");
+			editor = this.editor;
 		}
 		
 		return editor;
