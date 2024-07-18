@@ -1,5 +1,5 @@
-import { type ValidationAcceptor, type ValidationChecks } from 'langium';
-import type { JpipeAstType, Model} from '../generated/ast.js';
+import { Reference, type ValidationAcceptor, type ValidationChecks } from 'langium';
+import type { JpipeAstType, Model, Support, Variable} from '../generated/ast.js';
 import type { JpipeServices } from '../jpipe-module.js';
 
 
@@ -24,52 +24,59 @@ export class JpipeValidator {
         this.checkSupportingStatements(model, accept);
     }
 
-    //verifies variable naming
-    checkNaming(model: Model, accept: ValidationAcceptor): void{
+    //Checks that variables are defined
+    private checkVariables(model: Model, accept: ValidationAcceptor): void{
         model.entries.forEach( (entry) =>{
-            entry.variables.forEach((variable)=>{
-                let variableName = variable.name;
-                let pattern = /^[A-Z][a-z]*/;
-                if(!pattern.test(variableName)){
-                    accept("warning", "Your name does not match the naming requirements (must start with a capital)", {
-                        node: variable
-                    });
-                };
+            entry.supports.forEach( (support) =>{
+                this.checkSupport(support, accept);
             });
         });
     }
 
-    //theoretically checks that variables are defined
-    checkVariables(model: Model, accept: ValidationAcceptor): void{
-        model.entries.forEach( (entry) =>{
-            entry.supports.forEach( (support) =>{
-                if(support.left.ref !== undefined && support.right.ref !==undefined){
-                    let leftKind = support.left.ref?.kind;
-                    let rightKind = support.right.ref?.kind;
-                    if(leftKind === undefined || rightKind === undefined){
-                        if(leftKind === undefined && rightKind === undefined){
-                            accept("error", `Variables ${support.left.$refText} and ${support.right.$refText} are undefined.`, {
-                                node:support
-                            });
-                        }else if(leftKind === undefined){
-                            accept("error", `Variable ${support.left.$refText} is undefined.`, {
-                                node:support
-                            });
-                        }else if(rightKind === undefined){
-                            accept("error", `Variable ${support.right.$refText} is undefined.`, {
-                                node:support
-                            });
-                        }
-        
-                    }
-                }
+    //helper function to test if variables are defined
+    private checkSupport(support: Support, accept: ValidationAcceptor): void{
+        if(this.hasError(support.left, support.right)){
+            let errorStatement = this.getErrorStatement(support.left, support.right);
+            accept("error", errorStatement, {node: support});
+        }
+    }
 
-            });
-        });
+    //helper function to determine if there is an error in a support statement
+    private hasError(leftSupport: Reference<Variable>, rightSupport: Reference<Variable>): boolean{
+        let hasError: boolean;
+
+        let leftKind = leftSupport.ref?.kind;
+        let rightKind = rightSupport.ref?.kind;
+
+        if(leftKind === undefined || rightKind === undefined){
+           hasError = true; 
+        }else{
+            hasError = false;
+        }
+
+        return hasError;
+    }
+
+    //helper function to determine the necessary error statement
+    private getErrorStatement(leftSupport: Reference<Variable>, rightSupport: Reference<Variable>): string{
+        let errorStatement: string
+
+        let leftKind = leftSupport.ref?.kind;
+        let rightKind = rightSupport.ref?.kind;
+        
+        if(leftKind === undefined && rightKind === undefined){
+            errorStatement = `Variables ${leftSupport.$refText} and ${rightSupport.$refText} are undefined.`
+        }else if(leftKind === undefined){
+            errorStatement = `Variable ${leftSupport.$refText} is undefined.`
+        }else{
+            errorStatement = `Variable ${rightSupport.$refText} is undefined.`
+        }
+
+        return errorStatement;
     }
 
     //checks if support statements follow proper typing convention
-    checkSupportingStatements(model: Model, accept: ValidationAcceptor): void{
+    private checkSupportingStatements(model: Model, accept: ValidationAcceptor): void{
         let possibleSupports: Map<string, string[]> = new Map<string,string[]>([
             ['evidence', ['strategy']],
             ['strategy', ['sub-conclusion', 'conclusion']],
@@ -98,6 +105,4 @@ export class JpipeValidator {
             });
         });
     }
-
-
 }
