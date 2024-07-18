@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import util from "node:util";
 import { Command, CommandUser } from '../managers/command-manager.js';
 import { EventSubscriber, isTextEditor } from '../managers/event-manager.js';
-import { ConfigurationManager } from '../managers/configuration-manager.js';
+import { ConfigKey, ConfigurationManager } from '../managers/configuration-manager.js';
 
 export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextEditor | undefined>{
 	// New channel created in vscode terminal for user debugging.
@@ -76,7 +76,7 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 
 	//creates the command based on command settings
 	private async makeCommand(command_settings: CommandSettings): Promise<string>{
-		let jar_file = this.configuration.getConfiguration("jpipe.jarFile");
+		let jar_file = this.configuration.getConfiguration(ConfigKey.JARFILE);
 		
 		let input_file = this.document.uri;
 		
@@ -84,7 +84,7 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 		
 		let format = this.getFormat(command_settings);
 		
-		let log_level = this.configuration.getConfiguration("jpipe.logLevel");
+		let log_level = this.configuration.getConfiguration(ConfigKey.LOGLEVEL);
 		
 		let command = 'java -jar ' + jar_file + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
 		

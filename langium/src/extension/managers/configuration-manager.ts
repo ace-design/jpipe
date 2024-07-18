@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 import { EventSubscriber, isConfigurationChangeEvent, isTextEditor } from './event-manager.js';
 
 type Configuration<T> = {
-    readonly key: string,
-    readonly function: () => T,
+    readonly key: ConfigKey,
+    readonly update_function: () => T,
     value: T
 }
 
@@ -28,19 +28,25 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
 
         this.configurations = [
             {
-                key: "jpipe.logLevel",
-                function: this.updateLogLevel,
+                key: ConfigKey.LOGLEVEL,
+                update_function: this.updateLogLevel,
                 value: this.updateLogLevel()
             },
             {
-                key: "jpipe.jarFile",
-                function: this.updateJarFile,
+                key: ConfigKey.JARFILE,
+                update_function: this.updateJarFile,
                 value: this.updateJarFile()
+            },
+            {
+                key: ConfigKey.DEVMODE,
+                update_function: this.updateDeveloperMode,
+                value: this.updateDeveloperMode()
             }
         ]
 
         this.configuration_indices = this.setIndices(this.configurations);   
     }
+
 
     //updater functions
 	public async update(change: vscode.ConfigurationChangeEvent): Promise<void>;
@@ -53,21 +59,20 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
 		}
     }
 
-    //getter function to return the current value of any configuration being monitored
-    public getConfiguration(configuration_key: string): any{
-        let target_config: any;
-        
-        let config_index = this.configuration_indices.get(configuration_key);
-
-        if(config_index !== undefined){    
-            target_config = this.configurations[config_index].value;
-        }else{
-            throw new Error("Configuration: " + configuration_key + " cannot be found in configuration key list");
-        }
-
-       return target_config; 
+    //helper function to manage configuration updates
+    private updateConfiguration(configuration_change: vscode.ConfigurationChangeEvent): void{
+        this.configurations.forEach((configuration)=>{
+            if(configuration_change.affectsConfiguration(configuration.key)){
+                try{
+                    configuration.value = configuration.update_function.call(this);
+                }catch(error: any){
+                    this.output_channel.appendLine(error);
+                }
+                
+            }
+        });
     }
-
+    
     //helper function to manage editor updates
     private updateEditor(editor: vscode.TextEditor | undefined): void{
         if(editor){
@@ -80,24 +85,10 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
         }
     }
 
-    //helper function to manage configuration updates
-    private updateConfiguration(configuration_change: vscode.ConfigurationChangeEvent): void{
-        this.configurations.forEach((configuration)=>{
-            if(configuration_change.affectsConfiguration(configuration.key)){
-                try{
-                    configuration.value = configuration.function.call(this);
-                }catch(error: any){
-                    this.output_channel.appendLine(error);
-                }
-               
-            }
-        });
-    }
-
     //helper function to fetch the current log level
     private updateLogLevel(): string{
         let log_level: string;
-		let configuration = vscode.workspace.getConfiguration().inspect("jpipe.logLevel")?.globalValue;
+		let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.LOGLEVEL)?.globalValue;
 			
 		if(typeof configuration === "string"){
 			log_level = configuration;
@@ -108,11 +99,27 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
 		return log_level;
     }
 
+    //helper function to fetch the current developer mode setting
+    private updateDeveloperMode(): boolean {
+        let developer_mode: boolean;
+		let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.DEVMODE)?.globalValue;
+
+        if(typeof configuration === "boolean"){
+            developer_mode = configuration;
+        }else{
+            developer_mode = false;
+        }
+
+        return developer_mode;
+    }
+
     //helper function to fetch and verify the input jar file path
 	private updateJarFile(): string{
 		let jar_file: string;
+        let default_path: string;
+
 		let default_value = "";//must be kept in sync with the actual default value manually
-		let configuration = vscode.workspace.getConfiguration().inspect("jpipe.jarFile")?.globalValue;
+		let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.JARFILE)?.globalValue;
 		
 		if(typeof configuration === "string"){
 			jar_file = configuration;
@@ -120,15 +127,39 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
 			jar_file = default_value;
 		}
 		
-		if(jar_file === default_value){
-			jar_file = vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').path;
-			vscode.workspace.getConfiguration().update("jpipe.jarFile", jar_file);
+        default_path = vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').path;
+		
+        if(jar_file === default_value){
+			jar_file = default_path;
+			vscode.workspace.getConfiguration().update(ConfigKey.JARFILE, jar_file);
 		}else if(!this.jarPathExists(jar_file)){
-			throw new Error("Specified jar path does not exist");
+            let developer_mode = this.getConfiguration(ConfigKey.DEVMODE);
+            if(developer_mode){
+                throw new Error("This file does not exist, please try again");
+            }else{
+                jar_file = vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').path;
+            }
+            
 		}
 
 		return jar_file;
 	}
+
+
+    //getter function to return the current value of any configuration being monitored
+    public getConfiguration(configuration_key: ConfigKey): any{
+        let target_config: any;
+        
+        let config_index = this.configuration_indices.get(configuration_key);
+
+        if(config_index !== undefined){    
+            target_config = this.configurations[config_index].value;
+        }else{
+            throw new Error("Configuration: " + configuration_key + " cannot be found in configuration key list");
+        }
+
+        return target_config; 
+    }
 
     //helper function to verify jar file path
 	private jarPathExists(file_path: string): boolean{
@@ -164,4 +195,10 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
 
         return map;
     }
+}
+
+export enum ConfigKey{
+    LOGLEVEL = "jpipe.logLevel",
+    JARFILE = "jpipe.jarFile",
+    DEVMODE = "jpipe.developerMode"
 }
