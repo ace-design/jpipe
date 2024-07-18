@@ -56,13 +56,19 @@
         "configuration":{
             "title": "Jpipe Configuration",
             "properties": {
-                "jpipe.jarFile":{
+                "jpipe.developerMode": {
+                    "type": "boolean",
+                    "scope": "window",
+                    "default": false,
+                    "markdownDescription": "When developer mode is turned on, all automatic fixes are disabled"
+                },
+                "jpipe.jarFile": {
                     "type": "string",
                     "scope": "window",
                     "default": "",
                     "markdownDescription": "Set the path to the jar file compiler"
                 },
-                "jpipe.strictLeftFiltering":{
+                "jpipe.strictLeftFiltering": {
                     "type": "boolean",
                     "scope": "window",
                     "default": true,

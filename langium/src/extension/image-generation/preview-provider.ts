@@ -1,9 +1,8 @@
-import * as vscode from 'vscode'
-import util from "node:util";
-import { SaveImageCommand } from './save-image-command.js';
-import { Format } from './image-generator.js';
+import * as vscode from 'vscode';
+import { Format, ImageGenerator } from './image-generator.js';
 import { Command, CommandUser } from '../managers/command-manager.js';
 import { EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent } from '../managers/event-manager.js';
+
 
 //altered from editorReader
 export class PreviewProvider implements vscode.CustomTextEditorProvider, CommandUser, EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.TextEditorSelectionChangeEvent> {
@@ -31,15 +30,15 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 	// Global text panel used to display the jd code. 
 	private static textPanel: Thenable<vscode.TextEditor>;
 
-    private static save_image_command: SaveImageCommand;
+    private static image_generator: ImageGenerator;
 
-    constructor(save_image_command: SaveImageCommand, output_channel: vscode.OutputChannel) {
+    constructor(image_generator: ImageGenerator, output_channel: vscode.OutputChannel) {
 		// Without any initial data, must be empty string to prevent null error. 
 		PreviewProvider.svg_data = "";
 		this.output_channel = output_channel;
 		PreviewProvider.updating = false;
 		PreviewProvider.webviewDisposed = true;
-        PreviewProvider.save_image_command = save_image_command;
+        PreviewProvider.image_generator = image_generator;
 
 		vscode.window.registerCustomEditorProvider(PreviewProvider.ext_command, this);
 	}
@@ -51,16 +50,14 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 	public async update(editor: vscode.TextEditor | undefined): Promise<void>;
     public async update(changes: vscode.TextEditorSelectionChangeEvent): Promise<void>;
     public async update(data: (vscode.TextEditor | undefined) | vscode.TextEditorSelectionChangeEvent): Promise<void>{
-        if(PreviewProvider.webviewDisposed){
-			return;
+        if(!PreviewProvider.webviewDisposed){
+			if(isTextEditorSelectionChangeEvent(data)){
+				this.updateTextSelection(data);
+			}
+			else if(isTextEditor(data)){
+				this.updateEditor(data);
+			}
 		}
-
-		if(isTextEditorSelectionChangeEvent(data)){
-            this.updateTextSelection(data);
-        }
-        else if(isTextEditor(data)){
-            this.updateEditor(data);
-        }
     }
 
 	private async createWebview(): Promise<void>{
@@ -149,15 +146,10 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
 	// Executes the jar file for updated SVG
 	public async updateSVG(): Promise<void> {
-        const { exec } = require('node:child_process');
-		const execPromise = util.promisify(exec);
-		
 		try{
-			let command = await PreviewProvider.save_image_command.makeCommand({format: Format.SVG, save_image: false});
-			PreviewProvider.webviewPanel.title = PreviewProvider.save_image_command.getDiagramName();
-	
-			const {stdout, stderr} = await execPromise(command);
-			this.output_channel.appendLine(stderr.toString());
+			const {stdout} = await PreviewProvider.image_generator.generate({format: Format.SVG, save_image: false})
+			
+			PreviewProvider.webviewPanel.title = PreviewProvider.image_generator.getDiagramName();
 			PreviewProvider.svg_data = stdout;
 		}catch (error: any){
 			this.output_channel.appendLine(error.toString());
@@ -192,7 +184,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 	//helper function to update text selection
 	private async updateTextSelection(event: vscode.TextEditorSelectionChangeEvent){
 		if (event !== undefined && event.textEditor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
-			let new_diagram = PreviewProvider.save_image_command.getDiagramName();
+			let new_diagram = PreviewProvider.image_generator.getDiagramName();
 			
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
 			
