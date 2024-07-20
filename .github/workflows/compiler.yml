@@ -8,8 +8,6 @@ env:
 
 on:
   push: 
-    branches:
-      - main   
     paths:
       - 'ab-compiler/**'
   pull_request:
@@ -133,5 +131,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Compiler
-          path: jpipe.jar
+          path: ab-compiler/jpipe.jar
   
