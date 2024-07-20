@@ -148,6 +148,7 @@ jobs:
                 upload_url: ${{ steps.create_release.outputs.upload_url }}
                 asset_path: jpipe-${{ github.ref_name }}.jar
                 asset_name: jpipe-${{ github.ref_name }}.jar
+                asset_content_type: application/java-archive
 
             - name: Upload Release Asset -- Extension
               uses: actions/upload-release-asset@v1
@@ -157,6 +158,7 @@ jobs:
                 upload_url: ${{ steps.create_release.outputs.upload_url }}
                 asset_path: jpipe-extension-${{ github.ref_name }}.vsix
                 asset_name: jpipe-extension-${{ github.ref_name }}.vsix
+                asset_content_type: application/zip
 
             - name: Upload Release Asset -- Homebrew
               uses: actions/upload-release-asset@v1
@@ -166,4 +168,5 @@ jobs:
                 upload_url: ${{ steps.create_release.outputs.upload_url }}
                 asset_path: jpipe-${{ github.ref_name }}.tar.gz
                 asset_name: jpipe-${{ github.ref_name }}.tar.gz
+                asset_content_type: application/gzip
     
