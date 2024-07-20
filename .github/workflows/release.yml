@@ -61,7 +61,7 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                   name: jpipe-${{ github.ref_name }}.jar
-                  path: langium/jar/jpipe.jar
+                  path: langium/jar/
             
             - name: build extension
               run: |
@@ -90,7 +90,7 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                   name: jpipe-${{ github.ref_name }}.jar
-                  path: homebrew/jpipe.jar
+                  path: homebrew/
 
             - name: Create Homebrew artefact
               run: |
