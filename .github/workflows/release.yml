@@ -9,6 +9,10 @@ on:
         tags:
             - '*.*.*' # Only Admin can push such tags
 
+permissions:
+  packages: write
+  contents: write
+
 jobs:
     
     build_compiler:
