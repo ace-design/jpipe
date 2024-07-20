@@ -33,7 +33,6 @@ jobs:
 
       - name: Embed latest stable version of the compiler
         run: |
-
           wget -O ./jar/jpipe.jar https://github.com/ace-design/jpipe/releases/download/${{env.JPIPE_VERSION}}/jpipe.jar
 
       - name: Set up node.js
@@ -43,6 +42,7 @@ jobs:
 
       - name: Install vsce to package code
         run: |
+          npm i -g yo generator-langium
           npm install -g @vscode/vsce
       
       - name: Package extension as VSIX artefact
@@ -52,6 +52,6 @@ jobs:
       - name: Upload VSIX artefact
         uses: actions/upload-artifact@v4
         with:
-          name: Visual Code extension
-          path: jpipe-extension.vsix
+          name: jpipe-extension.vsix
+          path: langium/jpipe-extension.vsix
     
