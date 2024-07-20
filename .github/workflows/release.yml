@@ -132,18 +132,16 @@ jobs:
                   name: jpipe-${{ github.ref_name }}.tar.gz
                   path: release/jpipe-${{ github.ref_name }}.tar.gz
 
-            - name: Create release directory
+            - name: List artefacts to release
               run: |
                 ls -lh release
 
-            - name: Upload binaries to release
-              uses: svenstaro/upload-release-action@v2
+            - name: Create the release on GitHub
+              uses: ncipollo/release-action@v1
               with:
-                repo_token: ${{ secrets.GITHUB_TOKEN }}
-                file: release/*
-                tag: ${{ github.ref }}
-                overwrite: true
-                file_glob: true
+                artifacts: "release/*"
+                body: "Release automatically created by the CI/CD pipeline"
+                name: "Release ${{github.ref_name}}"
 
 
     
