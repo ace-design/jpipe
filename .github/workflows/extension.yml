@@ -9,11 +9,6 @@ on:
   pull_request:
     paths:
       - 'langium/**'
-  workflow_call:      # Allow the workflow to be called by othersinputs:
-    inputs:
-      compiler_available:
-        required: false
-        type: boolean
   workflow_dispatch:  # Can be triggered manually
 
 env:
@@ -35,26 +30,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      ###                                                                    ###
-      # If compiler available, get from artefacts. If not, get stable from web #
-      ###                                                                    ###
-
       - name: Embed latest stable version of the compiler
-        if: inputs.compiler_available == false
         run: |
           wget -O ./jar/jpipe.jar ${{env.JPIPE_WEB}}
-      
-      - name: retrieve compiler from environment
-        if: inputs.compiler_available == true
-        uses: actions/download-artifact@v4
-        with:
-          name: jpipe.jar
-          path: langium/jar/jpipe.jar
-
-      ###                          ###
-      # End of conditional behaviour #
-      ###                          ###
-
+  
       - name: Set up node.js
         uses: actions/setup-node@v4
         with:
