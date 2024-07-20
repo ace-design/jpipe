@@ -127,46 +127,15 @@ jobs:
               with:
                   name: jpipe-${{ github.ref_name }}.tar.gz
                   path: ./
-            
-            - name: Create release on github
-              id: create_release
-              uses: actions/create-release@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-              with:
-                tag_name: ${{ github.ref }}
-                release_name: Release ${{ github.ref_name }}
-                body: |
-                  Automatic release produced by CI/CD workflow
-                draft: false
-                prerelease: false
-            - name: Upload Release Asset -- Compiler
-              uses: actions/upload-release-asset@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                upload_url: ${{ steps.create_release.outputs.upload_url }}
-                asset_path: jpipe-${{ github.ref_name }}.jar
-                asset_name: jpipe-${{ github.ref_name }}.jar
-                asset_content_type: application/java-archive
 
-            - name: Upload Release Asset -- Extension
-              uses: actions/upload-release-asset@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Upload binaries to release
+              uses: svenstaro/upload-release-action@v2
               with:
-                upload_url: ${{ steps.create_release.outputs.upload_url }}
-                asset_path: jpipe-extension-${{ github.ref_name }}.vsix
-                asset_name: jpipe-extension-${{ github.ref_name }}.vsix
-                asset_content_type: application/zip
+                repo_token: ${{ secrets.GITHUB_TOKEN }}
+                file: jpipe-*
+                tag: ${{ github.ref }}
+                overwrite: true
+                file_glob: true
 
-            - name: Upload Release Asset -- Homebrew
-              uses: actions/upload-release-asset@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                upload_url: ${{ steps.create_release.outputs.upload_url }}
-                asset_path: jpipe-${{ github.ref_name }}.tar.gz
-                asset_name: jpipe-${{ github.ref_name }}.tar.gz
-                asset_content_type: application/gzip
+
     
