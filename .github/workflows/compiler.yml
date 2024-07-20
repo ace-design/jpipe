@@ -4,12 +4,12 @@ name: jPipe Compiler (action-based)
 
 env:
   JAVA_ENV_VERSION: '21'      # LTS version
-  FOLDER: './abc-compiler'   # Source code location
+  FOLDER: './ab-compiler'   # Source code location
 
 on:
   push:    
     paths:
-      - './abc-compiler/**'
+      - './ab-compiler/**'
   workflow_call:      # Allow the workflow to be called by others
   workflow_dispatch:  # Can be triggered manually
 
