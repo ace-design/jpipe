@@ -110,29 +110,33 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
+            - name: Create release directory
+              run: |
+                mkdir release
+
             - name: retrieve compiler
               uses: actions/download-artifact@v4
               with:
                   name: jpipe-${{ github.ref_name }}.jar
-                  path: ./
+                  path: release/jpipe-${{ github.ref_name }}.jar
 
             - name: retrieve extension
               uses: actions/download-artifact@v4
               with:
                 name: jpipe-extension-${{ github.ref_name }}.vsix
-                path: ./               
+                path: release/jpipe-extension-${{ github.ref_name }}.vsix    
             
             - name: retrieve homebrew
               uses: actions/download-artifact@v4
               with:
                   name: jpipe-${{ github.ref_name }}.tar.gz
-                  path: ./
+                  path: release/jpipe-${{ github.ref_name }}.tar.gz
 
             - name: Upload binaries to release
               uses: svenstaro/upload-release-action@v2
               with:
                 repo_token: ${{ secrets.GITHUB_TOKEN }}
-                file: jpipe-*
+                file: release/*
                 tag: ${{ github.ref }}
                 overwrite: true
                 file_glob: true
