@@ -5,17 +5,49 @@ on:
         inputs:
             version:
                 required: true
+                type: string
+            push_to_marketplace:
+                required: true
+                type: boolean
+            push_to_central:
+                required: true
+                type: boolean
 
 jobs:
     
     build_compiler:
         uses: ./.github/workflows/compiler.yml
 
+    release_compiler:
+        runs-on: ubuntu-latest
+        needs: [build_compiler]
+        if: inputs.push_to_central == true
+        steps:
+            - name: Deplopying to central
+              run: |
+                echo "TODO: implement release process on Maven Central"
+
     build_extension:
         needs: [build_compiler]
         uses: ./.github/workflows/extension.yml
         with:
             compiler_available: true
+
+    release_extension:
+        runs-on: ubuntu-latest
+        needs: [build_extension]
+        if: inputs.push_to_marketplace == true
+        steps:
+            - name: Retrieve extension
+              if: inputs.push_to_marketplace == true
+              uses: actions/download-artifact@v4
+              with:
+                name: jpipe-extension.vsix
+            - name: Publish extension to marketplace
+              if: inputs.push_to_marketplace == true
+              run: | 
+                vsce publish -p ${{ secrets.VS_MARKETPLACE_MGMT_TOKEN }}
+
 
     build_homebrew:
         needs: [build_compiler]
@@ -24,17 +56,61 @@ jobs:
             compiler_available: true
             version: ${{inputs.version}}
     
+
     release:
         runs-on: ubuntu-latest
         needs: [build_compiler, build_extension, build_homebrew]
         
         steps:
-            # Release extension
+            # Release extension, if wanted
+            - name: Checkout code
+              uses: actions/checkout@v4
             - name: Retrieve extension
               uses: actions/download-artifact@v4
               with:
                 name: jpipe-extension.vsix
-            - name: Publish extension to marketplace
-              run: | 
-                vsce publish -p ${{ secrets.VS_MARKETPLACE_MGMT_TOKEN }}
+            - name: Retrieve compiler
+              uses: actions/download-artifact@v4
+              with:
+                  name: jpipe.jar
+            - name: Retrieve homebrew artefact
+              uses: actions/download-artifact@v4
+              with:
+                name: jpipe-${{inputs.version}}.tar.gz
+                
+            - name: Create Release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+              with:
+                tag_name: ${{inputs.version}}
+                release_name: Release ${{ github.ref }}
+                body: Release triggered by Github Action.
+                draft: false
+                prerelease: false
+            - name: Upload Release Asset - Compiler
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }} 
+                asset_path: jpipe.jar
+                asset_name: jpipe.jar
+            - name: Upload Release Asset - Extension
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }} 
+                asset_path: jpipe-extension.vsix
+                asset_name: jpipe-extension.vsix
+            - name: Upload Release Asset - Homebrew
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }} 
+                asset_path: jpipe-${{inputs.version}}.tar.gz
+                asset_name: jpipe-${{inputs.version}}.tar.gz
 
