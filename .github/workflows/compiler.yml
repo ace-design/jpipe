@@ -7,9 +7,15 @@ env:
   FOLDER: './ab-compiler'   # Source code location
 
 on:
-  push:    
+  push: 
+    branches:
+      - main   
     paths:
-      - './ab-compiler/**'
+      - 'ab-compiler/**'
+  pull_request:
+    branches:
+      - main
+  
   workflow_call:      # Allow the workflow to be called by others
   workflow_dispatch:  # Can be triggered manually
 
