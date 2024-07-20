@@ -30,7 +30,6 @@ jobs:
 
             - name: Build compiler
               run: |
-                cd ab-compiler
                 mvn install
             
             - name: Upload JAR artefact
@@ -164,3 +163,4 @@ jobs:
                 upload_url: ${{ steps.create_release.outputs.upload_url }}
                 asset_path: jpipe-${{ github.ref }}.tar.gz
                 asset_name: jpipe-${{ github.ref }}.tar.gz
+    
