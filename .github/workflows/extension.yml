@@ -5,7 +5,7 @@ name: jPipe Language Extension
 on: 
   push:
     paths:
-    - '/langium/**'
+    - 'langium/**'
   workflow_call:      # Allow the workflow to be called by others
   workflow_dispatch:  # Can be triggered manually
 
