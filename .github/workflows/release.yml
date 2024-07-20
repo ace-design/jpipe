@@ -142,6 +142,17 @@ jobs:
                 artifacts: "release/*"
                 body: "Release automatically created by the CI/CD pipeline"
                 name: "Release ${{github.ref_name}}"
-
+            - name: Delete compiler artefact
+              uses: geekyeggo/delete-artifact@v5
+              with:
+                name: jpipe-${{ github.ref_name }}.jar
+            - name: Delete extension artefact
+              uses: geekyeggo/delete-artifact@v5
+              with:
+                name: jpipe-extension-${{ github.ref_name }}.vsix
+            - name: Delete homebrew artefact
+              uses: geekyeggo/delete-artifact@v5
+              with:
+                name: jpipe-${{ github.ref_name }}.tar.gz
 
     
