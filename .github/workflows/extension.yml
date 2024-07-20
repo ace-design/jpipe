@@ -6,6 +6,8 @@ on:
   push:
     paths:
     - '/langium/**'
+  workflow_call:      # Allow the workflow to be called by others
+  workflow_dispatch:  # Can be triggered manually
 
 env:
   NODEJS_VERSION: '21.2.0'

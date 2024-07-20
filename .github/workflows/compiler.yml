@@ -10,7 +10,8 @@ on:
   push:    
     paths:
       - './abc-compiler/**'
-  workflow_call:  # Allow the workflow to be called by others
+  workflow_call:      # Allow the workflow to be called by others
+  workflow_dispatch:  # Can be triggered manually
 
 jobs:
 
