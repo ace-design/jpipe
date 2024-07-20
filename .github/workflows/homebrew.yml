@@ -34,6 +34,7 @@ jobs:
             - name: Create Homebrew artefact
               run: |
                 cd homebrew
+                ls -lh 
                 tar czvf jpipe-formula.tar.gz *
             
             - name: Delete compiler artefact
