@@ -1,4 +1,4 @@
-# This is a basic workflow to help you get started with Actions
+# workflow to produce the VS code extension
 
 name: VS Code
 
@@ -9,12 +9,16 @@ on:
   pull_request:
     paths:
       - 'langium/**'
-  workflow_call:      # Allow the workflow to be called by others
+  workflow_call:      # Allow the workflow to be called by othersinputs:
+    inputs:
+      compiler_available:
+        required: false
+        type: boolean
   workflow_dispatch:  # Can be triggered manually
 
 env:
   NODEJS_VERSION: '21.2.0'
-  JPIPE_VERSION:  '0.1.0' # Release tag for the latest stable jpipe compiler      
+  JPIPE_WEB:  'https://github.com/ace-design/jpipe/releases/download/0.1.0/jpipe.jar' 
   FOLDER:         './langium'   # Source code location
 
 
@@ -31,9 +35,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      ###                                                                    ###
+      # If compiler available, get from artefacts. If not, get stable from web #
+      ###                                                                    ###
+
       - name: Embed latest stable version of the compiler
+        if: inputs.compiler_available == false
         run: |
-          wget -O ./jar/jpipe.jar https://github.com/ace-design/jpipe/releases/download/${{env.JPIPE_VERSION}}/jpipe.jar
+          wget -O ./jar/jpipe.jar ${{env.JPIPE_WEB}}
+      
+      - name: retrieve compiler from environment
+        if: inputs.compiler_available == true
+        uses: actions/download-artifact@v4
+        with:
+          name: jpipe.jar
+          path: ./jar/jpipe.jar
+
+      ###                          ###
+      # End of conditional behaviour #
+      ###                          ###
 
       - name: Set up node.js
         uses: actions/setup-node@v4

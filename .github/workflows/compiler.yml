@@ -1,6 +1,6 @@
-# This is a basic workflow to help you get started with Actions
+# Workflow to produce a version of the compiler
 
-name: compiler
+name: Compiler
 
 env:
   JAVA_ENV_VERSION: '21'      # LTS version

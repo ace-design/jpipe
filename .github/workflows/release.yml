@@ -1,0 +1,40 @@
+name: Release
+
+on: 
+    workflow_dispatch:  # Can be triggered manually
+        inputs:
+            version:
+                required: true
+
+jobs:
+    
+    build_compiler:
+        uses: ./.github/workflows/compiler.yml
+
+    build_extension:
+        needs: [build_compiler]
+        uses: ./.github/workflows/extension.yml
+        with:
+            compiler_available: true
+
+    build_homebrew:
+        needs: [build_compiler]
+        uses: ./.github/workflows/homebrew.yml
+        with:
+            compiler_available: true
+            version: ${{inputs.version}}
+    
+    release:
+        runs-on: ubuntu-latest
+        needs: [build_compiler, build_extension, build_homebrew]
+        
+        steps:
+            # Release extension
+            - name: Retrieve extension
+              uses: actions/download-artifact@v4
+              with:
+                name: jpipe-extension.vsix
+            - name: Publish extension to marketplace
+              run: | 
+                vsce publish -p ${{ secrets.VS_MARKETPLACE_MGMT_TOKEN }}
+
