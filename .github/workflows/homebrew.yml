@@ -2,15 +2,26 @@
 
 name: Homebrew
 
-on: 
-    workflow_dispatch:  # Can be triggered manually
-        inputs:
-            version:
-                required: true
+on:
+  workflow_call: 
+    inputs:
+      version:
+        required: true
+        type: string
+      compiler_available:
+        required: false
+        type: boolean
+  workflow_dispatch:  # Can be triggered manually
+    inputs:
+      version:
+        required: true
+        type: string
 
 jobs:
     
     build_compiler:
+        # skip compilation if compiler already available
+        if: inputs.compiler_available != true 
         uses: ./.github/workflows/compiler.yml
   
     release:
