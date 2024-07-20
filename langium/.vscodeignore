@@ -1,4 +1,8 @@
-.vscode/**
-.vscode-test/**
 .gitignore
-langium-quickstart.md
+.github
+.vscode
+node_modules
+src/
+tsconfig.json
+webpack.config.js
+esbuild.js

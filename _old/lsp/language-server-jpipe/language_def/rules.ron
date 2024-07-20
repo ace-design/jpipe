@@ -1,0 +1,107 @@
+LanguageDefinition (
+    language: (
+        name: "jpipe",
+        file_extensions: [ "jd" ]
+    ),
+    keywords: [ 
+        "pattern",
+        "@support",
+        "justification",
+        "is",
+        "evidence",
+        "strategy",
+        "sub-conclusion",
+        "conclusion",
+        "supports",
+        "load",
+        "implementation",
+        "of",
+        "implements",
+        "probe",
+        "expectation",
+        "operation",
+        "or",
+        "and",
+        "not",
+    ],
+    symbol_types: [
+        (name: "Justification", completion_type: Variable, highlight_type: Class),
+        (name: "Evidence", completion_type: Variable, highlight_type: Variable),
+        (name: "Strategy", completion_type: Variable, highlight_type: Function),
+        (name: "Conclusion", completion_type: Variable, highlight_type: Enum),
+        (name: "SubConclusion", completion_type: Variable, highlight_type: Macro),
+    ],
+    global_ast_rules: [],
+    ast_rules: [
+        Rule(
+            node_name: "Root", // Name of Rule (required)
+            is_scope: true, // defaults to false
+            children: [
+                (query: Kind("justification"), rule: Rule("Justification"))
+            ]
+        ),
+        Rule(
+            node_name: "Justification",
+            symbol: Init(type: "Justification", name_node: "Id"),
+            children: [
+                (query: Field("id"), rule: Direct("Id")),
+                (query: Kind("justif_body"), rule: Rule("JustificationBody"))
+            ]
+        ),
+        Rule(
+            node_name: "JustificationBody",
+            is_scope: true,            
+            children: [
+                (query: Kind("evidence"), rule: Rule("Evidence")),
+                (query: Kind("strategy"), rule: Rule("Strategy")),
+                (query: Kind("conclusion"), rule: Rule("Conclusion")),
+                (query: Kind("sub_conclusion"), rule: Rule("SubConclusion")),
+                (query: Kind("relation"), rule: Rule("Relation")),
+            ]
+        ),
+        Rule(
+            node_name: "Evidence",
+            symbol: Init(type: "Evidence", name_node: "Id"),
+            children: [
+                (query: Path([Kind("identified_element"), Field("id")]), rule: Direct("Id")),
+                (query: Path([Kind("identified_element"), Field("name")]), rule: Direct("Name"), highlight_type: String),
+            ]
+        ),
+        Rule(
+            node_name: "Strategy",
+            symbol: Init(type: "Strategy", name_node: "Id"),
+            children: [
+                (query: Path([Kind("identified_element"), Field("id")]), rule: Direct("Id")),
+                (query: Path([Kind("identified_element"), Field("name")]), rule: Direct("Name"), highlight_type: String),
+            ]
+        ),
+        Rule(
+            node_name: "Conclusion",
+            symbol: Init(type: "Conclusion", name_node: "Id"),
+            children: [
+                (query: Path([Kind("identified_element"), Field("id")]), rule: Direct("Id")),
+                (query: Path([Kind("identified_element"), Field("name")]), rule: Direct("Name"), highlight_type: String),
+            ]
+        ),
+        Rule(
+            node_name: "SubConclusion",
+            symbol: Init(type: "SubConclusion", name_node: "Id"),
+            children: [
+                (query: Path([Kind("identified_element"), Field("id")]), rule: Direct("Id")),
+                (query: Path([Kind("identified_element"), Field("name")]), rule: Direct("Name"), highlight_type: String),
+            ]
+        ),
+        Rule(
+            node_name: "Relation",
+            children: [
+                (query: Field("from"), rule: Rule("IdUsage")),
+                (query: Field("to"), rule: Rule("IdUsage")),
+            ]
+        ),      
+        Rule(
+            node_name: "IdUsage",
+            symbol: Usage
+        ),
+    ]
+)
+

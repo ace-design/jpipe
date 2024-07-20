@@ -1,4 +1,0 @@
-justification unsupported_conclusion {
-    conclusion C is "Conclusion 1"
-    // C has no support
-}
