@@ -118,19 +118,19 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                   name: jpipe-${{ github.ref_name }}.jar
-                  path: release/jpipe-${{ github.ref_name }}.jar
+                  path: release/
 
             - name: retrieve extension
               uses: actions/download-artifact@v4
               with:
                 name: jpipe-extension-${{ github.ref_name }}.vsix
-                path: release/jpipe-extension-${{ github.ref_name }}.vsix    
+                path: release/
             
             - name: retrieve homebrew
               uses: actions/download-artifact@v4
               with:
                   name: jpipe-${{ github.ref_name }}.tar.gz
-                  path: release/jpipe-${{ github.ref_name }}.tar.gz
+                  path: release/
 
             - name: List artefacts to release
               run: |
