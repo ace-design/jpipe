@@ -33,6 +33,11 @@ jobs:
                 cd homebrew
                 tar czvf jpipe-formula.tar.gz *
             
+            - name: Delete compiler artefact
+              uses: geekyeggo/delete-artifact@v5
+              with:
+                name: jpipe.jar
+
             - name:
               uses: actions/upload-artifact@v4
               with:
