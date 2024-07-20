@@ -12,4 +12,4 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo java -jar @@PREFIX@@/jpipe.jar "$@"
+java -jar @@PREFIX@@/jpipe.jar "$@"
