@@ -132,6 +132,10 @@ jobs:
                   name: jpipe-${{ github.ref_name }}.tar.gz
                   path: release/jpipe-${{ github.ref_name }}.tar.gz
 
+            - name: Create release directory
+              run: |
+                ls -lh release
+
             - name: Upload binaries to release
               uses: svenstaro/upload-release-action@v2
               with:
