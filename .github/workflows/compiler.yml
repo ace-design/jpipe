@@ -10,6 +10,8 @@ on:
   push: 
     paths:
       - 'ab-compiler/**'
+    tags-ignore:
+      - '**'
   pull_request:
     paths:
       - 'ab-compiler/**'
