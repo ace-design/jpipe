@@ -1,116 +1,166 @@
 name: Release
 
-on: 
-    workflow_dispatch:  # Can be triggered manually
-        inputs:
-            version:
-                required: true
-                type: string
-            push_to_marketplace:
-                required: true
-                type: boolean
-            push_to_central:
-                required: true
-                type: boolean
+env:
+  JAVA_ENV_VERSION: '21'      # LTS version
+  NODEJS_VERSION:   '21.2.0'  # TODO: updated for LTS (being 22 for langium?)
+
+on:
+    push:
+        tags:
+            - '*.*.*' # Only Admin can push such tags
 
 jobs:
     
     build_compiler:
-        uses: ./.github/workflows/compiler.yml
-
-    release_compiler:
+        defaults: 
+            run:
+                working-directory: './ab-compiler'
         runs-on: ubuntu-latest
-        needs: [build_compiler]
-        if: inputs.push_to_central == true
+        
         steps:
-            - name: Deplopying to central
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Java
+              uses: actions/setup-java@v4
+              with:
+                java-version: ${{env.JAVA_ENV_VERSION}}
+                distribution: 'adopt'
+                cache: 'maven'
+
+            - name: Build compiler
               run: |
-                echo "TODO: implement release process on Maven Central"
-
+                cd ab-compiler
+                mvn install
+            
+            - name: Upload JAR artefact
+              uses: actions/upload-artifact@v4
+              with:
+                name: jpipe-${{ github.ref }}.jar
+                path: ab-compiler/jpipe.jar
+    
     build_extension:
-        needs: [build_compiler]
-        uses: ./.github/workflows/extension.yml
-        with:
-            compiler_available: true
-
-    release_extension:
+        defaults: 
+            run:
+                working-directory: './langium'
         runs-on: ubuntu-latest
-        needs: [build_extension]
-        if: inputs.push_to_marketplace == true
+        needs: [build_compiler]
+
         steps:
-            - name: Retrieve extension
-              if: inputs.push_to_marketplace == true
+            - name: Checkout code
+              uses: actions/checkout@v4
+            
+            - name: Set up node.js
+              uses: actions/setup-node@v4
+              with:
+                node-version: '${{env.NODEJS_VERSION}}'
+            
+            - name: retrieve compiler
               uses: actions/download-artifact@v4
               with:
-                name: jpipe-extension.vsix
-            - name: Publish extension to marketplace
-              if: inputs.push_to_marketplace == true
-              run: | 
-                vsce publish -p ${{ secrets.VS_MARKETPLACE_MGMT_TOKEN }}
+                  name: jpipe-${{ github.ref }}.jar
+                  path: langium/jar/jpipe.jar
+            
+            - name: build extension
+              run: |
+                  npm install
+                  npm install -g @vscode/vsce
+                  vsce package -o jpipe-extension.vsix
 
-
-    build_homebrew:
-        needs: [build_compiler]
-        uses: ./.github/workflows/homebrew.yml
-        with:
-            compiler_available: true
-            version: ${{inputs.version}}
+            - name: Upload VSIX artefact
+              uses: actions/upload-artifact@v4
+              with:
+                name: jpipe-extension-${{ github.ref }}.vsix
+                path: langium/jpipe-extension.vsix
     
+    build_homebrew:
+        defaults: 
+            run:
+                working-directory: './homebrew'
+        runs-on: ubuntu-latest
+        needs: [build_compiler]
 
-    release:
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: retrieve compiler
+              uses: actions/download-artifact@v4
+              with:
+                  name: jpipe-${{ github.ref }}.jar
+                  path: homebrew/jpipe.jar
+
+            - name: Create Homebrew artefact
+              run: |
+                tar czvf jpipe-${{ github.ref }}.tar.gz *
+            
+            - name: Upload Homebrew artefact
+              uses: actions/upload-artifact@v4
+              with:
+                name: jpipe-${{ github.ref }}.tar.gz
+                path: homebrew/jpipe-${{ github.ref }}.tar.gz
+
+    release_artefacts:
         runs-on: ubuntu-latest
         needs: [build_compiler, build_extension, build_homebrew]
         
         steps:
-            # Release extension, if wanted
             - name: Checkout code
               uses: actions/checkout@v4
-            - name: Retrieve extension
+
+            - name: retrieve compiler
               uses: actions/download-artifact@v4
               with:
-                name: jpipe-extension.vsix
-            - name: Retrieve compiler
+                  name: jpipe-${{ github.ref }}.jar
+                  path: jpipe-${{ github.ref }}.jar
+
+            - name: retrieve extension
               uses: actions/download-artifact@v4
               with:
-                  name: jpipe.jar
-            - name: Retrieve homebrew artefact
+                name: jpipe-extension-${{ github.ref }}.vsix
+                path: jpipe-extension-${{ github.ref }}.vsix               
+            
+            - name: retrieve homebrew
               uses: actions/download-artifact@v4
               with:
-                name: jpipe-${{inputs.version}}.tar.gz
-                
-            - name: Create Release
+                  name: jpipe-${{ github.ref }}.tar.gz
+                  path: jpipe-${{ github.ref }}.tar.gz
+            
+            - name: Create release on github
               id: create_release
               uses: actions/create-release@v1
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
               with:
-                tag_name: ${{inputs.version}}
+                tag_name: ${{ github.ref }}
                 release_name: Release ${{ github.ref }}
-                body: Release triggered by Github Action.
+                body: |
+                  Automatic release produced by CI/CD workflow
                 draft: false
                 prerelease: false
-            - name: Upload Release Asset - Compiler
+            - name: Upload Release Asset -- Compiler
               uses: actions/upload-release-asset@v1
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                upload_url: ${{ steps.create_release.outputs.upload_url }} 
-                asset_path: jpipe.jar
-                asset_name: jpipe.jar
-            - name: Upload Release Asset - Extension
-              uses: actions/upload-release-asset@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                upload_url: ${{ steps.create_release.outputs.upload_url }} 
-                asset_path: jpipe-extension.vsix
-                asset_name: jpipe-extension.vsix
-            - name: Upload Release Asset - Homebrew
-              uses: actions/upload-release-asset@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                upload_url: ${{ steps.create_release.outputs.upload_url }} 
-                asset_path: jpipe-${{inputs.version}}.tar.gz
-                asset_name: jpipe-${{inputs.version}}.tar.gz
+                upload_url: ${{ steps.create_release.outputs.upload_url }}
+                asset_path: jpipe-${{ github.ref }}.jar
+                asset_name: jpipe-${{ github.ref }}.jar
 
+            - name: Upload Release Asset -- Extension
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }}
+                asset_path: jpipe-extension-${{ github.ref }}.vsix
+                asset_name: jpipe-extension-${{ github.ref }}.vsix
+
+            - name: Upload Release Asset -- Homebrew
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }}
+                asset_path: jpipe-${{ github.ref }}.tar.gz
+                asset_name: jpipe-${{ github.ref }}.tar.gz
