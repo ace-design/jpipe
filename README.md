@@ -41,6 +41,7 @@ The jPipe environment supports the definition of justification to support softwa
 ## Repository organization
 
   - `ab-compiler`: source code of the (action-based) compiler
+  - `brew`: 
   - `langium`: source code of the Visual Code extension
 
 ## Documentation
