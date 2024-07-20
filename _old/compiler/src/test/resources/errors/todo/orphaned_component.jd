@@ -1,0 +1,11 @@
+justification orphaned_component {
+
+    conclusion c is "my conclusion"
+    strategy s   is "my strategy"
+    evidence e   is "an evidence"
+    evidence e1  is "another unrelated evidence"
+    e supports s
+    s supports c
+
+}
+
