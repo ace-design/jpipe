@@ -42,7 +42,7 @@ jobs:
 
       - name: Install vsce to package code
         run: |
-          npm i -g yo generator-langium
+          npm install
           npm install -g @vscode/vsce
       
       - name: Package extension as VSIX artefact
