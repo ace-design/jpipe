@@ -32,14 +32,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Embed latest stable version of the compiler
-        uses: wei/wget@v1
-        with:
-          args: -O ./jar/jpipe.jar https://github.com/ace-design/jpipe/releases/download/0.1.0/jpipe.jar
+        run: |
+
+          wget -O ./jar/jpipe.jar https://github.com/ace-design/jpipe/releases/download/${{env.JPIPE_VERSION}}/jpipe.jar
 
       - name: Set up node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '{{env.NODEJS_VERSION}}'
+          node-version: '${{env.NODEJS_VERSION}}'
 
       - name: Install vsce to package code
         run: |
