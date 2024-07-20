@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: jPipe Language Extension
+name: VS Code
 
 on: 
   push: 

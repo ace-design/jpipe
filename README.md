@@ -6,6 +6,14 @@
 
 </div>
 
+
+<div align="center">
+
+[![jPipe Compiler (action-based)](https://github.com/ace-design/jpipe/actions/workflows/compiler.yml/badge.svg)](https://github.com/ace-design/jpipe/actions/workflows/compiler.yml) &nbsp; &nbsp; &nbsp; 
+[![jPipe Language Extension](https://github.com/ace-design/jpipe/actions/workflows/extension.yml/badge.svg)](https://github.com/ace-design/jpipe/actions/workflows/extension.yml)
+</div>
+
+
 The jPipe environment supports the definition of justification to support software maintenance activities. The name comes from "justified pipelines", as the key idea is to design an environment supporting the justification of CI/CD pipelines by design.
 
 ## General Information

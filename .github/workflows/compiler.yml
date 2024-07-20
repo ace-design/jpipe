@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: jPipe Compiler (action-based)
+name: compiler
 
 env:
   JAVA_ENV_VERSION: '21'      # LTS version
