@@ -37,6 +37,6 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: jpipe-${{inputs.version}}.tar.gz
-                  path: jpipe-formula.tar.gz
+                  path: homebrew/jpipe-formula.tar.gz
 
             
