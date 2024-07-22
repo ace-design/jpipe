@@ -1,44 +1,53 @@
 grammar Jpipe
 
 entry Model:
-    (entries+=Justification)*;
+    (entries += (Justification | Pattern))*;
 
-interface Class{
-    kind: 'justification' | 'pattern' | 'composition'
-    name: string
-}
+type Variable = JustificationVariable | PatternVariable;
 
-interface Variable{
-    kind: 'evidence' | 'strategy' | 'sub-conclusion' | 'conclusion'
-    name: string
-}
+type Instruction = JustificationInstruction | PatternInstruction;
 
-interface Instruction{
-    information: string
-}
-
-interface Support{
-    left: @Variable
-    right: @Variable
-}
+type Class = JustificationClass | PatternClass;
 
 Justification:
-    JustificationClass body=JustificationBody;
+    (JustificationClass | JustificationImplementsClass) body=JustificationBody;
 
-JustificationClass returns Class:
+JustificationClass:
     kind=('justification') name=ID;
 
-JustificationBody:
-    '{' (instructions+=JustificationInstruction | supports += JustificationSupport)* '}';
+JustificationImplementsClass:
+    kind=('justification') name=ID 'implements' class=[PatternClass];
 
-JustificationVariable returns Variable: 
+JustificationBody:
+    '{' (variables+=JustificationVariable | instructions+=JustificationInstruction | supports += JustificationSupport)* '}';
+
+JustificationVariable: 
     kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion') name=ID;
 
-JustificationInstruction returns Instruction:
+JustificationInstruction:
     JustificationVariable 'is' information=STRING;
 
-JustificationSupport returns Support:
-    left=[Variable:ID] 'supports' right=[Variable:ID];
+JustificationSupport:
+    left=[JustificationVariable:ID] 'supports' right=[JustificationVariable:ID];
+
+
+Pattern:
+    PatternClass body=PatternBody;
+
+PatternClass:
+    kind=('pattern') name=ID;
+
+PatternBody:
+    '{' (variables+=PatternVariable | instructions += PatternInstruction | supports += PatternSupport)* '}';
+
+PatternVariable: 
+    kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion' | '@support') name=ID;
+
+PatternInstruction:
+    PatternVariable 'is' information=STRING;
+
+PatternSupport:
+    left=[PatternVariable:ID] 'supports' right=[PatternVariable:ID];
 
 
 hidden terminal WS: /\s+/;

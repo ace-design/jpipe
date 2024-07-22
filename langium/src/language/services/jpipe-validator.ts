@@ -1,6 +1,7 @@
 import { Reference, type ValidationAcceptor, type ValidationChecks } from 'langium';
-import { isSupport, type JpipeAstType, type Support, type Model, type Variable} from '../generated/ast.js';
+import { JustificationSupport, JustificationVariable, PatternSupport, PatternVariable, Variable, type JpipeAstType, type Model} from '../generated/ast.js';
 import type { JpipeServices } from '../jpipe-module.js';
+import { isSupport } from './jpipe-completion-provider.js';
 
 
 /**
@@ -36,7 +37,7 @@ export class JpipeValidator {
     }
 
     //helper function to test if variables are defined
-    private checkSupport(support: Support, accept: ValidationAcceptor): void{
+    private checkSupport(support: PatternSupport | JustificationSupport, accept: ValidationAcceptor): void{
         if(this.hasError(support.left, support.right)){
             let errorStatement = this.getErrorStatement(support.left, support.right);
             accept("error", errorStatement, {node: support});
@@ -44,7 +45,7 @@ export class JpipeValidator {
     }
 
     //helper function to determine if there is an error in a support statement
-    private hasError(leftSupport: Reference<Variable>, rightSupport: Reference<Variable>): boolean{
+    private hasError(leftSupport: Reference<JustificationVariable | PatternVariable>, rightSupport: Reference<Variable>): boolean{
         let hasError: boolean;
 
         let leftKind = leftSupport.ref?.kind;
@@ -83,7 +84,8 @@ export class JpipeValidator {
             ['evidence', ['strategy']],
             ['strategy', ['sub-conclusion', 'conclusion']],
             ['sub-conclusion', ['strategy', 'conclusion']],
-            ['conclusion', []] 
+            ['conclusion', []] ,
+            ['@support', ['evidence', 'strategy', 'sub-conclusion', 'conclusion']]
         ]);
         
         model.entries.forEach( (entry) =>{

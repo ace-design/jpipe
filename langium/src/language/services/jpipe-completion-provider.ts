@@ -1,6 +1,6 @@
-import { AstNodeDescription, ReferenceInfo, Stream } from "langium";
+import { AstNode, AstNodeDescription, ReferenceInfo, Stream } from "langium";
 import { CompletionContext, DefaultCompletionProvider } from "langium/lsp";
-import { isSupport, isVariable, Support } from "../generated/ast.js";
+import { isJustificationClass, isJustificationImplementsClass, isJustificationInstruction, isJustificationSupport, isJustificationVariable, isPatternClass, isPatternInstruction, isPatternSupport, isPatternVariable, JustificationClass, JustificationImplementsClass, JustificationInstruction, JustificationSupport, JustificationVariable, PatternClass, PatternInstruction, PatternSupport, PatternVariable } from "../generated/ast.js";
 import { stream } from "../../../node_modules/langium/src/utils/stream.js"
 
 export class JpipeCompletionProvider extends DefaultCompletionProvider{
@@ -68,7 +68,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
     }
 
     //helper functino to determine which side of support statement we are on
-    onRightSide(context_node: Support){
+    onRightSide(context_node: PatternSupport | JustificationSupport){
         return context_node.left.ref !== undefined;
     }
    
@@ -175,4 +175,21 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
 
         return result;
     }
+}
+
+export function isSupport(node: AstNode | undefined): node is JustificationSupport | PatternSupport{
+    return isJustificationSupport(node) || isPatternSupport(node);
+}
+
+export function isVariable(node: AstNode | undefined): node is JustificationVariable | PatternVariable{
+    return isJustificationVariable(node) || isPatternVariable(node);
+}
+
+export function isInstruction(node: AstNode | undefined): node is JustificationInstruction | PatternInstruction{
+    return isJustificationInstruction(node) || isPatternInstruction(node);
+}
+
+
+export function isClass(node: AstNode | undefined): node is JustificationClass | JustificationImplementsClass | PatternClass{
+    return isJustificationClass(node) || isPatternClass(node) || isJustificationImplementsClass(node);
 }
