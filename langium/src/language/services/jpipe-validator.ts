@@ -1,5 +1,5 @@
 import { Reference, type ValidationAcceptor, type ValidationChecks } from 'langium';
-import type { JpipeAstType, Model, Support, Variable} from '../generated/ast.js';
+import type { JpipeAstType, JustificationSupport, Model, Variable} from '../generated/ast.js';
 import type { JpipeServices } from '../jpipe-module.js';
 
 
@@ -34,7 +34,7 @@ export class JpipeValidator {
     }
 
     //helper function to test if variables are defined
-    private checkSupport(support: Support, accept: ValidationAcceptor): void{
+    private checkSupport(support: JustificationSupport, accept: ValidationAcceptor): void{
         if(this.hasError(support.left, support.right)){
             let errorStatement = this.getErrorStatement(support.left, support.right);
             accept("error", errorStatement, {node: support});

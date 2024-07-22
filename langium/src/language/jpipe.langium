@@ -3,25 +3,23 @@ grammar Jpipe
 entry Model:
     (entries+=Justification)*;
 
-
-
 Justification:
     JustificationClass body=JustificationBody;
 
-JustificationClass:
+JustificationClass infers Class:
     kind=('justification') name=ID;
 
 JustificationBody:
     '{' (variables+=JustificationVariable | instructions+=JustificationInstruction | supports += JustificationSupport )* '}';
 
-JustificationVariable: 
+JustificationVariable infers Variable: 
     kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion') name=ID;
 
 JustificationInstruction:
     JustificationVariable 'is' information=STRING;
 
 JustificationSupport:
-    left=[JustificationVariable:ID] 'supports' right=[JustificationVariable:ID];
+    left=[Variable:ID] 'supports' right=[Variable:ID];
 
 
 hidden terminal WS: /\s+/;

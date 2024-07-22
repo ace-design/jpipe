@@ -1,6 +1,6 @@
 import { AstNodeDescription, ReferenceInfo, Stream } from "langium";
 import { CompletionContext, DefaultCompletionProvider } from "langium/lsp";
-import { Support, isSupport, isVariable } from "../generated/ast.js";
+import { isJustificationSupport, isVariable, JustificationSupport } from "../generated/ast.js";
 import { stream } from "../../../node_modules/langium/src/utils/stream.js"
 
 export class JpipeCompletionProvider extends DefaultCompletionProvider{
@@ -23,7 +23,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
         let variables = this.findVariables(potential_references);
 
         //if the current context is of a supporting statement, determines which variables should appear for autocomplete
-        if(isSupport(_context.node)){
+        if(isJustificationSupport(_context.node)){
             let support_variables: AstNodeDescription[];
             
             if(this.onRightSide(_context.node)){
@@ -68,7 +68,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
     }
 
     //helper functino to determine which side of support statement we are on
-    onRightSide(context_node: Support){
+    onRightSide(context_node: JustificationSupport){
         return context_node.left.ref !== undefined;
     }
    
@@ -79,7 +79,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
     getRightVariables(variables: AstNodeDescription[], _context: CompletionContext): AstNodeDescription[]{
         let rightVariables: AstNodeDescription[] = [];
         
-        if(isSupport(_context.node)){
+        if(isJustificationSupport(_context.node)){
             if(_context.node.left.ref !== undefined){
                 let supporter_kind = _context.node.left.ref.kind;
                 let allowable_types = this.typeMap.get(supporter_kind);
