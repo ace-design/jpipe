@@ -27,7 +27,7 @@ export class JpipeValidator {
     //Checks that variables are defined
     private checkVariables(model: Model, accept: ValidationAcceptor): void{
         model.entries.forEach( (entry) =>{
-            entry.supports.forEach( (support) =>{
+            entry.body.supports.forEach( (support) =>{
                 this.checkSupport(support, accept);
             });
         });
@@ -85,7 +85,8 @@ export class JpipeValidator {
         ]);
         
         model.entries.forEach( (entry) =>{
-            entry.supports.forEach( (support) =>{
+            entry.body.supports
+            entry.body.supports.forEach( (support) =>{
                 if(support.left.ref !== undefined && support.right.ref !==undefined){
                     let leftKind = support.left.ref?.kind;
                     let rightKind = support.right.ref?.kind;

@@ -1,22 +1,28 @@
 grammar Jpipe
 
 entry Model:
-    (entries+=Body)*;
+    (entries+=Justification)*;
 
-Body:
-    Justification;
+
 
 Justification:
-    kind=('justification') name=ID '{' (variables+=Variable | instructions+=Instruction | supports += Support )* '}';
+    JustificationClass body=JustificationBody;
 
-Variable: 
+JustificationClass:
+    kind=('justification') name=ID;
+
+JustificationBody:
+    '{' (variables+=JustificationVariable | instructions+=JustificationInstruction | supports += JustificationSupport )* '}';
+
+JustificationVariable: 
     kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion') name=ID;
 
-Instruction:
-    Variable 'is' information=STRING;
+JustificationInstruction:
+    JustificationVariable 'is' information=STRING;
 
-Support:
-    left=[Variable:ID] 'supports' right=[Variable:ID];
+JustificationSupport:
+    left=[JustificationVariable:ID] 'supports' right=[JustificationVariable:ID];
+
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
