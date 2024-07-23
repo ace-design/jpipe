@@ -11,7 +11,7 @@ export function registerValidationChecks(services: JpipeServices) {
     const registry = services.validation.ValidationRegistry;
     const validator = services.validation.JpipeValidator;
     const checks: ValidationChecks<JpipeAstType> = {
-        Model: [validator.testChecks]
+        Model: [validator.allChecks]
     };
     registry.register(checks, validator);
 }
@@ -19,43 +19,54 @@ export function registerValidationChecks(services: JpipeServices) {
 export class JpipeValidator {
 
     //edit to implement validation hierarchy (no duplicate statements)
-    public allChecks(model: Model, accept: ValidationAcceptor): void{
-        this.checkVariables(model, accept);
-        this.checkSupportingStatements(model, accept);
-    }
-
-    public testChecks(model: Model, accept: ValidationAcceptor): void{
-        this.checkVariables(model, accept);
-
+    allChecks(model: Model, accept: ValidationAcceptor): void{
+        this.checkSupportStatements(model, accept);
     }
 
     //Checks that variables are defined
-    private checkVariables(model: Model, accept: ValidationAcceptor): void{
+    private checkSupportStatements(model: Model, accept: ValidationAcceptor): void{
         model.entries.forEach( (entry) =>{
             if(hasSupports(entry)){
                 entry.body.supports.forEach( (support) =>{
-                    if(isSupport(support)){
-                        this.checkSupport(support, accept);
-                    }
+                    if(this.referencesCorrect(support, accept)){
+                        this.checkSupportRelations(support, accept);
+                    }            
                 });
             }
         });
     }
 
     //helper function to test if variables are defined
-    private checkSupport(support: Support, accept: ValidationAcceptor): void{
+    private referencesCorrect(support: Support, accept: ValidationAcceptor): boolean{
+        let symbolNamesCorrect: boolean;
+
         try{
             let error = this.getErrorType(support.left, support.right);
-            if(error !== ErrorType.NoError){
+            if(error === ErrorType.NoError){
+                symbolNamesCorrect = true;
+            }else{
+                symbolNamesCorrect = false;
+                
                 let errorStatements = this.getError(error).call(this,support);
                 
                 errorStatements.forEach(statement =>{
                     accept("error", statement, {node: support});
-                })
+                });
             }
         }catch(error: any){
+            symbolNamesCorrect = false;
             accept("error", "Unknown issue with phrase", {node: support});
         }
+
+        return symbolNamesCorrect;
+    }
+
+    //checks if support statements follow proper typing convention
+    private checkSupportRelations(support: Support, accept: ValidationAcceptor): void{
+        if(!this.supportRelationCorrect(support)){
+            let error_message = this.getRelationErrorMessage(support);
+            accept("error", error_message, {node:support});
+        }                   
     }
 
     //helper function to determine if there is an error in a support statement
@@ -107,32 +118,33 @@ export class JpipeValidator {
         return errorStatement;
     };
 
-    //checks if support statements follow proper typing convention
-    private checkSupportingStatements(model: Model, accept: ValidationAcceptor): void{
-        model.entries.forEach( (entry) =>{
-            if(hasSupports(entry)){
-                entry.body.supports.forEach( (support) =>{
-                    if(isSupport(support)){
-                        if(support.left.ref !== undefined && support.right.ref !==undefined){
-                            let leftKind = support.left.ref.kind;
-                            let rightKind = support.right.ref.kind;
-                            let possibleRights: string[] | undefined = possible_supports.get(leftKind);
-                                
-                            if(rightKind !== undefined){
-                                if (possibleRights?.includes(rightKind)){
-                                    return;
-                                }
-                            }
-                            
-                            accept("error", `It is not possible to have ${leftKind} support ${rightKind}.`, {
-                                node:support
-                            });
-                        }
-                    }
-                });
-            }
+    private supportRelationCorrect(support: Support): boolean{
+        let supportCorrect: boolean;
 
-        });
+        if(support.left.ref !== undefined && support.right.ref !==undefined){
+            let rightKind = support.right.ref.kind;
+            let possibleRights = possible_supports.get(support.left.ref.kind);
+
+                if(possibleRights?.includes(rightKind)){
+                    supportCorrect = true;
+                }else{
+                    supportCorrect = false;
+                }
+        }else{
+            supportCorrect = false;
+        }
+
+        return supportCorrect;
+    }
+
+    private getRelationErrorMessage(support: Support): string{
+        let error_message: string = "";
+        
+        if(support.left.ref !== undefined && support.right.ref !== undefined){
+            error_message = `It is not possible to have ${support.left.ref.kind} support ${support.right.ref.kind}.`
+        }
+        
+        return error_message;
     }
 }
 
