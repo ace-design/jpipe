@@ -1,0 +1,17 @@
+load "./pattern_declaration.jd"
+
+
+justification J1 implements prover_pattern {
+
+    sub-conclusion Su1 is "Merged model is available"
+    strategy St0 is "Merge Atomic model"
+    evidence Su0 is "Atomic Petri nets are available"
+    Su0 supports St0
+    St0 supports Su1
+
+    evidence Su2 is "TINA is available"
+}
+
+
+
+

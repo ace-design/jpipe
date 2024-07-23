@@ -1,5 +1,0 @@
-justification syntax_error {
-
-    evidence Su1 is "Evidence 1
-    conclusion C is "Conclusion 1" // Missing closing quote for Su1
-}
