@@ -83,13 +83,6 @@ export class JpipeValidator {
 
     //checks if support statements follow proper typing convention
     private checkSupportingStatements(model: Model, accept: ValidationAcceptor): void{
-        let possibleSupports: Map<string, string[]> = new Map<string,string[]>([
-            ['evidence', ['strategy']],
-            ['strategy', ['sub-conclusion', 'conclusion']],
-            ['sub-conclusion', ['strategy', 'conclusion']],
-            ['conclusion', []] ,
-            ['@support', ['evidence', 'strategy', 'sub-conclusion', 'conclusion']]
-        ]);
         
         model.entries.forEach( (entry) =>{
             if(hasSupports(entry)){
@@ -98,7 +91,7 @@ export class JpipeValidator {
                         if(support.left.ref !== undefined && support.right.ref !==undefined){
                             let leftKind = support.left.ref?.kind;
                             let rightKind = support.right.ref?.kind;
-                            let possibleRights: string[] | undefined = possibleSupports.get(leftKind);
+                            let possibleRights: string[] | undefined = possible_supports.get(leftKind);
                                 
                             if(rightKind !== undefined){
                                 if (possibleRights?.includes(rightKind)){
@@ -118,4 +111,10 @@ export class JpipeValidator {
     }
 }
 
-
+export var possible_supports = new Map<string,string[]>([
+    ['evidence', ['strategy', '@support']],
+    ['strategy', ['sub-conclusion', 'conclusion', '@support']],
+    ['sub-conclusion', ['strategy', 'conclusion', '@support']],
+    ['conclusion', []] ,
+    ['@support', ['strategy', 'sub-conclusion', 'conclusion']]
+]);

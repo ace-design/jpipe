@@ -2,16 +2,9 @@ import { AstNode, AstNodeDescription, ReferenceInfo, Stream } from "langium";
 import { CompletionContext, DefaultCompletionProvider } from "langium/lsp";
 import { CompositionClass, CompositionInstruction, isCompositionClass, isCompositionInstruction, isJustification, isJustificationClass, isJustificationImplementsClass, isJustificationInstruction, isJustificationSupport, isJustificationVariable, isPattern, isPatternClass, isPatternInstruction, isPatternSupport, isPatternVariable, Justification, JustificationClass, JustificationImplementsClass, JustificationInstruction, JustificationSupport, JustificationVariable, Pattern, PatternClass, PatternInstruction, PatternSupport, PatternVariable } from "../generated/ast.js";
 import { stream } from "../../../node_modules/langium/src/utils/stream.js"
+import { possible_supports } from "./jpipe-validator.js";
 
 export class JpipeCompletionProvider extends DefaultCompletionProvider{
-
-    //track which variable types can support other variable types
-    readonly typeMap: Map<string, string[]> = new Map<string,string[]>([
-        ['evidence', ['strategy']],
-        ['strategy', ['sub-conclusion', 'conclusion']],
-        ['sub-conclusion', ['strategy', 'conclusion']],
-        ['conclusion', []] 
-    ]);
 
     //filters reference candidates for variables in support statements for autocompletion
     protected override getReferenceCandidates(refInfo: ReferenceInfo, _context: CompletionContext): Stream<AstNodeDescription> {
@@ -83,7 +76,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
             
             if(_context.node.left.ref !== undefined){
                 let supporter_kind = _context.node.left.ref.kind;
-                let allowable_types = this.typeMap.get(supporter_kind);
+                let allowable_types = possible_supports.get(supporter_kind);
 
                 rightVariables = this.findRightVariables(variables, allowable_types);
             }
@@ -132,7 +125,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
         variables.forEach(variable =>{
             if(isVariable(variable.node)){
                 let variable_kind = variable.node.kind;
-                let allowable_types = this.typeMap.get(variable_kind);
+                let allowable_types = possible_supports.get(variable_kind);
                 
                 if (!(allowable_types === undefined  || allowable_types.length === 0)){
                     left_variables.push(variable);
@@ -150,7 +143,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
 
         variables.forEach((variable) =>{
             if(isVariable(variable.node)){
-                let allowable_types = this.typeMap.get(variable.node.kind);
+                let allowable_types = possible_supports.get(variable.node.kind);
                 
                 if (this.hasRightVariableDefined(variables,allowable_types)){
                     left_variables.push(variable);
