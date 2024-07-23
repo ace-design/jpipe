@@ -70,16 +70,19 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
     //ex. if your JD defines evidence 'e1', strategy 'e2' and conclusion e3', when starting the statement:
     //e2 supports ___ auto-completion will only show e3 as an option
     getRightVariables(variables: AstNodeDescription[], _context: CompletionContext): AstNodeDescription[]{
-        let rightVariables: AstNodeDescription[] = [];
+        let rightVariables: AstNodeDescription[];
         
         if(isSupport(_context.node)){
-            
             if(_context.node.left.ref !== undefined){
                 let supporter_kind = _context.node.left.ref.kind;
                 let allowable_types = possible_supports.get(supporter_kind);
 
                 rightVariables = this.findRightVariables(variables, allowable_types);
+            }else{
+                rightVariables = [];
             }
+        }else{
+            rightVariables = [];
         }
         
         return rightVariables;
@@ -93,7 +96,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
             if(isVariable(variable.node)){
                 if(allowable_types?.includes(variable.node.kind)){
                     right_variables.push(variable);
-                } 
+                }
             }
         });
 

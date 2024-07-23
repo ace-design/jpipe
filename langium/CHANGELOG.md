@@ -2,6 +2,11 @@
 
 ### Unreleased
 
+- Leader: Cass Braun
+  - Features:
+    - Added patterns and compositions to grammar with basic language support
+
+
 ### v0.2.0 (2024-07-19)
 
   - Leader: Cass Braun
