@@ -47,8 +47,11 @@ export class JpipeValidator {
         try{
             let error = this.getErrorType(support.left, support.right);
             if(error !== ErrorType.NoError){
-                let errorStatement = this.getErrorStatement(error);
-                accept("error", errorStatement.call(this, support), {node: support});
+                let errorStatements = this.getError(error).call(this,support);
+                
+                errorStatements.forEach(statement =>{
+                    accept("error", statement, {node: support});
+                })
             }
         }catch(error: any){
             accept("error", "Unknown issue with phrase", {node: support});
@@ -59,9 +62,7 @@ export class JpipeValidator {
     private getErrorType(left: Reference<Variable>, right: Reference<Variable>): ErrorType{
         let errorType: ErrorType;
 
-        if(left.error !== undefined || right.error !== undefined){
-            errorType = ErrorType.LinkingError;
-        }else if(left.ref === undefined || right.ref === undefined){
+        if(left.ref === undefined || right.ref === undefined){
             errorType = ErrorType.ReferenceError;
         }else{
             errorType = ErrorType.NoError;
@@ -71,11 +72,10 @@ export class JpipeValidator {
     }
 
     //helper function to determine the necessary error statement
-    private getErrorStatement(errorType: ErrorType): (support: Support) => string{
-        let errorFunction: (support: Support) => string;
+    private getError(errorType: ErrorType): (support: Support) => string[]{
+        let errorFunction: (support: Support) => string[];
 
-        let errors = new Map<ErrorType, (support: Support) => string>([
-            [ErrorType.LinkingError, this.getLinkingError],
+        let errors = new Map<ErrorType, (support: Support) => string[]>([
             [ErrorType.ReferenceError, this.getReferenceError]
         ]);  
         
@@ -84,28 +84,24 @@ export class JpipeValidator {
         if(returnFunction){
             errorFunction = returnFunction;
         }else{
-            errorFunction =  () => "";
+            errorFunction =  () => [];
         }
         
         return errorFunction;
     }
-
-    private getLinkingError =  (support: Support): string => {
-        return "";
-    };
     
-    private getReferenceError =  (support: Support): string => {
-        let errorStatement: string
+    private getReferenceError =  (support: Support): string[] => {
+        let errorStatement: string[];
 
-        let left = support.left.ref;
-        let right = support.right.ref;
+        let left = support.left;
+        let right = support.right;
         
-        if(left === undefined && right === undefined){
-            errorStatement = `Left and right variable are undefined.`
-        }else if(left === undefined){
-            errorStatement = `Left variable is undefined.`
+        if(left.ref === undefined && right.ref === undefined){
+            errorStatement =[ `Variables ${left.$refText} and ${right.$refText} are undefined.`];
+        }else if(left.ref === undefined){
+            errorStatement = [`Variable ${left.$refText} is undefined.`];
         }else{
-            errorStatement = `Right variable is undefined.`
+            errorStatement = [`Variable ${right.$refText}is undefined.`];
         }
 
         return errorStatement;
@@ -142,7 +138,6 @@ export class JpipeValidator {
 
 enum ErrorType{
     NoError,
-    LinkingError,
     ReferenceError
 }
 
