@@ -1,54 +1,25 @@
 grammar Jpipe
 
 entry Model:
-    (entries += (Justification | Pattern | Composition))*;
+    (entries += (JustificationPattern | Composition))*;
 
-type Variable = JustificationVariable | PatternVariable;
+JustificationPattern:
+    Class body=Body;
 
-type Instruction = JustificationInstruction | PatternInstruction;
+Class:
+    kind=('justification' | 'pattern') (name=ID | name=ID 'implements' implemented=[Class]);
 
-type Class = JustificationClass | PatternClass;
+Body:
+    '{' (variables+=Variable | instructions+=Instruction | supports += Support)* '}';
 
-Justification:
-    (JustificationClass | JustificationImplementsClass) body=JustificationBody;
-
-JustificationClass:
-    kind=('justification') name=ID;
-
-JustificationImplementsClass:
-    kind=('justification') name=ID 'implements' class=[PatternClass];
-
-JustificationBody:
-    '{' (variables+=JustificationVariable | instructions+=JustificationInstruction | supports += JustificationSupport)* '}';
-
-JustificationVariable: 
-    kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion') name=ID;
-
-JustificationInstruction:
-    JustificationVariable 'is' information=STRING;
-
-JustificationSupport:
-    left=[JustificationVariable:ID] 'supports' right=[JustificationVariable:ID];
-
-
-Pattern:
-    PatternClass body=PatternBody;
-
-PatternClass:
-    kind=('pattern') name=ID;
-
-PatternBody:
-    '{' (variables+=PatternVariable | instructions += PatternInstruction | supports += PatternSupport)* '}';
-
-PatternVariable: 
+Variable: 
     kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion' | '@support') name=ID;
 
-PatternInstruction:
-    PatternVariable 'is' information=STRING;
+Instruction:
+    Variable 'is' information=STRING;
 
-PatternSupport:
-    left=[PatternVariable:ID] 'supports' right=[PatternVariable:ID];
-
+Support:
+    left=[Variable:ID] 'supports' right=[Variable:ID];
 
 
 Composition:
@@ -67,7 +38,9 @@ CompositionInstruction:
     CompositionVariable 'is' information=CompositionInformation;
 
 CompositionInformation:
-    left=[JustificationClass] 'with' right=[JustificationClass];
+    left=[Class] 'with' right=[Class];
+
+
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
 terminal STRING: /"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/;

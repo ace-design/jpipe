@@ -1,6 +1,6 @@
 import { AstNode, AstNodeDescription, ReferenceInfo, Stream } from "langium";
 import { CompletionContext, DefaultCompletionProvider } from "langium/lsp";
-import { CompositionClass, CompositionInstruction, isCompositionClass, isCompositionInstruction, isJustification, isJustificationClass, isJustificationImplementsClass, isJustificationInstruction, isJustificationSupport, isJustificationVariable, isPattern, isPatternClass, isPatternInstruction, isPatternSupport, isPatternVariable, Justification, JustificationClass, JustificationImplementsClass, JustificationInstruction, JustificationSupport, JustificationVariable, Pattern, PatternClass, PatternInstruction, PatternSupport, PatternVariable } from "../generated/ast.js";
+import { Class, CompositionClass, CompositionInstruction, Instruction, isClass, isCompositionClass, isCompositionInstruction, isInstruction,  isJustificationPattern, isSupport, isVariable, JustificationPattern, Support, } from "../generated/ast.js";
 import { stream } from "../../../node_modules/langium/src/utils/stream.js"
 import { possible_supports } from "./jpipe-validator.js";
 
@@ -61,7 +61,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
     }
 
     //helper functino to determine which side of support statement we are on
-    onRightSide(context_node: PatternSupport | JustificationSupport){
+    onRightSide(context_node: Support){
         return context_node.left.ref !== undefined;
     }
    
@@ -173,23 +173,15 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
     }
 }
 
-export function isSupport(node: AstNode | undefined): node is JustificationSupport | PatternSupport{
-    return isJustificationSupport(node) || isPatternSupport(node);
-}
-
-export function isVariable(node: AstNode | undefined): node is JustificationVariable | PatternVariable {
-    return isJustificationVariable(node) || isPatternVariable(node);
-}
-
-export function isInstruction(node: AstNode | undefined): node is JustificationInstruction | PatternInstruction | CompositionInstruction{
-    return isJustificationInstruction(node) || isPatternInstruction(node) || isCompositionInstruction(node);
+export function isInstructionType(node: AstNode | undefined): node is Instruction | CompositionInstruction{
+    return isInstruction(node) || isCompositionInstruction(node);
 }
 
 
-export function isClass(node: AstNode | undefined): node is JustificationClass | JustificationImplementsClass | PatternClass | CompositionClass{
-    return isJustificationClass(node) || isPatternClass(node) || isJustificationImplementsClass(node) || isCompositionClass(node);
+export function isClassType(node: AstNode | undefined): node is Class | CompositionClass{
+    return isClass(node) || isCompositionClass(node);
 }
 
-export function hasSupports(node: AstNode): node is Pattern | Justification{
-    return isPattern(node) || isJustification(node);
+export function hasSupports(node: AstNode): node is JustificationPattern{
+    return isJustificationPattern(node);
 }

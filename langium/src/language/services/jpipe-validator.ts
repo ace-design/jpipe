@@ -1,7 +1,7 @@
 import { Reference, type ValidationAcceptor, type ValidationChecks } from 'langium';
-import { JustificationSupport, JustificationVariable, PatternSupport, PatternVariable, Variable, type JpipeAstType, type Model} from '../generated/ast.js';
+import { isSupport, Support, Variable, type JpipeAstType, type Model} from '../generated/ast.js';
 import type { JpipeServices } from '../jpipe-module.js';
-import { hasSupports, isSupport } from './jpipe-completion-provider.js';
+import { hasSupports } from './jpipe-completion-provider.js';
 
 
 /**
@@ -40,7 +40,7 @@ export class JpipeValidator {
     }
 
     //helper function to test if variables are defined
-    private checkSupport(support: PatternSupport | JustificationSupport, accept: ValidationAcceptor): void{
+    private checkSupport(support: Support, accept: ValidationAcceptor): void{
         if(this.hasError(support.left, support.right)){
             let errorStatement = this.getErrorStatement(support.left, support.right);
             accept("error", errorStatement, {node: support});
@@ -48,7 +48,7 @@ export class JpipeValidator {
     }
 
     //helper function to determine if there is an error in a support statement
-    private hasError(leftSupport: Reference<JustificationVariable | PatternVariable>, rightSupport: Reference<Variable>): boolean{
+    private hasError(leftSupport: Reference<Variable>, rightSupport: Reference<Variable>): boolean{
         let hasError: boolean;
 
         let leftKind = leftSupport.ref?.kind;
