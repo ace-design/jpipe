@@ -1,7 +1,7 @@
 grammar Jpipe
 
 entry Model:
-    (entries += (Justification | Pattern))*;
+    (entries += (Justification | Pattern | Composition))*;
 
 type Variable = JustificationVariable | PatternVariable;
 
@@ -50,6 +50,24 @@ PatternSupport:
     left=[PatternVariable:ID] 'supports' right=[PatternVariable:ID];
 
 
+
+Composition:
+    CompositionClass body=CompositionBody;
+
+CompositionClass:
+    kind=('composition') name=ID;
+
+CompositionBody:
+    '{' (variables+=CompositionVariable | instructions += CompositionInstruction)* '}';
+
+CompositionVariable:
+    kind='justification' name=ID;
+
+CompositionInstruction:
+    CompositionVariable 'is' information=CompositionInformation;
+
+CompositionInformation:
+    left=[JustificationClass] 'with' right=[JustificationClass];
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
 terminal STRING: /"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/;

@@ -1,7 +1,7 @@
 import { Reference, type ValidationAcceptor, type ValidationChecks } from 'langium';
 import { JustificationSupport, JustificationVariable, PatternSupport, PatternVariable, Variable, type JpipeAstType, type Model} from '../generated/ast.js';
 import type { JpipeServices } from '../jpipe-module.js';
-import { isSupport } from './jpipe-completion-provider.js';
+import { hasSupports, isSupport } from './jpipe-completion-provider.js';
 
 
 /**
@@ -28,11 +28,14 @@ export class JpipeValidator {
     //Checks that variables are defined
     private checkVariables(model: Model, accept: ValidationAcceptor): void{
         model.entries.forEach( (entry) =>{
-            entry.body.supports.forEach( (support) =>{
-                if(isSupport(support)){
-                    this.checkSupport(support, accept);
-                }
-            });
+            if(hasSupports(entry)){
+                entry.body.supports.forEach( (support) =>{
+                    if(isSupport(support)){
+                        this.checkSupport(support, accept);
+                    }
+                });
+            }
+
         });
     }
 
@@ -89,25 +92,30 @@ export class JpipeValidator {
         ]);
         
         model.entries.forEach( (entry) =>{
-            entry.body.supports.forEach( (support) =>{
-                if(isSupport(support)){
-                    if(support.left.ref !== undefined && support.right.ref !==undefined){
-                        let leftKind = support.left.ref?.kind;
-                        let rightKind = support.right.ref?.kind;
-                        let possibleRights: string[] | undefined = possibleSupports.get(leftKind);
-                            
-                        if(rightKind !== undefined){
-                            if (possibleRights?.includes(rightKind)){
-                                return;
+            if(hasSupports(entry)){
+                entry.body.supports.forEach( (support) =>{
+                    if(isSupport(support)){
+                        if(support.left.ref !== undefined && support.right.ref !==undefined){
+                            let leftKind = support.left.ref?.kind;
+                            let rightKind = support.right.ref?.kind;
+                            let possibleRights: string[] | undefined = possibleSupports.get(leftKind);
+                                
+                            if(rightKind !== undefined){
+                                if (possibleRights?.includes(rightKind)){
+                                    return;
+                                }
                             }
+                            
+                            accept("error", `It is not possible to have ${leftKind} support ${rightKind}.`, {
+                                node:support
+                            });
                         }
-                        
-                        accept("error", `It is not possible to have ${leftKind} support ${rightKind}.`, {
-                            node:support
-                        });
                     }
-                }
-            });
+                });
+            }
+
         });
     }
 }
+
+
