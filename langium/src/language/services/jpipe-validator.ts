@@ -1,5 +1,5 @@
-import { Reference, type ValidationAcceptor, type ValidationChecks } from 'langium';
-import { isSupport, Support, Variable, type JpipeAstType, type Model} from '../generated/ast.js';
+import { type ValidationAcceptor, type ValidationChecks } from 'langium';
+import { isSupport, Support, type JpipeAstType, type Model} from '../generated/ast.js';
 import type { JpipeServices } from '../jpipe-module.js';
 import { hasSupports } from './jpipe-completion-provider.js';
 
@@ -11,7 +11,7 @@ export function registerValidationChecks(services: JpipeServices) {
     const registry = services.validation.ValidationRegistry;
     const validator = services.validation.JpipeValidator;
     const checks: ValidationChecks<JpipeAstType> = {
-        Model: [validator.allChecks]
+        Model: [validator.testChecks]
     };
     registry.register(checks, validator);
 }
@@ -19,9 +19,12 @@ export function registerValidationChecks(services: JpipeServices) {
 export class JpipeValidator {
 
     //edit to implement validation hierarchy (no duplicate statements)
-    allChecks(model: Model, accept: ValidationAcceptor): void{
-        //this.checkNaming(model, accept);
+    public allChecks(model: Model, accept: ValidationAcceptor): void{
         this.checkVariables(model, accept);
+        this.checkSupportingStatements(model, accept);
+    }
+
+    public testChecks(model: Model, accept: ValidationAcceptor): void{
         this.checkSupportingStatements(model, accept);
     }
 
@@ -41,41 +44,33 @@ export class JpipeValidator {
 
     //helper function to test if variables are defined
     private checkSupport(support: Support, accept: ValidationAcceptor): void{
-        if(this.hasError(support.left, support.right)){
-            let errorStatement = this.getErrorStatement(support.left, support.right);
+        if(this.hasError(support)){
+            let errorStatement = this.getErrorStatement(support);
             accept("error", errorStatement, {node: support});
         }
     }
 
     //helper function to determine if there is an error in a support statement
-    private hasError(leftSupport: Reference<Variable>, rightSupport: Reference<Variable>): boolean{
-        let hasError: boolean;
+    private hasError(support: Support): boolean{
+        let left = support.left.ref;
+        let right = support.right.ref;
 
-        let leftKind = leftSupport.ref?.kind;
-        let rightKind = rightSupport.ref?.kind;
-
-        if(leftKind === undefined || rightKind === undefined){
-           hasError = true; 
-        }else{
-            hasError = false;
-        }
-
-        return hasError;
+        return left === undefined || right === undefined;
     }
 
     //helper function to determine the necessary error statement
-    private getErrorStatement(leftSupport: Reference<Variable>, rightSupport: Reference<Variable>): string{
+    private getErrorStatement(support: Support): string{
         let errorStatement: string
 
-        let leftKind = leftSupport.ref?.kind;
-        let rightKind = rightSupport.ref?.kind;
+        let left = support.left.ref;
+        let right = support.right.ref;
         
-        if(leftKind === undefined && rightKind === undefined){
-            errorStatement = `Variables ${leftSupport.$refText} and ${rightSupport.$refText} are undefined.`
-        }else if(leftKind === undefined){
-            errorStatement = `Variable ${leftSupport.$refText} is undefined.`
+        if(left === undefined && right === undefined){
+            errorStatement = `Left and right variable are undefined.`
+        }else if(left === undefined){
+            errorStatement = `Left variable is undefined.`
         }else{
-            errorStatement = `Variable ${rightSupport.$refText} is undefined.`
+            errorStatement = `Right variable is undefined.`
         }
 
         return errorStatement;
