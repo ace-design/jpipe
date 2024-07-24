@@ -11,17 +11,17 @@ export class SupportValidator implements Validator<Support>{
 
     //validator function
     public validate(support: Support, accept: ValidationAcceptor): void {
-        if(this.referencesCorrect(support, accept)){
-            this.checkSupportRelations(support, accept);
+        if(SupportValidator.referencesCorrect(support, accept)){
+            SupportValidator.checkSupportRelations(support, accept);
         }  
     }
 
     //helper function to test if variables are defined
-    private referencesCorrect(support: Support, accept: ValidationAcceptor): boolean{
+    private static referencesCorrect(support: Support, accept: ValidationAcceptor): boolean{
         let symbolNamesCorrect: boolean;
 
         try{
-            let error = this.getErrorType(support.left, support.right);
+            let error = SupportValidator.getErrorType(support.left, support.right);
             if(error === ErrorType.NoError){
                 symbolNamesCorrect = true;
             }else{
@@ -43,7 +43,7 @@ export class SupportValidator implements Validator<Support>{
 
 
     //helper function to determine if there is an error in a support statement
-    private getErrorType(left: Reference<Variable>, right: Reference<Variable>): ErrorType{
+    private static getErrorType(left: Reference<Variable>, right: Reference<Variable>): ErrorType{
         let errorType: ErrorType;
 
         if(left.ref === undefined || right.ref === undefined){
@@ -56,11 +56,11 @@ export class SupportValidator implements Validator<Support>{
     }
 
     //helper function to determine the necessary error statement
-    private getError(errorType: ErrorType): (support: Support) => string[]{
+    private static getError(errorType: ErrorType): (support: Support) => string[]{
         let errorFunction: (support: Support) => string[];
 
         let errors = new Map<ErrorType, (support: Support) => string[]>([
-            [ErrorType.ReferenceError, this.getReferenceError]
+            [ErrorType.ReferenceError, SupportValidator.getReferenceError]
         ]);  
         
         let returnFunction = errors.get(errorType);
@@ -75,7 +75,7 @@ export class SupportValidator implements Validator<Support>{
     }
     
     //helper function which gets the text(s) for a reference error (variable undefined etc.)
-    private getReferenceError =  (support: Support): string[] => {
+    private static getReferenceError =  (support: Support): string[] => {
         let errorStatement: string[];
 
         let left = support.left;
@@ -93,7 +93,7 @@ export class SupportValidator implements Validator<Support>{
     };
 
     //checks if support statements follow proper typing convention
-    private checkSupportRelations(support: Support, accept: ValidationAcceptor): void{
+    private static checkSupportRelations(support: Support, accept: ValidationAcceptor): void{
         if(!this.supportRelationCorrect(support)){
             let error_message = this.getRelationErrorMessage(support);
             accept("error", error_message, {node:support});
@@ -101,7 +101,7 @@ export class SupportValidator implements Validator<Support>{
     }
     
     //helper function to check if the left and the right variable are of the right kind
-    private supportRelationCorrect(support: Support): boolean{
+    private static supportRelationCorrect(support: Support): boolean{
         let supportCorrect: boolean;
 
         if(support.left.ref !== undefined && support.right.ref !==undefined){
@@ -121,7 +121,7 @@ export class SupportValidator implements Validator<Support>{
     }
 
     //helper function to get the error message on incorrect relation
-    private getRelationErrorMessage(support: Support): string{
+    private static getRelationErrorMessage(support: Support): string{
         let error_message: string = "";
         
         if(support.left.ref !== undefined && support.right.ref !== undefined){

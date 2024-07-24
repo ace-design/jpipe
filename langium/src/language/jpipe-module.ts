@@ -3,14 +3,14 @@ import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModul
 import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/module.js';
 import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
 import { JpipeCompletionProvider } from './services/jpipe-completion-provider.js';
-import { makeValidators, registerValidationChecks, Validator } from './services/validation/main-validation.js';
+import { JpipeValidator, registerValidationChecks } from './services/validation/main-validation.js';
 
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export type JpipeAddedServices = {
     validation: {
-        validators: Validator<any>[]
+        validator: JpipeValidator
     }
 }
 
@@ -27,7 +27,7 @@ export type JpipeServices = LangiumServices & JpipeAddedServices
  */
 export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAddedServices> = {
     validation: {
-        validators: () => makeValidators()
+        validator: () => new JpipeValidator()
     },
     lsp:{
         CompletionProvider: (services) => new JpipeCompletionProvider(services),

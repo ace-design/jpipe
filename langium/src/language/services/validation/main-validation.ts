@@ -2,28 +2,27 @@ import { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 import type { JpipeServices } from '../../jpipe-module.js';
 import { SupportValidator } from './support-validator.js';
 import { Class, CompositionClass, CompositionInstruction, Instruction, isClass, isCompositionClass, isCompositionInstruction, isInstruction, JpipeAstType } from '../../generated/ast.js';
-
+import { JustificationVariableValidator } from './variable-validator.js';
 
 /**
  * Register custom validation checks.
  */
 export function registerValidationChecks(services: JpipeServices) {
     const registry = services.validation.ValidationRegistry;
-    const validators = services.validation.validators;
+    const validator = services.validation.validator;
 
-    validators.forEach(validator =>{
-        registry.register(validator.checks, validator);
-    });
+    registry.register(validator.checks, validator);
 }
 
+export class JpipeValidator{
+    public static support_validator = new SupportValidator();
+    public static justification_validator = new JustificationVariableValidator();
 
-//Create all validators here so they can be added to the module
-export function makeValidators(): Validator<any>[]{
-    return [
-        new SupportValidator()
-    ];
+    public readonly checks: ValidationChecks<JpipeAstType> = {
+        Variable: JpipeValidator.justification_validator.validate,
+        Support: JpipeValidator.support_validator.validate
+    }
 }
-
 
 //when creating a validator, implement this interface
 export interface Validator<T>{

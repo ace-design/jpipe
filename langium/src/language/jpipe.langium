@@ -1,13 +1,13 @@
 grammar Jpipe
 
 entry Model:
-    (justificationPatterns += JustificationPattern | compositions += Composition)*;
+    (classes+=Class | justificationPatterns+=JustificationPattern | compositions+=Composition)*;
 
 JustificationPattern:
-    Class body=Body;
+    kind=('justification' | 'pattern') Class body=Body;
 
 Class:
-    kind=('justification' | 'pattern') (name=ID | name=ID 'implements' implemented=[Class]);
+    (name=ID | name=ID 'implements' implemented=[Class]);
 
 Body:
     '{' (variables+=Variable | instructions+=Instruction | supports += Support)* '}';
