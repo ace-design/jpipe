@@ -1,15 +1,16 @@
 import { type Module, inject, } from 'langium';
 import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/module.js';
-import { JpipeValidator, registerValidationChecks } from './services/jpipe-validator.js';
 import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
 import { JpipeCompletionProvider } from './services/jpipe-completion-provider.js';
+import { makeValidators, registerValidationChecks, Validator } from './services/validation/main-validation.js';
+import { SupportValidator } from './services/validation/support-validator.js';
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export type JpipeAddedServices = {
     validation: {
-        JpipeValidator: JpipeValidator
+        validators: Validator<any>[]
     }
 }
 
@@ -26,7 +27,7 @@ export type JpipeServices = LangiumServices & JpipeAddedServices
  */
 export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAddedServices> = {
     validation: {
-        JpipeValidator: () => new JpipeValidator()
+        validators: () => makeValidators()
     },
     lsp:{
         CompletionProvider: (services) => new JpipeCompletionProvider(services),
@@ -34,8 +35,6 @@ export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAd
         
     }
 };
-
-
 
 /**
  * Create the full set of services required by Langium.
@@ -71,5 +70,3 @@ export function createJpipeServices(context: DefaultSharedModuleContext): {
     
     return { shared, Jpipe };
 }
-
-

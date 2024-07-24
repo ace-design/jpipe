@@ -1,39 +1,19 @@
-import { Reference, type ValidationAcceptor, type ValidationChecks } from 'langium';
-import { isSupport, Support, Variable, type JpipeAstType, type Model} from '../generated/ast.js';
-import type { JpipeServices } from '../jpipe-module.js';
-import { hasSupports } from './jpipe-completion-provider.js';
+import { Reference, ValidationAcceptor, ValidationChecks} from "langium";
+import { JpipeAstType, Support, Variable } from "../../generated/ast.js";
+import { possible_supports, Validator } from "./main-validation.js";
 
-
-/**
- * Register custom validation checks.
- */
-export function registerValidationChecks(services: JpipeServices) {
-    const registry = services.validation.ValidationRegistry;
-    const validator = services.validation.JpipeValidator;
-    const checks: ValidationChecks<JpipeAstType> = {
-        Model: [validator.allChecks]
+//class to validate supporting statements found in the document
+export class SupportValidator implements Validator<Support>{
+    //list of checks the validator makes
+    public checks: ValidationChecks<JpipeAstType> = {
+        Support: [this.validate]
     };
-    registry.register(checks, validator);
-}
 
-export class JpipeValidator {
-
-    //edit to implement validation hierarchy (no duplicate statements)
-    allChecks(model: Model, accept: ValidationAcceptor): void{
-        this.checkSupportStatements(model, accept);
-    }
-
-    //Checks that variables are defined
-    private checkSupportStatements(model: Model, accept: ValidationAcceptor): void{
-        model.entries.forEach( (entry) =>{
-            if(hasSupports(entry)){
-                entry.body.supports.forEach( (support) =>{
-                    if(this.referencesCorrect(support, accept)){
-                        this.checkSupportRelations(support, accept);
-                    }            
-                });
-            }
-        });
+    //validator function
+    public validate(support: Support, accept: ValidationAcceptor): void {
+        if(this.referencesCorrect(support, accept)){
+            this.checkSupportRelations(support, accept);
+        }  
     }
 
     //helper function to test if variables are defined
@@ -61,13 +41,6 @@ export class JpipeValidator {
         return symbolNamesCorrect;
     }
 
-    //checks if support statements follow proper typing convention
-    private checkSupportRelations(support: Support, accept: ValidationAcceptor): void{
-        if(!this.supportRelationCorrect(support)){
-            let error_message = this.getRelationErrorMessage(support);
-            accept("error", error_message, {node:support});
-        }                   
-    }
 
     //helper function to determine if there is an error in a support statement
     private getErrorType(left: Reference<Variable>, right: Reference<Variable>): ErrorType{
@@ -101,6 +74,7 @@ export class JpipeValidator {
         return errorFunction;
     }
     
+    //helper function which gets the text(s) for a reference error (variable undefined etc.)
     private getReferenceError =  (support: Support): string[] => {
         let errorStatement: string[];
 
@@ -118,6 +92,15 @@ export class JpipeValidator {
         return errorStatement;
     };
 
+    //checks if support statements follow proper typing convention
+    private checkSupportRelations(support: Support, accept: ValidationAcceptor): void{
+        if(!this.supportRelationCorrect(support)){
+            let error_message = this.getRelationErrorMessage(support);
+            accept("error", error_message, {node:support});
+        }
+    }
+    
+    //helper function to check if the left and the right variable are of the right kind
     private supportRelationCorrect(support: Support): boolean{
         let supportCorrect: boolean;
 
@@ -137,6 +120,7 @@ export class JpipeValidator {
         return supportCorrect;
     }
 
+    //helper function to get the error message on incorrect relation
     private getRelationErrorMessage(support: Support): string{
         let error_message: string = "";
         
@@ -148,16 +132,8 @@ export class JpipeValidator {
     }
 }
 
+//enum to represent error types
 enum ErrorType{
     NoError,
     ReferenceError
 }
-
-
-export var possible_supports = new Map<string,string[]>([
-    ['evidence', ['strategy', '@support']],
-    ['strategy', ['sub-conclusion', 'conclusion', '@support']],
-    ['sub-conclusion', ['strategy', 'conclusion', '@support']],
-    ['conclusion', []] ,
-    ['@support', ['strategy', 'sub-conclusion', 'conclusion']]
-]);

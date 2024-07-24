@@ -1,9 +1,10 @@
 import { AstNode, AstNodeDescription, ReferenceInfo, Stream } from "langium";
 import { CompletionContext, DefaultCompletionProvider } from "langium/lsp";
-import { Class, CompositionClass, CompositionInstruction, Instruction, isClass, isCompositionClass, isCompositionInstruction, isInstruction,  isJustificationPattern, isSupport, isVariable, JustificationPattern, Support, } from "../generated/ast.js";
+import { isSupport, isVariable, Support, } from "../generated/ast.js";
 import { stream } from "../../../node_modules/langium/src/utils/stream.js"
-import { possible_supports } from "./jpipe-validator.js";
+import { possible_supports } from "./validation/main-validation.js";
 
+//provides additional completion support for the jpipe language
 export class JpipeCompletionProvider extends DefaultCompletionProvider{
 
     //filters reference candidates for variables in support statements for autocompletion
@@ -157,8 +158,8 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
         return left_variables;
     }
 
-     //helper function for filtering left probable variables
-     hasRightVariableDefined(variables: AstNodeDescription[], allowable_types: string[] | undefined): boolean{        
+    //helper function for filtering left probable variables
+    hasRightVariableDefined(variables: AstNodeDescription[], allowable_types: string[] | undefined): boolean{        
         let result:boolean = false;
         
         variables.forEach(possible_variable=>{
@@ -171,17 +172,4 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
 
         return result;
     }
-}
-
-export function isInstructionType(node: AstNode | undefined): node is Instruction | CompositionInstruction{
-    return isInstruction(node) || isCompositionInstruction(node);
-}
-
-
-export function isClassType(node: AstNode | undefined): node is Class | CompositionClass{
-    return isClass(node) || isCompositionClass(node);
-}
-
-export function hasSupports(node: AstNode): node is JustificationPattern{
-    return isJustificationPattern(node);
 }

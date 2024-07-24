@@ -1,7 +1,7 @@
 grammar Jpipe
 
 entry Model:
-    (entries += (JustificationPattern | Composition))*;
+    (justificationPatterns += JustificationPattern | compositions += Composition)*;
 
 JustificationPattern:
     Class body=Body;
