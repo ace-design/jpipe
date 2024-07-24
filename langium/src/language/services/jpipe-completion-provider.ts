@@ -1,4 +1,4 @@
-import { AstNode, AstNodeDescription, ReferenceInfo, Stream } from "langium";
+import { AstNodeDescription, ReferenceInfo, Stream } from "langium";
 import { CompletionContext, DefaultCompletionProvider } from "langium/lsp";
 import { isSupport, isVariable, Support, } from "../generated/ast.js";
 import { stream } from "../../../node_modules/langium/src/utils/stream.js"

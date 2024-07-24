@@ -4,7 +4,7 @@ import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/mo
 import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
 import { JpipeCompletionProvider } from './services/jpipe-completion-provider.js';
 import { makeValidators, registerValidationChecks, Validator } from './services/validation/main-validation.js';
-import { SupportValidator } from './services/validation/support-validator.js';
+
 /**
  * Declaration of custom services - add your own service classes here.
  */
