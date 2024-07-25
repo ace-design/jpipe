@@ -20,22 +20,18 @@ export class SupportValidator implements Validator<Support>{
     private static referencesCorrect(support: Support, accept: ValidationAcceptor): boolean{
         let symbolNamesCorrect: boolean;
 
-        try{
-            let error = SupportValidator.getErrorType(support.left, support.right);
-            if(error === ErrorType.NoError){
-                symbolNamesCorrect = true;
-            }else{
-                symbolNamesCorrect = false;
-                
-                let errorStatements = this.getError(error).call(this,support);
-                
-                errorStatements.forEach(statement =>{
-                    accept("error", statement, {node: support});
-                });
-            }
-        }catch(error: any){
+        let error = SupportValidator.getErrorType(support.left, support.right);
+        
+        if(error === ErrorType.NoError){
+            symbolNamesCorrect = true;
+        }else{
             symbolNamesCorrect = false;
-            accept("error", "Unknown issue with phrase", {node: support});
+            
+            let errorStatements = this.getError(error).call(this,support);
+            
+            errorStatements.forEach(statement =>{
+                accept("error", statement, {node: support});
+            });
         }
 
         return symbolNamesCorrect;

@@ -14,6 +14,7 @@ export function registerValidationChecks(services: JpipeServices) {
     registry.register(validator.checks, validator);
 }
 
+//Register additional validation here
 export class JpipeValidator{
     public static support_validator = new SupportValidator();
     public static justification_validator = new JustificationVariableValidator();
