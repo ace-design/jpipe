@@ -11,7 +11,7 @@ export class JustificationVariableValidator implements Validator<Variable>{
 
     //actual function to validate the variable
     public validate(variable: Variable, accept: ValidationAcceptor): void {
-        let class_kind = variable.$container.$container.kind;
+        let class_kind = variable.$container.kind;
         if(class_kind === 'justification'){
              JustificationVariableValidator.validateJustificationVariables(variable, accept);
         }
@@ -21,7 +21,7 @@ export class JustificationVariableValidator implements Validator<Variable>{
     //helper function to validate variables within justification diagrams
     private static validateJustificationVariables(variable: Variable, accept: ValidationAcceptor){
         if(JustificationVariableValidator.isJustificationVariableAcceptable(variable)){
-            let error_message = "Variable kind: " + variable.kind + " is not included in a " + variable.$container.$container.kind + " diagram";
+            let error_message = "Variable kind: " + variable.kind + " is not included in a " + variable.$container.kind + " diagram";
             
             accept("error", error_message, {node: variable, property: "kind"});
         }

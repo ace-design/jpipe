@@ -2,7 +2,7 @@ import { type AstNode, type MaybePromise, } from 'langium';
 import { AstNodeHoverProvider } from 'langium/lsp';
 import { Hover } from 'vscode-languageserver';
 import { isClassType, isInstructionType } from './validation/main-validation.js';
-import { isVariable } from '../generated/ast.js';
+import { isClass, isVariable } from '../generated/ast.js';
 
 //provides hover for variables and class types
 export class JpipeHoverProvider extends AstNodeHoverProvider{
@@ -21,7 +21,7 @@ export class JpipeHoverProvider extends AstNodeHoverProvider{
             } 
         }
         
-        if(isClassType(node)){
+        if(isClass(node)){
             return {
                 contents: {
                     kind: 'markdown',

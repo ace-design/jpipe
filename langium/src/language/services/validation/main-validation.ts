@@ -1,7 +1,7 @@
 import { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 import type { JpipeServices } from '../../jpipe-module.js';
 import { SupportValidator } from './support-validator.js';
-import { Class, CompositionClass, CompositionInstruction, Instruction, isClass, isCompositionClass, isCompositionInstruction, isInstruction, JpipeAstType } from '../../generated/ast.js';
+import { Class, CompositionInstruction, Instruction, isClass, isCompositionInstruction, isInstruction, JpipeAstType } from '../../generated/ast.js';
 import { JustificationVariableValidator } from './variable-validator.js';
 
 /**
@@ -42,8 +42,8 @@ export function isInstructionType(node: AstNode | undefined): node is Instructio
 
 
 //function to determine if a given node is a class
-export function isClassType(node: AstNode | undefined): node is Class | CompositionClass{
-    return isClass(node) || isCompositionClass(node);
+export function isClassType(node: AstNode | undefined): node is Class {
+    return isClass(node);
 }
 
 

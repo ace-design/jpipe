@@ -1,16 +1,19 @@
 grammar Jpipe
 
 entry Model:
-    (classes+=Class | justificationPatterns+=JustificationPattern | compositions+=Composition)*;
+    (loads+=(Load))* (classes+=Class)*;
 
-JustificationPattern:
-    kind=('justification' | 'pattern') Class body=Body;
+Load: 
+    "load" class=[Class] "from" link=STRING;
 
 Class:
-    (name=ID | name=ID 'implements' implemented=[Class]);
+    kind=('justification' | 'pattern' | 'composition') (name=ID | name=ID "implements" implemented=[Class]) (JustificationPattern | Composition);
 
-Body:
+JustificationPattern:
     '{' (variables+=Variable | instructions+=Instruction | supports += Support)* '}';
+
+Composition:
+    '{' (variables+=CompositionVariable | instructions+=CompositionInstruction)* '}';
 
 Variable: 
     kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion' | '@support') name=ID;
@@ -20,16 +23,6 @@ Instruction:
 
 Support:
     left=[Variable:ID] 'supports' right=[Variable:ID];
-
-
-Composition:
-    CompositionClass body=CompositionBody;
-
-CompositionClass:
-    kind=('composition') name=ID;
-
-CompositionBody:
-    '{' (variables+=CompositionVariable | instructions += CompositionInstruction)* '}';
 
 CompositionVariable:
     kind='justification' name=ID;
