@@ -7,11 +7,7 @@ import { isClass, isVariable } from '../generated/ast.js';
 //provides hover for variables and class types
 export class JpipeHoverProvider extends AstNodeHoverProvider{
     protected getAstNodeHoverContent(node: AstNode): MaybePromise<Hover | undefined> {
-        if(isInstructionType(node)){
-            node.$cstNode
-        }
         if(isVariable(node)){
-            console.log('node');
             return {
                 contents: {
                     kind: 'markdown',

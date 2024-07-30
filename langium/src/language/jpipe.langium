@@ -1,10 +1,10 @@
 grammar Jpipe
 
 entry Model:
-    (loads+=(Load))* (class_kinds+=Class)*;
+    (loads+=(Load))* (class_kinds+=Class )*;
 
 Load: 
-    "load" class=[Class:ID] "from" link=STRING;
+    "load" name=STRING;
 
 interface Class{
     kind: ('justification' | 'pattern' | 'composition')
