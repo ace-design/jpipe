@@ -1,8 +1,9 @@
-import { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
+import { ValidationAcceptor, ValidationChecks } from 'langium';
 import type { JpipeServices } from '../../jpipe-module.js';
 import { SupportValidator } from './support-validator.js';
-import { Class, CompositionInstruction, Instruction, isClass, isCompositionInstruction, isInstruction, JpipeAstType } from '../../generated/ast.js';
+import { JpipeAstType } from '../../generated/ast.js';
 import { JustificationVariableValidator } from './variable-validator.js';
+import { PatternValidator } from './pattern-validator.js';
 
 /**
  * Register custom validation checks.
@@ -18,34 +19,19 @@ export function registerValidationChecks(services: JpipeServices) {
 export class JpipeValidator{
     public static support_validator = new SupportValidator();
     public static justification_validator = new JustificationVariableValidator();
-
+    public static pattern_validator = new PatternValidator();
     public readonly checks: ValidationChecks<JpipeAstType> = {
         Variable: JpipeValidator.justification_validator.validate,
-        Support: JpipeValidator.support_validator.validate
+        Support: JpipeValidator.support_validator.validate,
+        JustificationPattern: JpipeValidator.pattern_validator.validate
     }
 }
 
 //when creating a validator, implement this interface
 export interface Validator<T>{
-    //create a list of checks your validator makes ***must be of type T
-    checks: ValidationChecks<JpipeAstType>;
-
     //function which actually validates the given information
     validate(model: T, accept: ValidationAcceptor): void;
 }
-
-
-//function to determine if a given node is an instruction
-export function isInstructionType(node: AstNode | undefined): node is Instruction | CompositionInstruction{
-    return isInstruction(node) || isCompositionInstruction(node);
-}
-
-
-//function to determine if a given node is a class
-export function isClassType(node: AstNode | undefined): node is Class {
-    return isClass(node);
-}
-
 
 //data structure to represent which elements can support which, format is ['a', ['b', 'c']], where "a supports b" or "a supports c"
 export var possible_supports = new Map<string,string[]>([

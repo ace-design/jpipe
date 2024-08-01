@@ -22,10 +22,10 @@ Composition:
     '{' (variables+=CompositionVariable | instructions+=CompositionInstruction)* '}';
 
 Variable: 
-    kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion' | '@support') name=ID;
+    kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion' | '@support') name=ID Instruction;
 
 Instruction:
-    Variable 'is' information=STRING;
+    'is' information=STRING;
 
 Support:
     left=[Variable:ID] 'supports' right=[Variable:ID];
