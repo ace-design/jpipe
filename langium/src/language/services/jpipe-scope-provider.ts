@@ -1,7 +1,13 @@
-import { AstNode, DefaultScopeProvider, MapScope, ReferenceInfo, Scope, URI } from "langium";
+import { AstNode, DefaultScopeProvider, LangiumCompletionParser, LangiumCoreServices, LangiumDocuments, MapScope, ReferenceInfo, Scope, URI } from "langium";
 import { Class, isModel, Load, Model } from "../generated/ast.js";
 
 export class JpipeScopeProvider extends DefaultScopeProvider{
+    private langiumDocuments: () => LangiumDocuments;
+
+    constructor(services: LangiumCoreServices){
+        super(services)
+        this.langiumDocuments = () => services.shared.workspace.LangiumDocuments;
+    }
     protected override getGlobalScope(referenceType: string, _context: ReferenceInfo): Scope {
         let included_uris: Set<string> = new Set<string>();
 
@@ -25,6 +31,30 @@ export class JpipeScopeProvider extends DefaultScopeProvider{
             load_statements.push(load_statement);
         });
         
+        return load_statements;
+    }
+
+    //use complicated recursion to get all import statements referenced by the document
+    private getImports(document_imports: Set<URI>, all_imports: Set<URI>, doc_provider: LangiumDocuments): Set<URI>{
+        document_imports.forEach((doc_import) =>{
+            let load_statements = this.getLoadStatements(doc_import, doc_provider);
+
+            if(load_statements.length !== 0){
+                let new_document_uris = this.getURIs(load_statements);
+                this.getImports(new_document_uris, all_imports);
+            }
+        });
+    }
+
+    private getLoadStatements(doc_import: URI, document_provider: LangiumDocuments): Load[]{
+        let load_statements: Load[] = [];
+
+        let document = document_provider.getDocument(doc_import);
+
+        if(document){
+            let model = getModelNode(document.parseResult.value);
+        }
+
         return load_statements;
     }
 }
