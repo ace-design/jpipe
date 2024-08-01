@@ -1,22 +1,22 @@
-import { AstNodeDescription, Stream } from "langium";
-import { isVariable, Support } from "../../generated/ast.js";
-import { CompletionProvider } from "./jpipe-completion-provider.js";
+import { AstNodeDescription, ReferenceInfo, Stream } from "langium";
+import { isSupport, isVariable, Variable } from "../../generated/ast.js";
+import { JpipeCompletion } from "./jpipe-completion-provider.js";
 import { possible_supports } from "../validation/main-validation.js";
 
 
-export class SupportCompletionProvider implements CompletionProvider<Support>{
-    constructor(){
-    }
-
+export class SupportCompletionProvider implements JpipeCompletion{
     //returns all candidates from the given reference type
-    public getCandidates(potential_references: Stream<AstNodeDescription>, node: Support): Set<AstNodeDescription> {
+    public getCandidates(potential_references: Stream<AstNodeDescription>, refInfo: ReferenceInfo): Set<AstNodeDescription> {
         let strict_left_filtering = true;
-        let support_variables: Set<AstNodeDescription>;
+        let support_variables = new Set<AstNodeDescription>();
 
         let variables = this.findVariables(potential_references);
-        
-        if(this.onRightSide(node)){
-            support_variables = this.getRightVariables(variables, node);
+        if(refInfo.property === "right"){
+            if(isSupport(refInfo.container)){
+                if(isVariable(refInfo.container.left.ref)){
+                    support_variables = this.getRightVariables(variables, refInfo.container.left.ref);
+                }
+            } 
         }else{
             support_variables = this.getLeftVariables(variables, strict_left_filtering);
         }
@@ -37,24 +37,16 @@ export class SupportCompletionProvider implements CompletionProvider<Support>{
         return variables;
     }
 
-    //helper functino to determine which side of support statement we are on
-    private onRightSide(context_node: Support){
-        return context_node.left.ref !== undefined;
-    }
-    
-
     //autocompletes right-side variables so that only those which fit the format are shown
     //ex. if your JD defines evidence 'e1', strategy 'e2' and conclusion e3', when starting the statement:
     //e2 supports ___ auto-completion will only show e3 as an option
-    private getRightVariables(variables: Set<AstNodeDescription>, node: Support): Set<AstNodeDescription>{
+    private getRightVariables(variables: Set<AstNodeDescription>, node: Variable): Set<AstNodeDescription>{
         let rightVariables = new Set<AstNodeDescription>();
 
-        if(node.left.ref !== undefined){
-            let supporter_kind = node.left.ref.kind;
-            let allowable_types = possible_supports.get(supporter_kind);
+        let supporter_kind = node.kind;
+        let allowable_types = possible_supports.get(supporter_kind);
 
-            rightVariables = this.findRightVariables(variables, allowable_types);
-        }
+        rightVariables = this.findRightVariables(variables, allowable_types);
         
         return rightVariables;
     }

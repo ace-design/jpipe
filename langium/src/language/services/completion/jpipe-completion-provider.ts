@@ -1,11 +1,12 @@
 import { AstNodeDescription, ReferenceInfo, Stream } from "langium";
 import { CompletionContext, DefaultCompletionProvider } from "langium/lsp";
-import { isSupport, isVariable } from "../../generated/ast.js";
+import { isClass, isSupport, isVariable } from "../../generated/ast.js";
 import { stream } from "../../../../node_modules/langium/src/utils/stream.js"
 import { SupportCompletionProvider } from "./support-completion.js";
+import { ClassCompletionProvider } from "./class-completion.js";
 
-export interface CompletionProvider<T>{
-    getCandidates(potential_references: Stream<AstNodeDescription>, node: T): Set<AstNodeDescription>;
+export interface JpipeCompletion{
+    getCandidates(potential_references: Stream<AstNodeDescription>, refInfo: ReferenceInfo): Set<AstNodeDescription>;
 }
 
 //provides additional completion support for the jpipe language
@@ -13,16 +14,21 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
 
     //filters reference candidates for variables in support statements for autocompletion
     protected override getReferenceCandidates(refInfo: ReferenceInfo, _context: CompletionContext): Stream<AstNodeDescription> {
+        let completion_provider: JpipeCompletion | undefined;
+        let addtional_references: Set<AstNodeDescription> | undefined;
+
         let potential_references = this.scopeProvider.getScope(refInfo).getAllElements();
 
         let references = this.findKeywords(potential_references);
-
-        let addtional_references: Set<AstNodeDescription> | undefined;
         //if the current context is of a supporting statement, determines which variables should appear for autocomplete
         if(isSupport(_context.node)){
-            let completion_provider = new SupportCompletionProvider();
-            addtional_references = completion_provider.getCandidates(potential_references, _context.node);
+            completion_provider = new SupportCompletionProvider();
+
+        }else if(isClass(refInfo.container)){
+           completion_provider = new ClassCompletionProvider();
         }
+
+        addtional_references = completion_provider?.getCandidates(potential_references, refInfo);
         
         addtional_references?.forEach(variable =>{
             references.add(variable);
