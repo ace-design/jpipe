@@ -1,12 +1,13 @@
 import { AstNodeDescription, ReferenceInfo, Stream } from "langium";
 import { CompletionContext, DefaultCompletionProvider } from "langium/lsp";
-import { isClass, isSupport, isVariable } from "../../generated/ast.js";
+import { isClass, isCompositionInformation, isSupport } from "../../generated/ast.js";
 import { stream } from "../../../../node_modules/langium/src/utils/stream.js"
 import { SupportCompletionProvider } from "./support-completion.js";
 import { ClassCompletionProvider } from "./class-completion.js";
 
+//implement interface when adding new complettion provider
 export interface JpipeCompletion{
-    getCandidates(potential_references: Stream<AstNodeDescription>, refInfo: ReferenceInfo): Set<AstNodeDescription>;
+    getCandidates(potential_references: Set<AstNodeDescription>, refInfo: ReferenceInfo): Set<AstNodeDescription>;
 }
 
 //provides additional completion support for the jpipe language
@@ -17,15 +18,16 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
         let completion_provider: JpipeCompletion | undefined;
         let addtional_references: Set<AstNodeDescription> | undefined;
 
-        let potential_references = this.scopeProvider.getScope(refInfo).getAllElements();
+        let references = new Set<AstNodeDescription>();
 
-        let references = this.findKeywords(potential_references);
-        //if the current context is of a supporting statement, determines which variables should appear for autocomplete
+        let potential_references = this.scopeProvider.getScope(refInfo).getAllElements().toSet();
+
         if(isSupport(_context.node)){
+            //if the current context is of a supporting statement, determines which variables should appear for autocomplete
             completion_provider = new SupportCompletionProvider();
-
-        }else if(isClass(refInfo.container)){
-           completion_provider = new ClassCompletionProvider();
+        }else if(isClass(_context.node) || isCompositionInformation(_context.node)){
+            //provides completion for class references
+            completion_provider = new ClassCompletionProvider()
         }
 
         addtional_references = completion_provider?.getCandidates(potential_references, refInfo);
@@ -37,16 +39,16 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
         return stream(references);
     }
 
-    //helper function for finding non-variable keywords
-    private findKeywords(potential_references: Stream<AstNodeDescription>): Set<AstNodeDescription>{
-        let keywords = new Set<AstNodeDescription>();
+    // //helper function for finding non-variable keywords
+    // private findKeywords(potential_references: Set<AstNodeDescription>): Set<AstNodeDescription>{
+    //     let keywords = new Set<AstNodeDescription>();
 
-        potential_references.forEach(potential =>{
-            if(!isVariable(potential.node)){
-                keywords.add(potential);
-            }
-        });
+    //     potential_references.forEach(potential =>{
+    //         if(!isVariable(potential.node)){
+    //             keywords.add(potential);
+    //         }
+    //     });
 
-        return keywords;
-    }
+    //     return keywords;
+    // }
 }

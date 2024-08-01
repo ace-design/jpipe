@@ -1,4 +1,4 @@
-import { AstNodeDescription, ReferenceInfo, Stream } from "langium";
+import { AstNodeDescription, ReferenceInfo } from "langium";
 import { isSupport, isVariable, Variable } from "../../generated/ast.js";
 import { JpipeCompletion } from "./jpipe-completion-provider.js";
 import { possible_supports } from "../validation/main-validation.js";
@@ -6,7 +6,7 @@ import { possible_supports } from "../validation/main-validation.js";
 
 export class SupportCompletionProvider implements JpipeCompletion{
     //returns all candidates from the given reference type
-    public getCandidates(potential_references: Stream<AstNodeDescription>, refInfo: ReferenceInfo): Set<AstNodeDescription> {
+    public getCandidates(potential_references: Set<AstNodeDescription>, refInfo: ReferenceInfo): Set<AstNodeDescription> {
         let strict_left_filtering = true;
         let support_variables = new Set<AstNodeDescription>();
 
@@ -25,7 +25,7 @@ export class SupportCompletionProvider implements JpipeCompletion{
     }
 
     //helper function for filtering references
-    private findVariables(potential_references: Stream<AstNodeDescription>): Set<AstNodeDescription>{
+    private findVariables(potential_references: Set<AstNodeDescription>): Set<AstNodeDescription>{
         let variables = new Set<AstNodeDescription>();
 
         potential_references.forEach((potential) =>{
