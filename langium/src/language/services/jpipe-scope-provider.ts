@@ -1,5 +1,5 @@
-import { AstNode, DefaultScopeProvider, LangiumCompletionParser, LangiumCoreServices, LangiumDocuments, MapScope, ReferenceInfo, Scope, URI } from "langium";
-import { Class, isModel, Load, Model } from "../generated/ast.js";
+import { AstNode, DefaultScopeProvider, LangiumCoreServices, LangiumDocuments, MapScope, ReferenceInfo, Scope, URI } from "langium";
+import { isModel, Load, Model } from "../generated/ast.js";
 
 export class JpipeScopeProvider extends DefaultScopeProvider{
     private langiumDocuments: () => LangiumDocuments;

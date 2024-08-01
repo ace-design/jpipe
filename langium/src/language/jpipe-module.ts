@@ -2,7 +2,7 @@ import { type Module, inject, } from 'langium';
 import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/module.js';
 import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
-import { JpipeCompletionProvider } from './services/jpipe-completion-provider.js';
+import { JpipeCompletionProvider } from './services/completion/jpipe-completion-provider.js';
 import { JpipeValidator, registerValidationChecks } from './services/validation/main-validation.js';
 import { JpipeScopeProvider } from './services/jpipe-scope-provider.js';
 
