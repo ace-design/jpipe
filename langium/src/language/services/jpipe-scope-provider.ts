@@ -45,18 +45,54 @@ export class JpipeScopeProvider extends DefaultScopeProvider{
             }
         });
     }
+//use complicated recursion to get all import statements referenced by the document
+private getImports(current_URI: URI, all_imports: Set<URI>, doc_provider: LangiumDocuments): Set<URI>{
+    if(all_imports.has(current_URI)){
+        return new Set<URI>();
+    }else{
+        all_imports.add(current_URI);
 
-    private getLoadStatements(doc_import: URI, document_provider: LangiumDocuments): Load[]{
-        let load_statements: Load[] = [];
+        this.setImports(current_URI, doc_provider);
 
-        let document = document_provider.getDocument(doc_import);
 
-        if(document){
-            let model = getModelNode(document.parseResult.value);
+        let load_URIs = this.uri_map.get(current_URI);
+    
+        if(load_URIs){
+            load_URIs.forEach(load_URI =>{
+                this.getImports(load_URI, all_imports, doc_provider);
+            });
         }
-
-        return load_statements;
+        return all_imports;
     }
+}
+
+
+private setImports(current_URI: URI, doc_provider: LangiumDocuments): void{
+
+    let load_URIs = getURIs(this.getNode(current_URI));
+
+    this.uri_map.set(current_URI, load_URIs);
+
+    load_URIs.forEach(load_URI =>{
+        this.setImports(load_URI, doc_provider);
+    });
+}
+
+
+private getNode(doc_import: URI): AstNode{
+    let model = this.indexManager.allElements("Class", new Set<string>([doc_import.toString()]));
+    let head = model.head();
+
+    if(head){
+        if(head.node){
+            return head.node;
+        }else{
+            throw new Error("Node not found");
+        }
+    }else{
+        throw new Error("Node not found");
+    }
+}
 }
 
 function getModelNode(node: AstNode): Model{
