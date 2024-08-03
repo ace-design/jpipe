@@ -5,6 +5,7 @@ import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
 import { JpipeCompletionProvider } from './services/completion/jpipe-completion-provider.js';
 import { JpipeValidator, registerValidationChecks } from './services/validation/main-validation.js';
 import { JpipeScopeProvider } from './services/jpipe-scope-provider.js';
+import { JpipeCodeActionProvider } from './services/jpipe-code-actions.js';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -33,6 +34,7 @@ export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAd
     lsp:{
         CompletionProvider: (services) => new JpipeCompletionProvider(services),
         HoverProvider: (services) => new JpipeHoverProvider(services),
+        CodeActionProvider: () => new JpipeCodeActionProvider()
     },
      references:{
         ScopeProvider: (services) => new JpipeScopeProvider(services)
