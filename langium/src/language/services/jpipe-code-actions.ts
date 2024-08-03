@@ -1,6 +1,6 @@
 import { AstNodeDescription, LangiumDocument, MaybePromise, PrecomputedScopes, URI } from "langium";
 import { CodeActionProvider } from "langium/lsp";
-import { CodeActionParams, CancellationToken, Command, CodeAction, CodeActionKind, Range, Position, WorkspaceEdit, Diagnostic } from "vscode-languageserver";
+import { CodeActionParams, CancellationToken, Command, CodeAction, CodeActionKind, Range, Position, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
 
 
 export class JpipeCodeActionProvider implements CodeActionProvider{
@@ -57,9 +57,10 @@ class RemoveLine implements CodeAction{
     public edit: WorkspaceEdit;
 
     constructor(uri: URI, range: Range){
+        let text_edit = TextEdit.del(this.getLine(range));
         this.edit = {
            changes: {
-            [uri.toString()]: [{range: this.getLine(range), newText: ""}]
+            [uri.toString()]: [text_edit]
            } 
         }
     }
