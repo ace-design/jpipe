@@ -6,7 +6,7 @@ import ca.mcscert.jpipe.error.FatalException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class Transformation<I,O> {
+public abstract class Transformation<I, O> {
 
     protected static final Logger logger = LogManager.getLogger();
 

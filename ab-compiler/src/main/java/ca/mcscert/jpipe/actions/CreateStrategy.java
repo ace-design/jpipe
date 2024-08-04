@@ -1,15 +1,24 @@
 package ca.mcscert.jpipe.actions;
 
-import ca.mcscert.jpipe.model.elements.Strategy;
 import ca.mcscert.jpipe.model.Unit;
+import ca.mcscert.jpipe.model.elements.Strategy;
 
-
-public final class CreateStrategy implements Action{
+/**
+ * Action tp create a strategy inside a justification.
+ */
+public final class CreateStrategy implements Action {
 
     private final String container;
     private final String identifier;
     private final String label;
 
+    /**
+     * Provides necessary information to create a Strategy inside a justification.
+     *
+     * @param container the justification containing the strategy.
+     * @param identifier the strategy's identifier.
+     * @param label the strategy's label.
+     */
     public CreateStrategy(String container, String identifier, String label) {
         this.container = container;
         this.identifier = identifier;
@@ -23,11 +32,11 @@ public final class CreateStrategy implements Action{
 
     @Override
     public String toString() {
-        return "CreateStrategy{" +
-                "container='" + container + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", label='" + label + '\'' +
-                '}';
+        return "CreateStrategy{"
+                + "container='" + container + '\''
+                + ", identifier='" + identifier + '\''
+                + ", label='" + label + '\''
+                + '}';
     }
 
 }

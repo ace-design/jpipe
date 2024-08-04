@@ -1,6 +1,6 @@
 package ca.mcscert.jpipe.compiler.steps;
 
-import ca.mcscert.jpipe.compiler.model.Transformation;
+import ca.mcscert.jpipe.compiler.model.Checker;
 import ca.mcscert.jpipe.error.ErrorManager;
 import ca.mcscert.jpipe.error.SemanticError;
 import ca.mcscert.jpipe.model.Justification;
@@ -16,11 +16,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class CompletenessChecker extends Transformation<Unit,Unit> {
-
+/**
+ * Check that a model is complete. Record errors in the global error manager if not.
+ * Being "not complete" is not a deal-breaker per se. We delegate to "HaltAndCatchFire" the decision
+ * to stop the compilation process if error where recorded.
+ */
+public final class CompletenessChecker extends Checker<Unit> {
 
     @Override
-    protected Unit run(Unit input, String source) throws Exception {
+    protected void check(Unit input, String source) {
         CompletenessVisitor visitor = new CompletenessVisitor();
         input.accept(visitor);
 
@@ -28,7 +32,6 @@ public final class CompletenessChecker extends Transformation<Unit,Unit> {
         if (! errors.isEmpty()) {
             errors.forEach(ErrorManager.getInstance()::registerError);
         }
-        return input;
     }
 
     private static class CompletenessVisitor extends ModelVisitor<List<Throwable>> {
@@ -44,15 +47,15 @@ public final class CompletenessChecker extends Transformation<Unit,Unit> {
 
         @Override
         public void visit(Unit u) {
-            for(Justification justification: u.getContents()) {
+            for (Justification justification : u.getContents()) {
                 justification.accept(this);
             }
             if (!this.used.containsAll(this.visited)) {
                 // some visited elements are not part of the global justification
                 this.visited.removeAll(this.used);
-                for(JustificationElement je: this.visited) {
-                    result.add(new SemanticError("Dangling justification element: [" +
-                                                    je.getIdentifier() + "]"));
+                for (JustificationElement je : this.visited) {
+                    result.add(new SemanticError("Dangling justification element: ["
+                                                    + je.getIdentifier() + "]"));
                 }
             }
         }
@@ -60,14 +63,15 @@ public final class CompletenessChecker extends Transformation<Unit,Unit> {
         @Override
         public void visit(Justification j) {
             // we're visiting all declared symbols, not just the entry point (the conclusion)
-            for(JustificationElement je: j.contents()) {
+            for (JustificationElement je : j.contents()) {
                 je.accept(this);
             }
         }
 
         @Override
         public void visit(Conclusion c) {
-            this.visited.add(c); this.used.add(c); // conclusion is always "used"
+            this.visited.add(c);
+            this.used.add(c); // conclusion is always "used": it's the output of the justification.
             if (c.getStrategy() == null) {
                 result.add(new SemanticError("[" + c + "] is incomplete (no support)"));
             } else {
@@ -83,7 +87,7 @@ public final class CompletenessChecker extends Transformation<Unit,Unit> {
         @Override
         public void visit(Strategy s) {
             this.visited.add(s);
-            if(s.getSupports().isEmpty()) {
+            if (s.getSupports().isEmpty()) {
                 result.add(new SemanticError("[" + s + "] is incomplete (no support)"));
             } else {
                 this.used.addAll(s.getSupports());
