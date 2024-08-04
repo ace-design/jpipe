@@ -7,16 +7,58 @@
     <groupId>eu.ace-design</groupId>
     <artifactId>abc-jpipe</artifactId>
 
+    <inceptionYear>2023</inceptionYear>
+
     <!-- Versioning convention: YYYY.term, 1 = Winter, 2 = Summer, 3 = Fall -->
     <version>2024.2</version>
 
+    <organization>
+        <name>McMaster Centre for Software Certification (McSCert)</name>
+        <url>https://www.mcscert.ca</url>
+    </organization>
+
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Antlr configuration -->
         <antlr4.visitor>true</antlr4.visitor>
         <antlr4.listener>true</antlr4.listener>
+        <!-- Controlling tests execution (default value) -->
+        <skip.tests.unit>false</skip.tests.unit>
+        <skip.tests.integration>false</skip.tests.integration>
         <!-- Should use latest LTS version -->
         <maven.compiler.release>21</maven.compiler.release>
     </properties>
+
+
+
+    <developers>
+        <developer>
+            <id>seb</id>
+            <name>Sébastien Mosser</name>
+            <email>mossers@mcmaster.ca</email>
+            <url>https://mosser.github.io</url>
+            <organization>McMaster University (McScert)</organization>
+            <organizationUrl>https://www.eng.mcmaster.ca/cas/</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>America/Toronto</timezone>
+        </developer>
+        <developer>
+            <id>nirmal</id>
+            <name>Nirmal Chaudhari</name>
+            <email>chaudn12@mcmaster.ca</email>
+            <url>https://www.linkedin.com/in/nirmal2003/</url>
+            <organization>McMaster University (McSCert)</organization>
+            <organizationUrl>https://www.eng.mcmaster.ca/cas/</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>America/Toronto</timezone>
+        </developer>
+    </developers>
 
     <dependencies>
         <!-- Core dependencies -->
@@ -64,12 +106,6 @@
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>2.23.1</version>
         </dependency>
-        <!-- JSON (for error messages and LSP) -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20240303</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -92,7 +128,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>Main</mainClass>
+                            <mainClass>ca.mcscert.jpipe.Main</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Multi-Release>true</Multi-Release>
@@ -195,8 +231,8 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>package</id>
-                        <phase>package</phase>
+                        <id>install</id>
+                        <phase>install</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>

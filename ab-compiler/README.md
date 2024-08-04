@@ -9,7 +9,7 @@ TBD
 
 ## How to contribute
 
-### Compiling the compiler
+### Compiling the compilationChain
 
 ```
 $ mvn clean package
