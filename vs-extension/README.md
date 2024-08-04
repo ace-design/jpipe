@@ -32,7 +32,7 @@ While testing, and debugging, you may need to manually remove the extension from
 2. Change diagrams within files by click on any other diagram within the text editor. 
 3. Opening another file will update the webview accordingly if it is also a *.jd file. 
 4. Making changes to any diagrams will regenerate the updated diagram on the right.
-5. For compiler output, go to the output tabe, and look under "jpipe_console".
+5. For compilationChain output, go to the output tabe, and look under "jpipe_console".
 
 
 
@@ -42,7 +42,7 @@ Contributions can be made by modifying the code in the [src/](src/) directory.
 1. The code for the visualizer can be found in the [src/editorReader.ts](src/editorReader.ts) file. 
 2. The code for the LSP, and visualizer registration can be found in the [src/extension.ts](src/editorReader.ts) file. Note, this is the main entry point for the extension. 
 3. If changes are made to the LSP, then regenerate the binary and replace [jpipe-language-server](jpipe-language-server) with it. 
-4. Similarly, if changes are made to the jpipe compiler, then regenerate the jar file, and replace [jpipe.jar](jpipe.jar) with it. 
+4. Similarly, if changes are made to the jpipe compilationChain, then regenerate the jar file, and replace [jpipe.jar](jpipe.jar) with it. 
 5. Regenerate the `.vsix` file with updated changes using the following command in the main directory:
     `vsce package`
 

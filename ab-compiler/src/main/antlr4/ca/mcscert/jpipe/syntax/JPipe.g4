@@ -4,7 +4,7 @@ grammar JPipe;
  ** Parser rules **
  ******************/
 
-// Root rule for parsing (called by the compiler)
+// Root rule for parsing (called by the compilationChain)
 unit            : (justification)+ EOF;
 
 // Declare a justification

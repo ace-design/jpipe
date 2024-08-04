@@ -1,0 +1,39 @@
+@startuml model
+!include ./commons.style
+
+title "jPipe Domain Model"
+
+class Unit {
+    + fileName: String
+}
+
+Unit *--> "1..*" Justification
+
+class Justification {
+    + name: String
+}
+
+Justification *--> "1" Conclusion
+
+abstract class JustificationElement {
+    + id: Symbol
+    + label: String
+}
+
+class Conclusion extends JustificationElement
+
+Conclusion -> "1" Strategy
+
+class Strategy extends JustificationElement
+
+Strategy -> "1..*" Support
+
+abstract class Support extends JustificationElement
+
+class Evidence extends Support
+
+class SubConclusion extends Support
+
+Strategy "1" <-- SubConclusion
+
+@enduml
