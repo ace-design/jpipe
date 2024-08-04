@@ -1,0 +1,7 @@
+justification undefined_element {
+
+    evidence Su1 is "Evidence 1"
+    Su1 supports Su2  // Su2 is not defined
+
+    conclusion C is "Conclusion 1"
+}

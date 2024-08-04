@@ -1,0 +1,5 @@
+justification j {
+
+    strategy s is "this is a strategy"
+
+}

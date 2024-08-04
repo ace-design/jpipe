@@ -1,8 +1,0 @@
-justification repeated_kw {
-
-    evidence evidence Su1 is "Evidence 1"  // 'evidence' keyword repeated
-    conclusion C is "Conclusion 1"
-
-    Su1 supports C
-
-}

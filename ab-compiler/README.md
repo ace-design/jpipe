@@ -5,7 +5,7 @@
 
 ## How to use
 
-TBD
+### Compiling a file
 
 ## How to contribute
 

@@ -1,0 +1,160 @@
+{
+    "name": "jpipe-extension",
+    "displayName": "jPipe Language (McSCert)",
+    "description": "Language Support for the jPipe language",
+    "author": "McMaster Centre for Software Certification (McSCert)",
+    "publisher": "mcscert",
+    "version": "0.2.0",
+    "license": "MIT",
+    "icon": "images/logo.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ace-design/jpipe"
+    },
+    "type": "module",
+    "scripts": {
+        "build": "tsc -b tsconfig.json && node esbuild.mjs",
+        "lint": "eslint src --ext ts",
+        "langium:generate": "langium generate",
+        "langium:watch": "langium generate --watch",
+        "compile": "npm run check-types && node esbuild.js",
+        "check-types": "tsc --noEmit",
+        "watch": "npm-run-all -p watch:*",
+        "watch:esbuild": "node esbuild.mjs --watch",
+        "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+        "vscode:prepublish": "npm run langium:generate && npm run package",
+        "package": "npm run check-types && node esbuild.mjs --production"
+    },
+    "dependencies": {
+        "chalk": "~5.3.0",
+        "commander": "~11.0.0",
+        "langium": "~3.0.0",
+        "vscode-languageclient": "~9.0.1",
+        "vscode-languageserver": "~9.0.1"
+    },
+    "devDependencies": {
+        "@types/node": "^18.0.0",
+        "@types/vscode": "~1.67.0",
+        "@typescript-eslint/eslint-plugin": "~6.4.1",
+        "@typescript-eslint/parser": "~6.4.1",
+        "concurrently": "~8.2.1",
+        "esbuild": "^0.19.12",
+        "eslint": "~8.47.0",
+        "langium-cli": "~3.0.0",
+        "typescript": "~5.1.6",
+        "vitest": "~1.0.0"
+    },
+    "engines": {
+        "vscode": "^1.67.0",
+        "node": ">=18.0.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "configuration": {
+            "title": "jPipe Configuration",
+            "properties": {
+                "jpipe.jarFile": {
+                    "type": "string",
+                    "scope": "window",
+                    "default": "",
+                    "markdownDescription": "Set the path to the jar file compiler"
+                },
+                "jpipe.strictLeftFiltering": {
+                    "type": "boolean",
+                    "scope": "window",
+                    "default": true,
+                    "markdownDescription": "For code completion suggestions on the left variables in supporting statements, consider the scope of all variables previously defined. With strict left filtering on, only variables which can support a pre-defined variable will be suggested."
+                },
+                "jpipe.logLevel": {
+                    "type": "string",
+                    "scope": "window",
+                    "enum": [
+                        "all",
+                        "error",
+                        "trace",
+                        "info",
+                        "debug"
+                    ],
+                    "default": "error",
+                    "markdownDescription": "Set the log level for compiler."
+                }
+            }
+        },
+        "languages": [
+            {
+                "id": "jpipe",
+                "aliases": [
+                    "jpipe",
+                    "jpipe"
+                ],
+                "extensions": [
+                    ".jd"
+                ],
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "dark": "images/icon_dark.svg",
+                    "light": "images/icon_light.svg"
+    }
+            }
+        ],
+        "grammars": [
+            {
+                "language": "jpipe",
+                "scopeName": "source.jpipe",
+                "path": "syntaxes/jpipe.tmLanguage.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "jpipe.downloadPNG",
+                "title": ".png"
+            },
+            {
+                "command": "jpipe.downloadSVG",
+                "title": ".svg"
+            },
+            {
+                "command": "jpipe.vis.preview",
+                "title": "Preview Diagram"
+            },
+            {
+                "command": "jpipe.vis",
+                "title": "Visualize Jpipe"
+            }
+        ],
+        "submenus": [
+            {
+                "id": "jpipe.submenu.downloadImage",
+                "label": "Download as"
+            }
+        ],
+        "menus": {
+            "jpipe.submenu.downloadImage": [
+                {
+                    "command": "jpipe.downloadSVG"
+                },
+                {
+                    "command": "jpipe.downloadPNG"
+                }
+            ],
+            "editor/context": [
+                {
+                    "submenu": "jpipe.submenu.downloadImage",
+                    "group": "navigation",
+                    "when": "jpipe.atJustification"
+                },
+                {
+                    "command": "jpipe.vis.preview",
+                    "group": "navigation",
+                    "when": "jpipe.inJustification || jpipe.atJustification"
+                }
+            ]
+        }
+    },
+    "activationEvents": [
+        "onLanguage:jpipe"
+    ],
+    "main": "./out/extension/main.cjs"
+}
