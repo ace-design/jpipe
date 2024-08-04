@@ -31,9 +31,9 @@ public final class CompilerFactory {
     public static Compiler defaultCompiler(Configuration config) {
         List<Throwable> errors = new ArrayList<>();
 
-        Source<InputStream> source = new FileReader();
 
-        return source.andThen(new CharStreamProvider())
+        return new FileReader()
+                     .andThen(new CharStreamProvider())
                      .andThen(new Lexer(errors))
                      .andThen(new Parser(errors))
                      .andThen(new HaltAndCatchFire<>(errors))
