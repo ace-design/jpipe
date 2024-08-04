@@ -1,0 +1,112 @@
+{
+  "name": "jpipe-extension",
+  "displayName": "jpipe-extension",
+  "publisher": "mcscert",
+  "repository": {
+		"type": "git",
+		"url": "https://github.com/ace-design/jpipe/tree/main"
+	},
+  "description": "Visualization tool for the jpipe language.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:jpipe"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "jpipe",
+        "extensions": [
+          ".jd"
+        ]
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "NoName for jpipe",
+      "properties": {
+        "noname-jpipe.language_server.path": {
+          "scope": "resource",
+          "type": "string",
+          "description": "Path to language server executable.",
+          "format": "path"
+        },
+        "noname-jpipe.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        }
+      }
+    },
+    "menus": {
+      "editor/title": [
+        {
+          "command": "jpipe.vis.preview",
+          "when": "resourceLangId==jpipe",
+          "group": "navigation"
+        }
+      ]
+    },
+    "customEditors": [
+      {
+        "viewType": "jpipe.vis",
+        "displayName": "jPipe Visualizer",
+        "selector": [
+          {
+            "filenamePattern": "*.jd"
+          }
+        ],
+        "priority": "default",
+        "preview": "false"
+      }
+    ],
+    "commands": [
+      {
+        "command": "jpipe.vis",
+        "title": "%jpipe.vis.title%",
+        "category": "jPipeVis",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "jpipe.vis.preview",
+        "title": "%jpipe.vis.title%",
+        "category": "jPipeVis",
+        "icon": "$(open-preview)"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.8",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}

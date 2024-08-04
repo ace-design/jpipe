@@ -1,0 +1,15 @@
+justification dupli_diag {
+    evidence e is "An evidence"
+    strategy s is "a Strategy"
+    conclusion c is "a Conclusion"
+    e supports s
+    s supports c
+}
+
+justification dupli_diag {
+    evidence e is "An evidence"
+    strategy s is "a Strategy"
+    conclusion c is "a Conclusion"
+    e supports s
+    s supports c
+}
