@@ -6,6 +6,9 @@ import java.io.InputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 
+/**
+ * Delegate to ANTLR the transformation of an input stream into a character-based one.
+ */
 public final class CharStreamProvider extends Transformation<InputStream, CharStream> {
 
     @Override

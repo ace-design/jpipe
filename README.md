@@ -20,7 +20,7 @@ The jPipe environment supports the definition of justification to support softwa
 
 <div align="center">
 
-![nserc](./docs/sponsors/mcscert.svg)
+![McScert logo](./docs/sponsors/mcscert.svg)
 
 </div>
 
@@ -40,8 +40,8 @@ The jPipe environment supports the definition of justification to support softwa
 ## Repository organization
 
   - `ab-compiler`: source code of the (action-based) compiler
-  - `brew`: 
-  - `langium`: source code of the Visual Code extension
+  - `brew`: distribution of the code using HomeBrew
+  - `langium`: source code of the Visual Code extension IDE
 
 ## Documentation
 
@@ -64,7 +64,7 @@ Found a bug, or want to add a cool feature? Feel free to fork this repository an
 
 If you're interested in contributing to the research effort related to jPipe, feel free to contact the PI: [Dr. Sébastien Mosser](mossers@mcmaster.ca). 
 
-**We do have undergrad summer internships available to contribute to the compilationChain, as 
+**We do have undergrad summer internships available to contribute to the compiler, as 
 well as MASc and PhD positions in Software Engineering at Mac.**
 
 ## Sponsors

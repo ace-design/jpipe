@@ -15,8 +15,19 @@ import java.util.List;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+/**
+ * Create a list of actions to build a model out of a parse tree.
+ */
 public final class ActionListProvider extends Transformation<ParseTree, List<Action>> {
 
+    /**
+     * Transform a ParseTree into a list of actions to be executed to build the model.
+     *
+     * @param input the parse tree to visit.
+     * @param source the name of the file that provided the parse tree (error mgmt)
+     * @return the ordered list of Action instances to execute to create the model
+     * @throws Exception is something goes wrong
+     */
     @Override
     protected List<Action> run(ParseTree input, String source) throws Exception {
         ActionBuilder ab = new ActionBuilder(source);
@@ -24,6 +35,9 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         return ab.collect();
     }
 
+    /**
+     * Creating the actions is a visit of the raw parse tree provided by ANTLR.
+     */
     private static class ActionBuilder extends JPipeBaseListener {
 
         private record Context(String unitFileName, String justificationId) {
@@ -85,7 +99,7 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         }
 
         private String strip(String s) {
-            return s.substring(1, s.length()-1);
+            return s.substring(1, s.length() - 1);
         }
     }
 

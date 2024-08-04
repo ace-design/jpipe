@@ -1,15 +1,24 @@
 package ca.mcscert.jpipe.actions;
 
-import ca.mcscert.jpipe.model.elements.Evidence;
 import ca.mcscert.jpipe.model.Unit;
+import ca.mcscert.jpipe.model.elements.Evidence;
 
-
-public final class CreateEvidence implements Action{
+/**
+ * Implement the action used to create an evidence in a given justification.
+ */
+public final class CreateEvidence implements Action {
 
     private final String container;
     private final String identifier;
     private final String label;
 
+    /**
+     * Provide necessary information to create an evidence in a justification.
+     *
+     * @param container the justification used as a container (its id).
+     * @param identifier the evidence's justification.
+     * @param label the evidence's justification.
+     */
     public CreateEvidence(String container, String identifier, String label) {
         this.container = container;
         this.identifier = identifier;
@@ -24,10 +33,11 @@ public final class CreateEvidence implements Action{
 
     @Override
     public String toString() {
-        return "CreateEvidence{" +
-                "container='" + container + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", label='" + label + '\'' +
-                '}';
+        return "CreateEvidence{"
+                + "container='" + container + '\''
+                + ", identifier='" + identifier + '\''
+                + ", label='" + label + '\''
+                + '}';
     }
+
 }

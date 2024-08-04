@@ -130,7 +130,9 @@ public final class Configuration {
      */
     private String readOutput(CommandLine parser) throws Exception {
         logger.trace("  Identifying output file/stream");
-        return (Option.OUTPUT_PATH.isIn(parser)? Option.OUTPUT_PATH.readFrom(parser): STDOUT_PATH);
+        return (Option.OUTPUT_PATH.isIn(parser)
+                ? Option.OUTPUT_PATH.readFrom(parser)
+                : STDOUT_PATH);
     }
 
 
@@ -148,12 +150,12 @@ public final class Configuration {
 
     @Override
     public String toString() {
-        return "Configuration{" +
-                "inputFilePath='" + inputFilePath + '\'' +
-                ", outputFilePath='" + outputFilePath + '\'' +
-                ", diagramName='" + diagramName + '\'' +
-                ", format=" + format +
-                ", mode=" + mode +
-                '}';
+        return "Configuration{"
+                + "inputFilePath='" + inputFilePath + '\''
+                + ", outputFilePath='" + outputFilePath + '\''
+                + ", diagramName='" + diagramName + '\''
+                + ", format=" + format
+                + ", mode=" + mode
+                + '}';
     }
 }

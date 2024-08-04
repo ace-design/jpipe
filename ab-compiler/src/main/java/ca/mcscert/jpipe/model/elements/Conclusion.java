@@ -2,10 +2,19 @@ package ca.mcscert.jpipe.model.elements;
 
 import ca.mcscert.jpipe.visitors.ModelVisitor;
 
+/**
+ * Model what a Conclusion is in the Model.
+ */
 public final class Conclusion extends JustificationElement {
 
     private Strategy strategy;
 
+    /**
+     * A conclusion bounds a label to an identifier.
+     *
+     * @param identifier the unique identifier of the element.
+     * @param label the label of the conclusion.
+     */
     public Conclusion(String identifier, String label) {
         super(identifier, label);
     }

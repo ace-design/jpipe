@@ -8,7 +8,13 @@ import ca.mcscert.jpipe.model.elements.Strategy;
 import ca.mcscert.jpipe.model.elements.SubConclusion;
 import ca.mcscert.jpipe.model.elements.Support;
 
+/**
+ * Implements a default visitor for a jPipe model. Mainly provided as example.
+ *
+ * @param <T> the type used as a "return" from the visit.
+ */
 public abstract class DefaultModelVisitor<T> extends ModelVisitor<T> {
+
 
     protected DefaultModelVisitor(T result) {
         super(result);
@@ -26,7 +32,7 @@ public abstract class DefaultModelVisitor<T> extends ModelVisitor<T> {
 
     @Override
     public void visit(Strategy s) {
-        for(Support support: s.getSupports()){
+        for (Support support : s.getSupports()) {
             support.accept(this);
         }
     }
@@ -43,7 +49,7 @@ public abstract class DefaultModelVisitor<T> extends ModelVisitor<T> {
 
     @Override
     public void visit(Unit u) {
-        for(Justification justification: u.getContents()) {
+        for (Justification justification : u.getContents()) {
             justification.accept(this);
         }
     }
