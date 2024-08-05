@@ -8,9 +8,9 @@ import java.lang.annotation.Target;
 /**
  * Annotation definition to "tag" some exceptions as being semantically relevant for jPipe.
  */
-@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public @interface JPipeError {
 
 }

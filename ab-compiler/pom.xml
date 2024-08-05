@@ -215,7 +215,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>10.14.1</version>
+                    </dependency>
+                </dependencies>
                 <configuration>
                     <sourceDirectories>
                         <!-- To avoid checking ANTLR4 code generation -->
@@ -223,11 +230,11 @@
                     </sourceDirectories>
                     <configLocation>google_checks.xml</configLocation>
                     <suppressionsLocation>${project.resources[0].directory}/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
-                    <consoleOutput>true</consoleOutput>
+                    <consoleOutput>false</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <violationSeverity>warning</violationSeverity>
                     <failOnViolation>true</failOnViolation>
-                    <linkXRef>false</linkXRef>
+                    <linkXRef>true</linkXRef>
                 </configuration>
                 <executions>
                     <execution>
