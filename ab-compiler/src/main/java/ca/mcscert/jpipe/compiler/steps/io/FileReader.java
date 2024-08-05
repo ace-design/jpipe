@@ -7,6 +7,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Compiler source, providing an InputStream from a File.
+ */
 public final class FileReader extends Source<InputStream>  {
 
 

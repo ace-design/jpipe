@@ -3,16 +3,17 @@ package ca.mcscert.jpipe.compiler;
 import ca.mcscert.jpipe.cli.Configuration;
 import ca.mcscert.jpipe.compiler.steps.ActionListInterpretation;
 import ca.mcscert.jpipe.compiler.steps.ActionListProvider;
+import ca.mcscert.jpipe.compiler.steps.Apply;
 import ca.mcscert.jpipe.compiler.steps.CharStreamProvider;
 import ca.mcscert.jpipe.compiler.steps.CompletenessChecker;
-import ca.mcscert.jpipe.compiler.steps.HaltAndCatchFire;
+import ca.mcscert.jpipe.compiler.steps.LazyHaltAndCatchFire;
 import ca.mcscert.jpipe.compiler.steps.Lexer;
 import ca.mcscert.jpipe.compiler.steps.ModelVisit;
 import ca.mcscert.jpipe.compiler.steps.Parser;
 import ca.mcscert.jpipe.compiler.steps.ScopeFiltering;
 import ca.mcscert.jpipe.compiler.steps.io.FileReader;
 import ca.mcscert.jpipe.compiler.steps.io.GraphVizRenderer;
-import ca.mcscert.jpipe.visitors.exporters.MutableGraphExporter;
+import ca.mcscert.jpipe.visitors.exporters.GraphVizExporter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,14 +47,13 @@ public final class CompilerFactory {
                      .andThen(new CharStreamProvider())
                      .andThen(new Lexer(errors))
                      .andThen(new Parser(errors))
-                     .andThen(new HaltAndCatchFire<>(errors))
+                     .andThen(new LazyHaltAndCatchFire<>(errors))
                      .andThen(new ActionListProvider())
                      .andThen(new ActionListInterpretation())
                      .andThen(new CompletenessChecker())
-                     .andThen(new HaltAndCatchFire<>(errors))
                      .andThen(new ScopeFiltering(config.getDiagramName()))
-                     .andThen(new ModelVisit<>(new MutableGraphExporter()))
-                     .andThen(new GraphVizRenderer(config));
+                     .andThen(new ModelVisit<>(new GraphVizExporter()))
+                     .andThen(new GraphVizRenderer(config.getFormat()));
     }
 
 }

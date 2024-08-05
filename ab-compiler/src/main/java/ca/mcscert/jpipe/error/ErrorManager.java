@@ -27,7 +27,7 @@ public final class ErrorManager {
     private ErrorManager() { }
 
     /**
-     * Access to the singletoned instance.
+     * Access to the singleton-ed instance.
      *
      * @return the ErrorManager singleton.
      */
@@ -66,11 +66,12 @@ public final class ErrorManager {
      */
     @Override
     public String toString() {
-        if(this.errors.isEmpty())
+        if (this.errors.isEmpty()) {
             return "";
-        StringJoiner buffer = new StringJoiner("\n","","");
-        for(Throwable t: errors.reversed()) {
-            buffer.add((isLanguageError(t)? processLanguageError(t): processSystemError(t)));
+        }
+        StringJoiner buffer = new StringJoiner("\n", "", "");
+        for (Throwable t : errors.reversed()) {
+            buffer.add((isLanguageError(t) ? processLanguageError(t) : processSystemError(t)));
         }
         return buffer.add("").toString();
     }

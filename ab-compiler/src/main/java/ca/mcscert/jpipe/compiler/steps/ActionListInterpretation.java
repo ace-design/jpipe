@@ -16,7 +16,7 @@ public final class ActionListInterpretation extends Transformation<List<Action>,
     private static final Logger logger = LogManager.getLogger();
 
     /**
-     * execute the actions provided as input in a newly created unit, returned.
+     * Execute the actions provided as input in a newly created unit, returned.
      *
      * @param input the list of actions to interpret.
      * @param source the source file name (for error mgmt purpose)

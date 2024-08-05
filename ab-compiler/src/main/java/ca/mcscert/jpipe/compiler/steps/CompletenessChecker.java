@@ -28,7 +28,7 @@ public final class CompletenessChecker extends Checker<Unit> {
         CompletenessVisitor visitor = new CompletenessVisitor();
         input.accept(visitor);
 
-        List<Throwable> errors = visitor.getResult();
+        List<Throwable> errors = visitor.getAccumulator();
         if (! errors.isEmpty()) {
             errors.forEach(ErrorManager.getInstance()::registerError);
         }
@@ -54,7 +54,7 @@ public final class CompletenessChecker extends Checker<Unit> {
                 // some visited elements are not part of the global justification
                 this.visited.removeAll(this.used);
                 for (JustificationElement je : this.visited) {
-                    result.add(new SemanticError("Dangling justification element: ["
+                    accumulator.add(new SemanticError("Dangling justification element: ["
                                                     + je.getIdentifier() + "]"));
                 }
             }
@@ -73,7 +73,7 @@ public final class CompletenessChecker extends Checker<Unit> {
             this.visited.add(c);
             this.used.add(c); // conclusion is always "used": it's the output of the justification.
             if (c.getStrategy() == null) {
-                result.add(new SemanticError("[" + c + "] is incomplete (no support)"));
+                accumulator.add(new SemanticError("[" + c + "] is incomplete (no support)"));
             } else {
                 this.used.add(c.getStrategy());
             }
@@ -88,7 +88,7 @@ public final class CompletenessChecker extends Checker<Unit> {
         public void visit(Strategy s) {
             this.visited.add(s);
             if (s.getSupports().isEmpty()) {
-                result.add(new SemanticError("[" + s + "] is incomplete (no support)"));
+                accumulator.add(new SemanticError("[" + s + "] is incomplete (no support)"));
             } else {
                 this.used.addAll(s.getSupports());
             }
@@ -98,7 +98,7 @@ public final class CompletenessChecker extends Checker<Unit> {
         public void visit(SubConclusion sc) {
             this.visited.add(sc);
             if (sc.getStrategy() == null) {
-                result.add(new SemanticError("[" + sc + "] is incomplete (no support)"));
+                accumulator.add(new SemanticError("[" + sc + "] is incomplete (no support)"));
             } else {
                 this.used.add(sc.getStrategy());
             }

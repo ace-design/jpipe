@@ -21,10 +21,16 @@ import guru.nidi.graphviz.attribute.Style;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.model.MutableNode;
 
+/**
+ * Visit a jPipe model to produce a GraphViz Mutable Graph (used for image rendering).
+ */
+public class GraphVizExporter extends ModelVisitor<MutableGraph> {
 
-public class MutableGraphExporter extends ModelVisitor<MutableGraph> {
-
-    public MutableGraphExporter() {
+    /**
+     * Creates a Mutable Graph exporter visitor. Instantiating the accumulator as a properly
+     * configured mutable graph, modified while visiting.
+     */
+    public GraphVizExporter() {
         // Mutable graph (Graphviz data structure) as output
         super(mutGraph()
                 .setDirected(true)
@@ -40,8 +46,8 @@ public class MutableGraphExporter extends ModelVisitor<MutableGraph> {
     @Override
     public void visit(Justification j) {
         // Setting justification name
-        this.result.graphAttrs().add(Label.markdown(j.getName()));
-        for (JustificationElement je: j.contents()) {
+        this.accumulator.graphAttrs().add(Label.markdown(j.getName()));
+        for (JustificationElement je : j.contents()) {
             je.accept(this);
         }
     }
@@ -55,9 +61,9 @@ public class MutableGraphExporter extends ModelVisitor<MutableGraph> {
                 .add(Color.LIGHTGREY.fill())
                 .add(Style.lineWidth(1.01))
                 ;
-        n.addTo(this.result);
+        n.addTo(this.accumulator);
         if (c.getStrategy() != null) {
-            this.result.add(node(c.getStrategy().getIdentifier()).link(n));
+            this.accumulator.add(node(c.getStrategy().getIdentifier()).link(n));
         }
     }
 
@@ -69,7 +75,7 @@ public class MutableGraphExporter extends ModelVisitor<MutableGraph> {
                 .add(Color.LIGHTSKYBLUE2.fill())
                 .add(Style.FILLED)
                 .add(Style.lineWidth(1.01));
-        n.addTo(this.result);
+        n.addTo(this.accumulator);
     }
 
     @Override
@@ -80,9 +86,9 @@ public class MutableGraphExporter extends ModelVisitor<MutableGraph> {
                 .add(Style.FILLED)
                 .add(Color.PALEGREEN.fill())
                 .add(Style.lineWidth(1.01));
-        n.addTo(this.result);
-        for(Support su: s.getSupports()) {
-            this.result.add(node(su.getIdentifier()).link(n));
+        n.addTo(this.accumulator);
+        for (Support su : s.getSupports()) {
+            this.accumulator.add(node(su.getIdentifier()).link(n));
         }
     }
 
@@ -93,9 +99,9 @@ public class MutableGraphExporter extends ModelVisitor<MutableGraph> {
                 .add(Shape.RECT)
                 .add(Color.DODGERBLUE)
                 .add(Style.lineWidth(1.01));
-        n.addTo(this.result);
+        n.addTo(this.accumulator);
         if (sc.getStrategy() != null) {
-            this.result.add(node(sc.getStrategy().getIdentifier()).link(n));
+            this.accumulator.add(node(sc.getStrategy().getIdentifier()).link(n));
         }
     }
 
