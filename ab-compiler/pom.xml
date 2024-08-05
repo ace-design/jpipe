@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.ace-design</groupId>
-    <artifactId>abc-jpipe</artifactId>
+    <artifactId>jpipe</artifactId>
 
     <inceptionYear>2023</inceptionYear>
 
@@ -19,6 +19,7 @@
 
 
     <properties>
+        <jar.filename>jpipe</jar.filename>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Antlr configuration -->
         <antlr4.visitor>true</antlr4.visitor>
@@ -109,7 +110,7 @@
     </dependencies>
 
     <build>
-        <finalName>abc-jpipe</finalName>
+        <finalName>${jar.filename}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -207,7 +208,7 @@
                         </goals>
                         <configuration>
                             <sourceFile>${project.build.directory}/${project.artifactId}-jar-with-dependencies.jar</sourceFile>
-                            <destinationFile>jpipe.jar</destinationFile>
+                            <destinationFile>${jar.filename}.jar</destinationFile>
                         </configuration>
                     </execution>
                 </executions>
@@ -217,6 +218,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.4.0</version>
                 <dependencies>
+                    <!-- Need to update Checkstyle to support annotations in the source code -->
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>

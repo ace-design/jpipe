@@ -41,10 +41,9 @@ public abstract class Transformation<I, O> {
      * @return the expected output
      */
     public final O fire(I in, String source) {
-        String name = (this.getClass().getCanonicalName() == null
-                        ? "Anonymous"
-                        : this.getClass().getCanonicalName());
-        logger.info("Firing transformation [{}]", name);
+        if (this.getClass().getCanonicalName() != null) {
+            logger.info("Firing transformation [{}]", this.getClass().getCanonicalName());
+        }
         O out = null;
         try {
             out = run(in, source);
@@ -79,7 +78,7 @@ public abstract class Transformation<I, O> {
         Transformation<I, O> myself = this;
         return new Transformation<>() {
             @Override protected R run(I input, String source) throws Exception {
-                return next.fire(myself.run(input, source), source);
+                return next.fire(myself.fire(input, source), source);
             }
         };
     }
