@@ -1,14 +1,13 @@
 package ca.mcscert.jpipe;
 
 import ca.mcscert.jpipe.cli.ColorPrinter;
-import ca.mcscert.jpipe.cli.Option;
-import ca.mcscert.jpipe.compiler.Compiler;
-import ca.mcscert.jpipe.error.FatalException;
 import ca.mcscert.jpipe.cli.CommandLineParser;
 import ca.mcscert.jpipe.cli.Configuration;
-import ca.mcscert.jpipe.compiler.model.ChainCompiler;
+import ca.mcscert.jpipe.cli.Option;
+import ca.mcscert.jpipe.compiler.Compiler;
 import ca.mcscert.jpipe.compiler.CompilerFactory;
 import ca.mcscert.jpipe.error.ErrorManager;
+import ca.mcscert.jpipe.error.FatalException;
 import java.util.Optional;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.UnrecognizedOptionException;
@@ -50,7 +49,7 @@ public final class Main {
             flush();
         } catch (FatalException fe) {
             flush(ERROR_CODE);
-        } catch(UnrecognizedOptionException ure) {
+        } catch (UnrecognizedOptionException ure) {
             cli.help();
             ColorPrinter printer = new ColorPrinter(System.err);
             printer.println("\n" + ure.getMessage());
@@ -69,8 +68,15 @@ public final class Main {
         logger.info("End of compilation process");
     }
 
+    /**
+     * Reconfigure Log4J2 to use the provided log level. Default is OFF (if none provided)
+     *
+     * @param args raw arguments from the command line.
+     */
     private static void setupLogLevel(CommandLine args) {
-        Level lvl = (Option.LOG_LVL.isIn(args)? Level.getLevel(Option.LOG_LVL.readFrom(args)): Level.OFF);
+        Level lvl = (Option.LOG_LVL.isIn(args)
+                        ? Level.getLevel(Option.LOG_LVL.readFrom(args))
+                        : Level.OFF);
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         org.apache.logging.log4j.core.config.Configuration c = ctx.getConfiguration();
         LoggerConfig loggerConfig = c.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);

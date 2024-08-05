@@ -7,12 +7,20 @@ import ca.mcscert.jpipe.visitors.ModelVisitor;
 import java.util.Collection;
 import java.util.StringJoiner;
 
+/**
+ * Define what a Justification is in a jPipe model.
+ */
 public final class Justification implements Visitable {
 
     private final String name;
     private final SymbolTable<JustificationElement> symbols;
     private Conclusion conclusion;
 
+    /**
+     * Creates a justification based on its name.
+     *
+     * @param name the name (identifier) to be used.
+     */
     public Justification(String name) {
         this.name = name;
         this.symbols = new SymbolTable<>();
@@ -26,9 +34,15 @@ public final class Justification implements Visitable {
         return conclusion;
     }
 
+    /**
+     * Set the one and only conclusion for this justification (cannot be changed).
+     *
+     * @param conclusion the conclusion reached by this justification.
+     */
     public void setConclusion(Conclusion conclusion) {
         if (this.conclusion != null) {
-            String msg = String.format("Justification %s cannot be concluded by %s as it is already using %s",
+            String msg = String.format("Justification %s cannot be concluded by %s as it is "
+                                        + "already using %s",
                     name, conclusion.getIdentifier(), this.conclusion.getIdentifier());
             throw new SemanticError(msg);
         }

@@ -10,10 +10,20 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 
+/**
+ * Delegate to ANTLR the task of "lexing" the character stream into relevant tokens.
+ */
 public final class Lexer extends Transformation<CharStream, CommonTokenStream> {
 
     private final List<Throwable> errors;
 
+    /**
+     * The lexer step might produce errors. As such, the constructor takes as input a list, used to
+     * record lexing errors when encountered. We delegate the responsibility of "what to do with
+     * such errors" to next steps.
+     *
+     * @param errors the list of errors used to record lexing errors, if any.
+     */
     public Lexer(List<Throwable> errors) {
         this.errors = errors;
     }
@@ -26,6 +36,10 @@ public final class Lexer extends Transformation<CharStream, CommonTokenStream> {
         return new CommonTokenStream(lexer);
     }
 
+    /**
+     * Specialization of the ANTLR error listener to implement error recording instead of
+     * exception throwing.
+     */
     private static class LexerErrorListener extends BaseErrorListener {
 
         private final List<Throwable> errors;
