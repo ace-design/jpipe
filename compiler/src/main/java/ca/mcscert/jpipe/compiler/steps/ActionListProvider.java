@@ -7,9 +7,15 @@ import ca.mcscert.jpipe.actions.CreateJustification;
 import ca.mcscert.jpipe.actions.CreateRelation;
 import ca.mcscert.jpipe.actions.CreateStrategy;
 import ca.mcscert.jpipe.actions.CreateSubConclusion;
+import ca.mcscert.jpipe.compiler.CompilerFactory;
+import ca.mcscert.jpipe.compiler.model.ChainBuilder;
 import ca.mcscert.jpipe.compiler.model.Transformation;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -97,6 +103,21 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             result.add(new CreateRelation(buildContext.justificationId,
                     ctx.from.getText(), ctx.to.getText()));
         }
+
+
+        @Override
+        public void enterLoad(JPipeParser.LoadContext ctx) {
+            String root = new File(this.buildContext.unitFileName).getParent();
+            String toLoad = Paths.get(root, strip(ctx.file.getText())).toString();
+            ChainBuilder<InputStream, List<Action>> loader = CompilerFactory.actionProvider();
+            try {
+                List<Action> loaded = loader.partialExecution(toLoad);
+                result.addAll(loaded);
+            } catch (IOException ioe) {
+                throw new RuntimeException(ioe.getMessage());
+            }
+        }
+
 
         private String strip(String s) {
             return s.substring(1, s.length() - 1);

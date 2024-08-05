@@ -5,7 +5,10 @@ grammar JPipe;
  ******************/
 
 // Root rule for parsing (called by the compilationChain)
-unit            : (justification)+ EOF;
+unit            : (justification | load)+ EOF;
+
+// load another file inside the current one.
+load            : LOAD file=STRING;
 
 // Declare a justification
 justification   : JUSTIFICATION id=ID OPEN justif_body CLOSE;
@@ -34,6 +37,8 @@ STRATEGY        : 'strategy';
 SUBCONCLUSION   : 'sub-conclusion';
 CONCLUSION      : 'conclusion';
 SUPPORT_LNK     : 'supports';
+
+LOAD            : 'load';
 
 // Making whitespaces and newlines irrelevant to the syntax
 WHITESPACE  : [ \t]+                -> channel(HIDDEN);

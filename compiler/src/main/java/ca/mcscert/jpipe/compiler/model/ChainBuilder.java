@@ -1,5 +1,7 @@
 package ca.mcscert.jpipe.compiler.model;
 
+import java.io.IOException;
+
 /**
  * Builder pattern to be used as internal DSL when building a compilation chain.
  *
@@ -42,5 +44,20 @@ public final class ChainBuilder<I, O> {
     public ChainCompiler<I, O> andThen(Sink<O> sink) {
         return new ChainCompiler<>(this.source, this.chain, sink);
     }
+
+
+    /**
+     * Execute a partial compilation chain to produce an object rather than serialize the result
+     * into a file.
+     *
+     * @param sourceFile the input file path
+     * @return an instance of O, result of applying the partial chain.
+     * @throws IOException is something goes wrong.
+     */
+    public O partialExecution(String sourceFile) throws IOException {
+        I i = source.provideFrom(sourceFile);
+        return chain.fire(i, sourceFile);
+    }
+
 
 }

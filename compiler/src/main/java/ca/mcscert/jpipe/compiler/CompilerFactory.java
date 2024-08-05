@@ -1,6 +1,8 @@
 package ca.mcscert.jpipe.compiler;
 
+import ca.mcscert.jpipe.actions.Action;
 import ca.mcscert.jpipe.cli.Configuration;
+import ca.mcscert.jpipe.compiler.model.ChainBuilder;
 import ca.mcscert.jpipe.compiler.steps.ActionListInterpretation;
 import ca.mcscert.jpipe.compiler.steps.ActionListProvider;
 import ca.mcscert.jpipe.compiler.steps.Apply;
@@ -14,6 +16,7 @@ import ca.mcscert.jpipe.compiler.steps.ScopeFiltering;
 import ca.mcscert.jpipe.compiler.steps.io.FileReader;
 import ca.mcscert.jpipe.compiler.steps.io.GraphVizRenderer;
 import ca.mcscert.jpipe.visitors.exporters.GraphVizExporter;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,19 +44,28 @@ public final class CompilerFactory {
      * @return a default instance of Compiler.
      */
     private static Compiler defaultCompiler(Configuration config) {
-        List<Throwable> errors = new ArrayList<>();
-
-        return new FileReader()
-                     .andThen(new CharStreamProvider())
-                     .andThen(new Lexer(errors))
-                     .andThen(new Parser(errors))
-                     .andThen(new LazyHaltAndCatchFire<>(errors))
-                     .andThen(new ActionListProvider())
+        return actionProvider()
                      .andThen(new ActionListInterpretation())
                      .andThen(new CompletenessChecker())
                      .andThen(new ScopeFiltering(config.getDiagramName()))
                      .andThen(new ModelVisit<>(new GraphVizExporter()))
                      .andThen(new GraphVizRenderer(config.getFormat()));
+    }
+
+    /**
+     * Build a partial compilation chain that extracts a list of actions out of a given file.
+     *
+     * @return the list of actions to execute to create a model conform the contents of a
+     *          given file.
+     */
+    public static ChainBuilder<InputStream, List<Action>> actionProvider() {
+        List<Throwable> errors = new ArrayList<>();
+        return new FileReader()
+                .andThen(new CharStreamProvider())
+                .andThen(new Lexer(errors))
+                .andThen(new Parser(errors))
+                .andThen(new LazyHaltAndCatchFire<>(errors))
+                .andThen(new ActionListProvider());
     }
 
 }

@@ -86,10 +86,10 @@ public final class ErrorManager {
         StringBuffer buffer = new StringBuffer();
         buffer.append("[system] ")
                 .append(t.getClass().getName())
-                .append(" ").append(t.getMessage());
+                .append(": ").append(t.getMessage());
         StringWriter sw = new StringWriter();
         t.printStackTrace(new PrintWriter(sw));
-        buffer.append(System.lineSeparator()).append(sw);
+        logger.debug(sw);
         return buffer;
     }
 
@@ -97,7 +97,8 @@ public final class ErrorManager {
         logger.debug("  Processing jPipe error");
         StringBuffer buffer = new StringBuffer();
         buffer.append("[error] ")
-                .append(t.toString());
+                .append(t.getClass().getCanonicalName())
+                .append(": ").append(t.getMessage());;
         return buffer;
     }
 
