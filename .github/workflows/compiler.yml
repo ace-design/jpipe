@@ -4,17 +4,17 @@ name: Compiler
 
 env:
   JAVA_ENV_VERSION: '21'      # LTS version
-  FOLDER: './ab-compiler'   # Source code location
+  FOLDER: './compiler'   # Source code location
 
 on:
   push: 
     paths:
-      - 'ab-compiler/**'
+      - 'compiler/**'
     tags-ignore:
       - '**'
   pull_request:
     paths:
-      - 'ab-compiler/**'
+      - 'compiler/**'
   
   workflow_call:      # Allow the workflow to be called by others
   workflow_dispatch:  # Can be triggered manually
@@ -133,5 +133,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jpipe.jar
-          path: ab-compiler/jpipe.jar
+          path: compiler/jpipe.jar
   
