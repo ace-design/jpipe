@@ -17,7 +17,7 @@ jobs:
     build_compiler:
         defaults: 
             run:
-                working-directory: './ab-compiler'
+                working-directory: './compiler'
         runs-on: ubuntu-latest
         
         steps:
@@ -39,7 +39,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                 name: jpipe-${{ github.ref_name }}.jar
-                path: ab-compiler/jpipe.jar
+                path: compiler/jpipe.jar
     
     build_extension:
         defaults: 
