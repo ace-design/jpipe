@@ -6,6 +6,7 @@ import { JpipeCompletionProvider } from './services/completion/jpipe-completion-
 import { JpipeValidator, registerValidationChecks } from './services/validation/main-validation.js';
 import { JpipeScopeProvider } from './services/jpipe-scope-provider.js';
 import { JpipeCodeActionProvider } from './services/validation/jpipe-code-action-provider.js';
+import { JpipeBroadScopeProvider } from './services/jpipe-broad-scope-provider.js';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -13,6 +14,9 @@ import { JpipeCodeActionProvider } from './services/validation/jpipe-code-action
 export type JpipeAddedServices = {
     validation: {
         validator: JpipeValidator
+    },
+    scope: {
+        broadScopeProvider: JpipeBroadScopeProvider
     }
 }
 
@@ -38,7 +42,10 @@ export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAd
     },
      references:{
         ScopeProvider: (services) => new JpipeScopeProvider(services)
-     }
+    },
+    scope: {
+        broadScopeProvider: (services) => new JpipeBroadScopeProvider(services)
+    }
 };
 
 /**
