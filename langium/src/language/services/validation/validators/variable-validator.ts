@@ -1,6 +1,6 @@
 import { diagnosticData, ValidationAcceptor } from "langium";
-import { Variable } from "../../generated/ast.js";
-import { Validator } from "./main-validation.js";
+import { Variable } from "../../../generated/ast.js";
+import { Validator } from "../main-validation.js";
 
 //class to validate variables in justification diagrams
 export class JustificationVariableValidator implements Validator<Variable>{
@@ -18,7 +18,7 @@ export class JustificationVariableValidator implements Validator<Variable>{
         if(JustificationVariableValidator.isJustificationVariableAcceptable(variable)){
             let error_message = "Variable kind: " + variable.kind + " is not included in a " + variable.$container.kind + " diagram";
             
-            accept("error", error_message, {node: variable, property: "kind", data: diagnosticData("supportInJustification")});
+            accept("error", error_message, {node: variable, property: "kind", data: "supportInJustification"});
         }
     }
 

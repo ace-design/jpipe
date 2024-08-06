@@ -1,6 +1,6 @@
 import { Reference, ValidationAcceptor } from "langium";
-import { Support, Variable } from "../../generated/ast.js";
-import { possible_supports, Validator } from "./main-validation.js";
+import { Support, Variable } from "../../../generated/ast.js";
+import { possible_supports, Validator } from "../main-validation.js";
 
 //class to validate supporting statements found in the document
 export class SupportValidator implements Validator<Support>{
@@ -87,7 +87,7 @@ export class SupportValidator implements Validator<Support>{
     private static checkSupportRelations(support: Support, accept: ValidationAcceptor): void{
         if(!this.supportRelationCorrect(support)){
             let error_message = this.getRelationErrorMessage(support);
-            accept("error", error_message, {node:support});
+            accept("error", error_message, {node:support, data: "supportNotMatching"});
         }
     }
     

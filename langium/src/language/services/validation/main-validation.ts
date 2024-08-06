@@ -1,9 +1,9 @@
 import { ValidationAcceptor, ValidationChecks } from 'langium';
 import type { JpipeServices } from '../../jpipe-module.js';
-import { SupportValidator } from './support-validator.js';
+import { SupportValidator } from './validators/support-validator.js';
 import { JpipeAstType } from '../../generated/ast.js';
-import { JustificationVariableValidator } from './variable-validator.js';
-import { PatternValidator } from './pattern-validator.js';
+import { JustificationVariableValidator } from './validators/variable-validator.js';
+import { PatternValidator } from './validators/pattern-validator.js';
 
 /**
  * Register custom validation checks.

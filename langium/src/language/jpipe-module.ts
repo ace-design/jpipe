@@ -5,7 +5,7 @@ import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
 import { JpipeCompletionProvider } from './services/completion/jpipe-completion-provider.js';
 import { JpipeValidator, registerValidationChecks } from './services/validation/main-validation.js';
 import { JpipeScopeProvider } from './services/jpipe-scope-provider.js';
-import { JpipeCodeActionProvider } from './services/code-actions.ts/jpipe-code-actions.js';
+import { JpipeCodeActionProvider } from './services/validation/jpipe-code-action-provider.js';
 
 /**
  * Declaration of custom services - add your own service classes here.

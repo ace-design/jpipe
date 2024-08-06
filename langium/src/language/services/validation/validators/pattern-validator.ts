@@ -1,6 +1,6 @@
 import { diagnosticData, ValidationAcceptor } from "langium";
-import { JustificationPattern } from "../../generated/ast.js";
-import { Validator } from "./main-validation.js";
+import { JustificationPattern } from "../../../generated/ast.js";
+import { Validator } from "../main-validation.js";
 
 
 export class PatternValidator implements Validator<JustificationPattern>{
@@ -15,7 +15,7 @@ export class PatternValidator implements Validator<JustificationPattern>{
             });
 
             if(!support_found){
-                accept("warning", "No @support variables found in pattern", {node: model, property: "name", data: diagnosticData("noSupportInPattern")})
+                accept("warning", "No @support variables found in pattern", {node: model, property: "name", data: "noSupportInPattern"})
             }
         }
     }
