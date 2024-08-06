@@ -1,15 +1,18 @@
 import { type Module, inject, } from 'langium';
 import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/module.js';
-import { JpipeValidator, registerValidationChecks } from './services/jpipe-validator.js';
 import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
-import { JpipeCompletionProvider } from './services/jpipe-completion-provider.js';
+import { JpipeCompletionProvider } from './services/completion/jpipe-completion-provider.js';
+import { JpipeValidator, registerValidationChecks } from './services/validation/main-validation.js';
+import { JpipeScopeProvider } from './services/jpipe-scope-provider.js';
+import { JpipeCodeActionProvider } from './services/jpipe-code-actions.js';
+
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export type JpipeAddedServices = {
     validation: {
-        JpipeValidator: JpipeValidator
+        validator: JpipeValidator
     }
 }
 
@@ -26,16 +29,17 @@ export type JpipeServices = LangiumServices & JpipeAddedServices
  */
 export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAddedServices> = {
     validation: {
-        JpipeValidator: () => new JpipeValidator()
+        validator: () => new JpipeValidator()
     },
     lsp:{
         CompletionProvider: (services) => new JpipeCompletionProvider(services),
         HoverProvider: (services) => new JpipeHoverProvider(services),
-        
-    }
+        CodeActionProvider: () => new JpipeCodeActionProvider()
+    },
+     references:{
+        ScopeProvider: (services) => new JpipeScopeProvider(services)
+     }
 };
-
-
 
 /**
  * Create the full set of services required by Langium.
@@ -67,9 +71,9 @@ export function createJpipeServices(context: DefaultSharedModuleContext): {
         JpipeModule
     );
     shared.ServiceRegistry.register(Jpipe);
+   
     registerValidationChecks(Jpipe);
+    
     
     return { shared, Jpipe };
 }
-
-

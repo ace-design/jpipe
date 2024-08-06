@@ -4,7 +4,7 @@
     "description": "Language Support for the jPipe language",
     "author": "McMaster Centre for Software Certification (McSCert)",
     "publisher": "mcscert",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "license": "MIT",
     "icon": "images/logo.png",
     "repository": {
@@ -26,8 +26,6 @@
         "package": "npm run check-types && node esbuild.mjs --production"
     },
     "dependencies": {
-        "chalk": "~5.3.0",
-        "commander": "~11.0.0",
         "langium": "~3.0.0",
         "vscode-languageclient": "~9.0.1",
         "vscode-languageserver": "~9.0.1"
@@ -55,6 +53,12 @@
         "configuration": {
             "title": "jPipe Configuration",
             "properties": {
+                "jpipe.developerMode": {
+                    "type": "boolean",
+                    "scope": "window",
+                    "default": false,
+                    "markdownDescription": "When developer mode is turned on, all automatic fixes are disabled"
+                },
                 "jpipe.jarFile": {
                     "type": "string",
                     "scope": "window",

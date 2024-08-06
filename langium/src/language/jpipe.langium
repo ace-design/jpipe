@@ -1,22 +1,44 @@
 grammar Jpipe
 
 entry Model:
-    (entries+=Body)*;
+    (loads+=(Load))* (class_kinds+=Class )*;
 
-Body:
-    Justification;
+Load: 
+    "load" name=STRING;
 
-Justification:
-    kind=('justification') name=ID '{' (variables+=Variable | instructions+=Instruction | supports += Support )* '}';
+interface Class{
+    kind: ('justification' | 'pattern' | 'composition')
+    name: string
+    implemented?: @Class
+}
+
+Class returns Class:
+    kind=('justification' | 'pattern' | 'composition') (name=ID | name=ID "implements" implemented=[Class:ID]) (JustificationPattern | Composition);
+
+JustificationPattern:
+    '{' (variables+=Variable | instructions+=Instruction | supports += Support)* '}';
+
+Composition:
+    '{' (variables+=CompositionVariable | instructions+=CompositionInstruction)* '}';
 
 Variable: 
-    kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion') name=ID;
+    kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion' | '@support') name=ID Instruction;
 
 Instruction:
-    Variable 'is' information=STRING;
+    'is' information=STRING;
 
 Support:
     left=[Variable:ID] 'supports' right=[Variable:ID];
+
+CompositionVariable:
+    kind='justification' name=ID;
+
+CompositionInstruction:
+    CompositionVariable 'is' information=CompositionInformation;
+
+CompositionInformation:
+    left=[Class:ID] 'with' right=[Class:ID];
+
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
