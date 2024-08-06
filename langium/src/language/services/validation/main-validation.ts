@@ -20,6 +20,7 @@ export class JpipeValidator{
     public static support_validator = new SupportValidator();
     public static justification_validator = new JustificationVariableValidator();
     public static pattern_validator = new PatternValidator();
+    
     public readonly checks: ValidationChecks<JpipeAstType> = {
         Variable: JpipeValidator.justification_validator.validate,
         Support: JpipeValidator.support_validator.validate,

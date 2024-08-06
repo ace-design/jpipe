@@ -1,6 +1,11 @@
 ## Changelog
 
 ### Unreleased
+- Leader: Cass Braun
+  - Features:
+    - Added QuickFix to change justification to pattern if it includes an instruction labelled @support
+    - Added QuickFix to change pattern to justification if it includes no instruction labelled @support
+    - Added QuickFix to remove support statement line if it's instruction types do not match
 
 ### v0.2.1 (2024-08-06)
 - Leader: Cass Braun
