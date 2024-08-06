@@ -2,10 +2,12 @@
 
 ### Unreleased
 
+### v0.2.1 (2024-08-06)
 - Leader: Cass Braun
   - Features:
     - Added patterns and compositions to grammar with basic language support
-
+    - Added improved completion for justification diagrams and compositions
+    - Added basic quick fix
 
 ### v0.2.0 (2024-07-19)
 
