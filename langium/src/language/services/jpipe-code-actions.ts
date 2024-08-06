@@ -5,12 +5,18 @@ import { CodeActionParams, CancellationToken, Command, CodeAction, CodeActionKin
 
 export class JpipeCodeActionProvider implements CodeActionProvider{
     getCodeActions(document: LangiumDocument, params: CodeActionParams, cancelToken?: CancellationToken): MaybePromise<Array<Command | CodeAction> | undefined> {
+        if(cancelToken){
+            if(cancelToken.isCancellationRequested){
+                return undefined;
+            }
+        }
+        
         let code_actions = new Array<CodeAction>();
 
         params.context.diagnostics.forEach(diagnostic =>{
             if(this.hasCode(diagnostic, "supportInJustification")){
                 code_actions.push(
-                    new RemoveLine(document.uri, params.range)
+                    new RemoveLine(document.uri, params.range, diagnostic, "supportInJustification")
                 );
             }
         })
@@ -21,7 +27,7 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
     private hasCode(diagnostic: Diagnostic, code: string): boolean{
         let hasCode = false;
 
-        if(diagnostic.data.code){
+        if(diagnostic.data){
             if(diagnostic.data.code === code){
                 hasCode = true;
             }
@@ -55,14 +61,18 @@ class RemoveLine implements CodeAction{
     public title = "Remove line";
     public kind = CodeActionKind.QuickFix;
     public edit: WorkspaceEdit;
+    public data: string;
+    public diagnostics?: Diagnostic[] | undefined;
 
-    constructor(uri: URI, range: Range){
+    constructor(uri: URI, range: Range, diagnostic: Diagnostic, data: string){
         let text_edit = TextEdit.del(this.getLine(range));
         this.edit = {
            changes: {
             [uri.toString()]: [text_edit]
            } 
         }
+        this.diagnostics = [diagnostic];
+        this.data = data;
     }
 
     private getLine(range: Range): Range{

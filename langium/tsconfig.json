@@ -21,7 +21,7 @@
     "include": [
         "src/**/*.ts",
         "test/**/*.ts"
-, "src/language/services/old/jpipe-command-handler.ts-old", "src/extension/image-generation/save-image-command.ts-old"    ],
+    ],
     "exclude": [
         "out",
         "node_modules"
