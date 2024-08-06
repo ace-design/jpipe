@@ -16,11 +16,12 @@ justif_body     : (evidence | sub_conclusion | strategy | relation | conclusion)
 
 // Body of a justification/pattern content
 
-element:        id=ID IS name=STRING;
 evidence        : EVIDENCE      element;
 strategy        : STRATEGY      element;
 sub_conclusion  : SUBCONCLUSION element;
 conclusion      : CONCLUSION    element;
+
+element         : id=ID IS name=STRING;
 
 relation        : from=ID SUPPORT_LNK to=ID;
 

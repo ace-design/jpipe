@@ -44,28 +44,18 @@ public final class CompilerFactory {
      * @return a default instance of Compiler.
      */
     private static Compiler defaultCompiler(Configuration config) {
-        return actionProvider()
-                     .andThen(new ActionListInterpretation())
-                     .andThen(new CompletenessChecker())
-                     .andThen(new ScopeFiltering(config.getDiagramName()))
-                     .andThen(new ModelVisit<>(new GraphVizExporter()))
-                     .andThen(new GraphVizRenderer(config.getFormat()));
-    }
-
-    /**
-     * Build a partial compilation chain that extracts a list of actions out of a given file.
-     *
-     * @return the list of actions to execute to create a model conform the contents of a
-     *          given file.
-     */
-    public static ChainBuilder<InputStream, List<Action>> actionProvider() {
         List<Throwable> errors = new ArrayList<>();
         return new FileReader()
                 .andThen(new CharStreamProvider())
                 .andThen(new Lexer(errors))
                 .andThen(new Parser(errors))
                 .andThen(new LazyHaltAndCatchFire<>(errors))
-                .andThen(new ActionListProvider());
+                .andThen(new ActionListProvider())
+                .andThen(new ActionListInterpretation())
+                .andThen(new CompletenessChecker())
+                .andThen(new ScopeFiltering(config.getDiagramName()))
+                .andThen(new ModelVisit<>(new GraphVizExporter()))
+                .andThen(new GraphVizRenderer(config.getFormat()));
     }
 
 }

@@ -10,7 +10,7 @@ import java.util.Collection;
 public final class Unit implements Visitable {
 
     private final String name;
-    private final SymbolTable<Justification> contents;
+    private final SymbolTable<Justification> symbols;
 
     /**
      * Instantiates a compilation unit, using its name (source file).
@@ -19,7 +19,7 @@ public final class Unit implements Visitable {
      */
     public Unit(String name) {
         this.name = name;
-        this.contents = new SymbolTable<>();
+        this.symbols = new SymbolTable<>();
     }
 
     public String getName() {
@@ -32,7 +32,7 @@ public final class Unit implements Visitable {
      * @param j the justification to record.
      */
     public void add(Justification j) {
-        this.contents.record(j.getName(), j);
+        this.symbols.record(j.getName(), j);
     }
 
     /**
@@ -42,16 +42,16 @@ public final class Unit implements Visitable {
      * @param e the element to add.
      */
     public void addInto(String container, JustificationElement e) {
-        Justification justification = contents.get(container);
+        Justification justification = symbols.get(container);
         justification.add(e);
     }
 
     public Justification get(String identifier) {
-        return this.contents.get(identifier);
+        return this.symbols.get(identifier);
     }
 
     public Collection<Justification> getContents() {
-        return this.contents.values();
+        return this.symbols.values();
     }
 
 
