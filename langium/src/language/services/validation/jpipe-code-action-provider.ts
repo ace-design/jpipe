@@ -18,7 +18,7 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
 
         params.context.diagnostics.forEach(diagnostic => {
             let code = this.getCode(diagnostic);
-            console.log(code);
+
             switch (code) {
                 case "supportInJustification":
                     code_actions.push(
@@ -49,7 +49,9 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
         let code: string | undefined;
 
         if(diagnostic.data){
-            code = diagnostic.data
+            if(diagnostic.data.code){
+                code = diagnostic.data.code
+            }
         }
 
         return code;

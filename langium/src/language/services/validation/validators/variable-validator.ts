@@ -18,7 +18,7 @@ export class JustificationVariableValidator implements Validator<Variable>{
         if(JustificationVariableValidator.isJustificationVariableAcceptable(variable)){
             let error_message = "Variable kind: " + variable.kind + " is not included in a " + variable.$container.kind + " diagram";
             
-            accept("error", error_message, {node: variable, property: "kind", data: "supportInJustification"});
+            accept("error", error_message, {node: variable, property: "kind", data: diagnosticData("supportInJustification")});
         }
     }
 

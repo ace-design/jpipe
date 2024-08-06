@@ -15,7 +15,7 @@ export class PatternValidator implements Validator<JustificationPattern>{
             });
 
             if(!support_found){
-                accept("warning", "No @support variables found in pattern", {node: model, property: "name", data: "noSupportInPattern"})
+                accept("warning", "No @support variables found in pattern", {node: model, property: "name", data: diagnosticData("noSupportInPattern")})
             }
         }
     }
