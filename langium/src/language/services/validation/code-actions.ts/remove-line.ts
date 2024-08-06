@@ -1,4 +1,4 @@
-import { LangiumDocument, URI } from "langium";
+import { LangiumDocument } from "langium";
 import { CodeAction, CodeActionKind, Range, WorkspaceEdit, Diagnostic, TextEdit, integer, CodeActionParams } from "vscode-languageserver";
 
 //Code action to remove a line

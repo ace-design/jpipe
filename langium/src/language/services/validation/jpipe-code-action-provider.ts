@@ -1,6 +1,6 @@
-import { LangiumDocument, MaybePromise, URI } from "langium";
+import { LangiumDocument, MaybePromise } from "langium";
 import { CodeActionProvider } from "langium/lsp";
-import { CodeActionParams, CancellationToken, Command, CodeAction, CodeActionKind, Range, Position, WorkspaceEdit, Diagnostic, TextEdit, integer } from "vscode-languageserver";
+import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
 import { ChangeDeclaration } from "./code-actions.ts/change-declaration.js";
 import { RemoveLine } from "./code-actions.ts/remove-line.js";
 
@@ -35,6 +35,9 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
                     code_actions.push(
                         new RemoveLine(document, params, diagnostic)
                     );
+                    break;
+                case "linking-error":
+                    
                     break;
                 default:
                     break;
