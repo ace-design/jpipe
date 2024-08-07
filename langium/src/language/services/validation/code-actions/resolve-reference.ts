@@ -67,6 +67,7 @@ export function findRelativePath(home: URI, dest: URI): string{
         dest_components = dest_path.split("/").reverse();
     }
 
+
     let home_first_element = home_components.pop();
     let dest_first_element = dest_components.pop();
 
@@ -75,18 +76,31 @@ export function findRelativePath(home: URI, dest: URI): string{
         dest_first_element = dest_components.pop();
     }
  
-    if(home_first_element){
+    if(home_first_element && dest_first_element){
         home_components.push(home_first_element);
+        dest_components.push(dest_first_element);
+
         home_components = home_components.reverse();
+        dest_components = dest_components.reverse();
     }else{
         throw new Error("Element is within scope");
     }
     
-    let relative_path = ".";
+    let relative_path = "";
 
-    home_components.forEach(component =>{
+    dest_components.forEach( component => {
         relative_path = relative_path + seperator + component;
     });
 
+    if(home_components.length === 1){
+        relative_path = "." + relative_path;
+    }else{
+        while(home_components.length > 2){
+            relative_path = seperator + ".."  + relative_path;
+        }
+
+       relative_path = ".." + relative_path; 
+    }
+    
     return relative_path;
 } 

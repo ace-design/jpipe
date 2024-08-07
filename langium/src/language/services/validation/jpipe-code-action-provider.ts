@@ -43,7 +43,7 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
                     break;
                 case "linking-error":
                     let data = this.toLinkingError(diagnostic.data);
-                    let paths = this.getPaths(data);
+                    let paths = this.getPaths(document, data);
 
                     paths.forEach(path =>{
                         code_actions.push(new ResolveReference(document, diagnostic, path))
@@ -85,13 +85,14 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
         }
     }
 
-    private getPaths(data: LinkingErrorData): Set<URI>{
+    private getPaths(document: LangiumDocument, data: LinkingErrorData): Set<URI>{
         let paths = new Set<URI>();
 
         this.index_manager.allElements(data.containerType).forEach(e=>{
             if(e.name === data.refText){
                 if(e.node){
                     let home_doc = getDocument(e.node);
+
                     paths.add(home_doc.uri);
                 }
             }
