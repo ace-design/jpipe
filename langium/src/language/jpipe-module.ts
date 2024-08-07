@@ -1,12 +1,8 @@
 import { DefaultScopeProvider, type Module, inject, } from 'langium';
 import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/module.js';
-import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
-import { JpipeCompletionProvider } from './services/completion/jpipe-completion-provider.js';
-import { JpipeValidator, registerValidationChecks } from './services/validation/main-validation.js';
-import { JpipeScopeProvider } from './services/jpipe-scope-provider.js';
-import { JpipeCodeActionProvider } from './services/validation/jpipe-code-action-provider.js';
-import { JpipeBroadScopeProvider } from './services/jpipe-broad-scope-provider.js';
+import { JpipeCodeActionProvider, JpipeCompletionProvider, JpipeHoverProvider, JpipeScopeProvider, JpipeValidator, registerValidationChecks } from './services/index.js';
+
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -44,7 +40,7 @@ export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAd
         ScopeProvider: (services) => new JpipeScopeProvider(services)
     },
     scope: {
-        broadScopeProvider: (services) => new JpipeBroadScopeProvider(services)
+        broadScopeProvider: (services) => new DefaultScopeProvider(services)
     }
 };
 
