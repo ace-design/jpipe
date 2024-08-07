@@ -1,8 +1,7 @@
 import { LangiumDocument, MaybePromise } from "langium";
 import { CodeActionProvider } from "langium/lsp";
 import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
-import { ChangeDeclaration } from "./code-actions.ts/change-declaration.js";
-import { RemoveLine } from "./code-actions.ts/remove-line.js";
+import { RemoveLine, ChangeDeclaration } from "./code-actions.ts/index.js";
 
 //class which provides all code actions (quick fixes)
 export class JpipeCodeActionProvider implements CodeActionProvider{
