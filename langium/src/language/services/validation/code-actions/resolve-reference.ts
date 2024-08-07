@@ -1,7 +1,7 @@
-import { IndexManager, LangiumDocument, LinkingErrorData, ScopeProvider, URI } from "langium";
+import { LangiumDocument, URI } from "langium";
 import { CodeAction, CodeActionKind, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
-import { getDocument } from "/home/braunc8/summer/langium/jpipegit/jpipe/langium/node_modules/langium/lib/utils/ast-utils.js";
 
+//Code action to provide load statements to a given path
 export class ResolveReference implements CodeAction{
     title!: string;
     kind = CodeActionKind.QuickFix;
@@ -23,6 +23,7 @@ export class ResolveReference implements CodeAction{
         
     }
 
+    //helper function to get the title of a resolve reference code action
     private getTitle(document: LangiumDocument, path: URI): string{
         let import_path: string;
         
@@ -35,6 +36,7 @@ export class ResolveReference implements CodeAction{
         return "Add import from " + import_path;
     }
 
+    //helper function to get the workspace edit of a resolve reference code action
     private getEdit(document: LangiumDocument, path: URI): WorkspaceEdit{
         let new_text = "load \"" + path.path + "\"\n";
 

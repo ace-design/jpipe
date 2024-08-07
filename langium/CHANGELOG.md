@@ -6,6 +6,7 @@
     - Added QuickFix to change justification to pattern if it includes an instruction labelled @support
     - Added QuickFix to change pattern to justification if it includes no instruction labelled @support
     - Added QuickFix to remove support statement line if it's instruction types do not match
+    - Added QuickFix to add load statements for unresolved references
 
 ### v0.2.1 (2024-08-06)
 - Leader: Cass Braun
