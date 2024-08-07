@@ -34,7 +34,7 @@ export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAd
     lsp:{
         CompletionProvider: (services) => new JpipeCompletionProvider(services),
         HoverProvider: (services) => new JpipeHoverProvider(services),
-        CodeActionProvider: () => new JpipeCodeActionProvider()
+        CodeActionProvider: (services) => new JpipeCodeActionProvider(services)
     },
      references:{
         ScopeProvider: (services) => new JpipeScopeProvider(services)

@@ -1,10 +1,16 @@
-import { LangiumDocument, MaybePromise } from "langium";
-import { CodeActionProvider } from "langium/lsp";
+import { IndexManager, LangiumDocument, LinkingErrorData, MaybePromise, URI } from "langium";
+import { CodeActionProvider, LangiumServices } from "langium/lsp";
 import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
-import { RemoveLine, ChangeDeclaration } from "./code-actions/index.js";
+import { RemoveLine, ChangeDeclaration, ResolveReference } from "./code-actions/index.js";
+import { getDocument } from "/home/braunc8/summer/langium/jpipegit/jpipe/langium/node_modules/langium/lib/utils/ast-utils.js";
 
 //class which provides all code actions (quick fixes)
 export class JpipeCodeActionProvider implements CodeActionProvider{
+    private readonly index_manager: IndexManager;
+
+    constructor(services: LangiumServices){
+        this.index_manager = services.shared.workspace.IndexManager;
+    }
     //returns codes based on diagnostics
     getCodeActions(document: LangiumDocument, params: CodeActionParams, cancelToken?: CancellationToken): MaybePromise<Array<Command | CodeAction> | undefined> {
         if(cancelToken){
@@ -36,7 +42,12 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
                     );
                     break;
                 case "linking-error":
-                    
+                    let data = this.toLinkingError(diagnostic.data);
+                    let paths = this.getPaths(data);
+
+                    paths.forEach(path =>{
+                        code_actions.push(new ResolveReference(document, diagnostic, path))
+                    });
                     break;
                 default:
                     break;
@@ -57,6 +68,36 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
         }
 
         return code;
+    }
+
+    private toLinkingError(data: any): LinkingErrorData{
+        if(data.code && data.containerType && data.property && data.refText){
+            return {
+                code: data.code,
+                containerType: data.containerType,
+                property: data.property,
+                refText: data.refText,
+                actionSegment: data.actionSegment,
+                actionRange: data.actionRange
+            }
+        }else{
+            throw new Error("Diagnostic data not in correct form");
+        }
+    }
+
+    private getPaths(data: LinkingErrorData): Set<URI>{
+        let paths = new Set<URI>();
+
+        this.index_manager.allElements(data.containerType).forEach(e=>{
+            if(e.name === data.refText){
+                if(e.node){
+                    let home_doc = getDocument(e.node);
+                    paths.add(home_doc.uri);
+                }
+            }
+        });
+
+        return paths;
     }
 }
 
