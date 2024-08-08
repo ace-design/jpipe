@@ -49,24 +49,32 @@ export class ResolveReference implements CodeAction{
 }
 
 export function findRelativePath(home: URI, dest: URI): string{
-    let home_path = home.path;
-    let dest_path = dest.path;
-
     let home_components: Array<string>;
     let dest_components: Array<string>;
 
-    let seperator: string;
+    let seperator: "/" | "\\";
     
-    if (home_path.includes("\\")){
+    if (home.path.includes("\\")){
         seperator = "\\";
-        home_components = home_path.split("\\");
-        dest_components = dest_path.split("\\");
+        home_components = home.path.split("\\");
+        dest_components = dest.path.split("\\");
     }else{
         seperator = "/";
-        home_components = home_path.split("/").reverse();
-        dest_components = dest_path.split("/").reverse();
+        home_components = home.path.split("/");
+        dest_components = dest.path.split("/");
     }
 
+    let reduced_components = reduceComponents(home_components, dest_components);
+
+    home_components = reduced_components.home_components;
+    dest_components = reduced_components.dest_components;
+
+    return assembleRelativePath(home_components, dest_components, seperator);
+} 
+
+function reduceComponents(home_components: Array<string>, dest_components: Array<string>): {home_components: Array<string>, dest_components: Array<string>}{
+    home_components = home_components.reverse();
+    dest_components = dest_components.reverse();
 
     let home_first_element = home_components.pop();
     let dest_first_element = dest_components.pop();
@@ -85,22 +93,31 @@ export function findRelativePath(home: URI, dest: URI): string{
     }else{
         throw new Error("Element is within scope");
     }
-    
+
+    return {
+        home_components: home_components,
+        dest_components: dest_components
+    };
+}
+
+function assembleRelativePath(home_components: Array<string>, dest_components: Array<string>, seperator: "/" | "\\"): string{
     let relative_path = "";
 
     dest_components.forEach( component => {
         relative_path = relative_path + seperator + component;
     });
 
-    if(home_components.length === 1){
-        relative_path = "." + relative_path;
-    }else{
-        while(home_components.length > 2){
-            relative_path = seperator + ".."  + relative_path;
-        }
-
-       relative_path = ".." + relative_path; 
-    }
+    if(seperator === "/"){
+        if(home_components.length === 1){
+            relative_path = "." + relative_path;
+        }else{
+            while(home_components.length > 2){
+                relative_path = seperator + ".."  + relative_path;
+            }
     
+           relative_path = ".." + relative_path; 
+        }
+    }
+
     return relative_path;
-} 
+}
