@@ -8,6 +8,7 @@
     - Added QuickFix to remove support statement line if it's instruction types do not match
     - Added QuickFix to add relative load statements for unresolved references
     - Added support for relative load statements
+    - Added validation for declaration implementation rules
 
 ### v0.2.1 (2024-08-06)
 - Leader: Cass Braun
