@@ -36,6 +36,8 @@ abstract class Path{
         
     public abstract toString(): string;
 
+    public abstract clone(): Path;
+
     // helper function for accesing purposes
     shift(): string | undefined{
         return this.components.shift();
@@ -60,13 +62,14 @@ abstract class Path{
 
 //Stores a relative path to a file
 export class RelativePath extends Path{
-    override components!: string[];
+    override components!: Array<string>;
     override separator!: "\\" | "/";
     override type: "Relative" | "Absolute";
     
     constructor(path: string);
     constructor(home: AbsolutePath, dest: AbsolutePath);
-    constructor(path: string | AbsolutePath, dest?: AbsolutePath){
+    constructor(path: Array<string>, separator: "\\" | "/");
+    constructor(path: string | AbsolutePath | Array<string>, next?: AbsolutePath | ("\\" | "/")){
         super();
         this.type = "Relative";
 
@@ -78,26 +81,28 @@ export class RelativePath extends Path{
                 this.separator = "/";
                 this.components = path.split("/");
             }
-        }else if(dest){
+        }else if(Array.isArray(path) && (next === "\\" || next === "/")){
+            this.components = path;
+            this.separator = next;
+        }else if(Path.isAbsolutePath(path) && Path.isAbsolutePath(next)){
             if(path.separator === "/"){
                 if(path.components.length === 1){
-                    dest.unshift(".");
+                    next.unshift(".");
                 }else{
                     for(let i = 0 ; i < (path.components.length - 1) ; i++){
-                        dest.unshift("..");
+                        next.unshift("..");
                     }
                 }
             }
             
-            this.components = dest.components;
-            this.separator = dest.separator;
+            this.components = next.components;
+            this.separator = next.separator;
         }
-
     }
 
     public toAbsolutePath(home: AbsolutePath): AbsolutePath{
         let absolute_path: AbsolutePath;
-        let this_path = new AbsolutePath(this.toString());
+        let this_path = this.clone();
 
         home.pop();
         
@@ -136,21 +141,37 @@ export class RelativePath extends Path{
 
         return path;
     }
+
+    public override clone(): RelativePath{
+        let components = new Array<string>();
+        let separator = this.separator;
+        
+        this.components.forEach(component =>{
+            components.push(component);
+        })
+
+        return new RelativePath(components, separator);
+    }
 }
 
 //Stores an absolute path to a file
 export class AbsolutePath extends Path{
     override type: "Relative" | "Absolute";
-    override components: Array<string>;
-    override separator: "\\" | "/";
+    override components!: Array<string>;
+    override separator!: "\\" | "/";
 
     public constructor(path: string);
     public constructor(path: URI);
-    public constructor(path: string | URI){
+    public constructor(path: Array<string>, separator: "\\" | "/");
+    public constructor(path: string | URI | Array<string>, separator?: "\\" | "/"){
         super();
         this.type = "Absolute"
-
-        if(typeof path === "string"){
+        if(Array.isArray(path)){
+            if((separator === "\\" || separator === "/")){
+                this.components = path;
+                this.separator = separator;
+            }
+        }else if(typeof path === "string"){
             if (path.includes("\\")){
                 this.separator = "\\";
                 this.components = path.split("\\");
@@ -173,7 +194,7 @@ export class AbsolutePath extends Path{
     public getRelativePathTo(dest: AbsolutePath): RelativePath;
     public getRelativePathTo(dest: string | AbsolutePath): RelativePath{
         if(AbsolutePath.isAbsolutePath(dest)){
-            let reduced_path = this.reduceComponents(new AbsolutePath(this.toString()), dest);
+            let reduced_path = this.reduceComponents(this.clone(), dest);
             return new RelativePath(reduced_path.home, reduced_path.dest);
 
         }else{
@@ -219,5 +240,16 @@ export class AbsolutePath extends Path{
         }
 
         return path;
+    }
+
+    public override clone(): AbsolutePath{
+        let components = new Array<string>();
+        let separator = this.separator;
+        
+        this.components.forEach(component =>{
+            components.push(component);
+        })
+
+        return new AbsolutePath(components, separator);
     }
 }
