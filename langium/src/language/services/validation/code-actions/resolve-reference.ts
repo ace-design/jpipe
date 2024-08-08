@@ -14,34 +14,35 @@ export class ResolveReference implements CodeAction{
     data?: any;
 
     constructor(document: LangiumDocument, diagnostic: Diagnostic, path: URI){
-        this.title = this.getTitle(document, path);
+        let relative_path = this.getRelativePath(document.uri, path);
+        this.title = "Add import from " + relative_path;
 
         this.diagnostics = [diagnostic];
         this.isPreferred = true
         
-        this.edit = this.getEdit(document, path);
+        this.edit = this.getEdit(document, relative_path);
         this.data = diagnostic.data
         
     }
 
-    //helper function to get the title of a resolve reference code action
-    private getTitle(document: LangiumDocument, path: URI): string{
+    //helper function to get the relative path
+    private getRelativePath(home_URI: URI, dest_URI: URI): string{
         let import_path: string;
-        let home_path = new AbsolutePath(document.uri);
+        let home_path = new AbsolutePath(home_URI);
 
         try{
-            import_path = home_path.getRelativePathTo(path.path).toString();
+            import_path = home_path.getRelativePathTo(dest_URI.path).toString();
         }catch(error: any){
             console.log(error.toString());
-            import_path = path.path;
+            import_path = dest_URI.path;
         }
 
-        return "Add import from " + import_path;
+        return import_path;
     }
 
     //helper function to get the workspace edit of a resolve reference code action
-    private getEdit(document: LangiumDocument, path: URI): WorkspaceEdit{
-        let new_text = "load \"" + path.path + "\"\n";
+    private getEdit(document: LangiumDocument, relative_path: string): WorkspaceEdit{
+        let new_text = "load \"" + relative_path + "\"\n";
 
         return {
             changes: {
