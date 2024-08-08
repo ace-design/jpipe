@@ -1,5 +1,6 @@
 import { LangiumDocument, URI } from "langium";
 import { CodeAction, CodeActionKind, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
+import { FilePath } from "./path-utilities.js";
 
 //Code action to provide load statements to a given path
 export class ResolveReference implements CodeAction{
@@ -25,10 +26,11 @@ export class ResolveReference implements CodeAction{
 
     //helper function to get the title of a resolve reference code action
     private getTitle(document: LangiumDocument, path: URI): string{
+        let home_path = new FilePath(document.uri);
         let import_path: string;
         
         try{
-            import_path = findRelativePath(document.uri, path);
+            import_path = home_path.getRelativePathTo(path).toString();
         }catch(error: any){
             import_path = path.path;
         }
@@ -46,78 +48,4 @@ export class ResolveReference implements CodeAction{
             }
         };
     }
-}
-
-export function findRelativePath(home: URI, dest: URI): string{
-    let home_components: Array<string>;
-    let dest_components: Array<string>;
-
-    let seperator: "/" | "\\";
-    
-    if (home.path.includes("\\")){
-        seperator = "\\";
-        home_components = home.path.split("\\");
-        dest_components = dest.path.split("\\");
-    }else{
-        seperator = "/";
-        home_components = home.path.split("/");
-        dest_components = dest.path.split("/");
-    }
-
-    let reduced_components = reduceComponents(home_components, dest_components);
-
-    home_components = reduced_components.home_components;
-    dest_components = reduced_components.dest_components;
-
-    return assembleRelativePath(home_components, dest_components, seperator);
-} 
-
-function reduceComponents(home_components: Array<string>, dest_components: Array<string>): {home_components: Array<string>, dest_components: Array<string>}{
-    home_components = home_components.reverse();
-    dest_components = dest_components.reverse();
-
-    let home_first_element = home_components.pop();
-    let dest_first_element = dest_components.pop();
-
-    while(home_first_element === dest_first_element){
-        home_first_element = home_components.pop();
-        dest_first_element = dest_components.pop();
-    }
- 
-    if(home_first_element && dest_first_element){
-        home_components.push(home_first_element);
-        dest_components.push(dest_first_element);
-
-        home_components = home_components.reverse();
-        dest_components = dest_components.reverse();
-    }else{
-        throw new Error("Element is within scope");
-    }
-
-    return {
-        home_components: home_components,
-        dest_components: dest_components
-    };
-}
-
-function assembleRelativePath(home_components: Array<string>, dest_components: Array<string>, seperator: "/" | "\\"): string{
-    let relative_path = "";
-
-    dest_components.forEach( component => {
-        relative_path = relative_path + seperator + component;
-    });
-
-    if(seperator === "/"){
-        if(home_components.length === 1){
-            relative_path = "." + relative_path;
-        }else{
-            while(home_components.length > 2){
-                relative_path = seperator + ".."  + relative_path;
-            }
-    
-           relative_path = ".." + relative_path; 
-        }
-    }
-
-    return relative_path;
 }

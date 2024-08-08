@@ -6,7 +6,6 @@ import { isClass } from "../../generated/ast.js";
 export class ClassCompletionProvider implements JpipeCompletion{
     //provides reference candidates
     getCandidates(potential_references: Set<AstNodeDescription>, refInfo: ReferenceInfo): Set<AstNodeDescription> {
-        console.log("Getting candidates")
         let candidates = new Set<AstNodeDescription>(); 
         let verification_function: ((potential_references: Set<AstNodeDescription>) => Set<AstNodeDescription>) | undefined;
 
