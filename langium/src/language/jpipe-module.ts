@@ -1,7 +1,7 @@
 import { DefaultScopeProvider, type Module, inject, } from 'langium';
 import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/module.js';
-import { JpipeCodeActionProvider, JpipeCompletionProvider, JpipeHoverProvider, JpipeScopeProvider, JpipeValidator, registerValidationChecks } from './services/index.js';
+import { JpipeCodeActionProvider, JpipeCompletionProvider, JpipeHoverProvider, JpipeScopeProvider, JpipeValidationRegistrar } from './services/index.js';
 
 
 /**
@@ -9,7 +9,7 @@ import { JpipeCodeActionProvider, JpipeCompletionProvider, JpipeHoverProvider, J
  */
 export type JpipeAddedServices = {
     validation: {
-        validator: JpipeValidator
+        validationRegistrar: JpipeValidationRegistrar
     },
     scope: {
         broadScopeProvider: DefaultScopeProvider
@@ -29,7 +29,7 @@ export type JpipeServices = LangiumServices & JpipeAddedServices
  */
 export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAddedServices> = {
     validation: {
-        validator: () => new JpipeValidator()
+        validationRegistrar: (services) => new JpipeValidationRegistrar(services)
     },
     lsp:{
         CompletionProvider: (services) => new JpipeCompletionProvider(services),
@@ -73,10 +73,8 @@ export function createJpipeServices(context: DefaultSharedModuleContext): {
         JpipeGeneratedModule,
         JpipeModule
     );
+
     shared.ServiceRegistry.register(Jpipe);
-   
-    registerValidationChecks(Jpipe);
-    
-    
+
     return { shared, Jpipe };
 }

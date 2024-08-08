@@ -1,8 +1,11 @@
-import { diagnosticData, ValidationAcceptor } from "langium";
-import { Declaration } from "../../../generated/ast.js";
+import { diagnosticData, ValidationAcceptor, ValidationChecks } from "langium";
+import { Declaration, JpipeAstType } from "../../../generated/ast.js";
 import { Validator } from "../main-validation.js";
 
 export class DeclarationValidator implements Validator<Declaration>{
+    public readonly checks: ValidationChecks<JpipeAstType> = {
+        Declaration: this.validate,
+    }
     validate(declaration: Declaration, accept: ValidationAcceptor): void {
         if(declaration.implemented){
             if(declaration.kind !== "justification"){ //validating that justification is implementing

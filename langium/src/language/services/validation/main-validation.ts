@@ -1,35 +1,30 @@
-import { ValidationAcceptor, ValidationChecks } from 'langium';
+import { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 import type { JpipeServices } from '../../jpipe-module.js';
 import { JpipeAstType } from '../../generated/ast.js';
 import { PatternValidator, JustificationVariableValidator, SupportValidator, DeclarationValidator } from './validators/index.js';
 
-/**
- * Register custom validation checks.
- */
-export function registerValidationChecks(services: JpipeServices) {
-    const registry = services.validation.ValidationRegistry;
-    const validator = services.validation.validator;
-
-    registry.register(validator.checks, validator);
-}
-
-//Register additional validation here
-export class JpipeValidator{
-    public static support_validator = new SupportValidator();
-    public static justification_validator = new JustificationVariableValidator();
-    public static pattern_validator = new PatternValidator();
-    public static declaration_validator = new DeclarationValidator();
+export class JpipeValidationRegistrar{
+    private validators: Array<Validator<any>>;
     
-    public readonly checks: ValidationChecks<JpipeAstType> = {
-        Variable: JpipeValidator.justification_validator.validate,
-        Support: JpipeValidator.support_validator.validate,
-        JustificationPattern: JpipeValidator.pattern_validator.validate,
-        Declaration: JpipeValidator.declaration_validator.validate
+    constructor(services: JpipeServices){
+        const registry = services.validation.ValidationRegistry;
+
+        this.validators = new Array<Validator<any>>(
+            new SupportValidator(),
+            new JustificationVariableValidator(),
+            new PatternValidator(),
+            new DeclarationValidator()
+        );
+
+        this.validators.forEach(validator =>{
+            registry.register(validator.checks)
+        })
     }
 }
 
 //when creating a validator, implement this interface
-export interface Validator<T>{
+export interface Validator<T extends AstNode>{
+    checks: ValidationChecks<JpipeAstType>;
     //function which actually validates the given information
     validate(model: T, accept: ValidationAcceptor): void;
 }

@@ -1,9 +1,12 @@
-import { diagnosticData, ValidationAcceptor } from "langium";
-import { Variable } from "../../../generated/ast.js";
+import { diagnosticData, ValidationAcceptor, ValidationChecks } from "langium";
+import { JpipeAstType, Variable } from "../../../generated/ast.js";
 import { Validator } from "../main-validation.js";
 
 //class to validate variables in justification diagrams
 export class JustificationVariableValidator implements Validator<Variable>{
+    public readonly checks: ValidationChecks<JpipeAstType> = {
+        Variable: this.validate,
+    } 
     //actual function to validate the variable
     public validate(variable: Variable, accept: ValidationAcceptor): void {
         let declaration_kind = variable.$container.kind;
