@@ -149,6 +149,6 @@ export function getDeclaration(node: AstNode): Declaration{
     if(isDeclaration(container)){
         return container;
     }else{
-        throw new Error("Class not found");
+        throw new Error("Declaration not found");
     }
 }

@@ -6,8 +6,8 @@ import { Validator } from "../main-validation.js";
 export class JustificationVariableValidator implements Validator<Variable>{
     //actual function to validate the variable
     public validate(variable: Variable, accept: ValidationAcceptor): void {
-        let class_kind = variable.$container.kind;
-        if(class_kind === 'justification'){
+        let declaration_kind = variable.$container.kind;
+        if(declaration_kind === 'justification'){
              JustificationVariableValidator.validateJustificationVariables(variable, accept);
         }
 
