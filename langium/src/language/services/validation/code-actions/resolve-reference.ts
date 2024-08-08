@@ -1,6 +1,6 @@
 import { LangiumDocument, URI } from "langium";
 import { CodeAction, CodeActionKind, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
-import { FilePath } from "./path-utilities.js";
+import { AbsolutePath } from "./path-utilities.js";
 
 //Code action to provide load statements to a given path
 export class ResolveReference implements CodeAction{
@@ -27,7 +27,7 @@ export class ResolveReference implements CodeAction{
     //helper function to get the title of a resolve reference code action
     private getTitle(document: LangiumDocument, path: URI): string{
         let import_path: string;
-        let home_path = new FilePath(document.uri);
+        let home_path = new AbsolutePath(document.uri);
 
         try{
             import_path = home_path.getRelativePathTo(path.path).toString();

@@ -1,5 +1,6 @@
 import { URI } from "langium";
 
+//Stores a Path to a file
 abstract class Path{
     abstract components: Array<string>;
     abstract separator: "\\" | "/";
@@ -15,6 +16,24 @@ abstract class Path{
         return true;
     }
 
+    //Determines if an object is a RelativePath
+    public static isRelativePath(value: any): value is RelativePath{
+        if(Path.isPath(value) && value.type === "Relative"){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    //Determines if an object is an AbsolutePath
+    public static isAbsolutePath(value: any): value is AbsolutePath{
+        if(Path.isPath(value) && value.type === "Absolute"){
+            return true;
+        }else{
+            return false;
+        }
+    }
+        
     public abstract toString(): string;
 
     // helper function for accesing purposes
@@ -39,37 +58,73 @@ abstract class Path{
 
 }
 
+//Stores a relative path to a file
 export class RelativePath extends Path{
-    override components: string[];
-    override separator: "\\" | "/";
+    override components!: string[];
+    override separator!: "\\" | "/";
     override type: "Relative" | "Absolute";
     
-    constructor(home: FilePath, dest: FilePath){
+    constructor(path: string);
+    constructor(home: AbsolutePath, dest: AbsolutePath);
+    constructor(path: string | AbsolutePath, dest?: AbsolutePath){
         super();
         this.type = "Relative";
 
-        if(home.separator === "/"){
-            if(home.components.length === 1){
-                dest.unshift(".");
+        if(typeof path === "string"){
+            if(path.includes("\\")){
+                this.separator = "\\";
+                this.components = path.split("\\");
             }else{
-                for(let i = 0 ; i < (home.components.length - 1) ; i++){
-                    dest.unshift("..");
+                this.separator = "/";
+                this.components = path.split("/");
+            }
+        }else if(dest){
+            if(path.separator === "/"){
+                if(path.components.length === 1){
+                    dest.unshift(".");
+                }else{
+                    for(let i = 0 ; i < (path.components.length - 1) ; i++){
+                        dest.unshift("..");
+                    }
                 }
             }
+            
+            this.components = dest.components;
+            this.separator = dest.separator;
         }
-        
-        this.components = dest.components;
-        this.separator = dest.separator;
-    }
-    //Determines if an object is a FilePath
-    public static isRelativePath(value: any): value is RelativePath{
-        if(Path.isPath(value) && value.type === "Relative"){
-            return true;
-        }else{
-            return false;
-        }
+
     }
 
+    public toAbsolutePath(home: AbsolutePath): AbsolutePath{
+        let absolute_path: AbsolutePath;
+        let this_path = new AbsolutePath(this.toString());
+
+        home.pop();
+        
+        let first_element = this_path.shift();
+
+        if(first_element === "."){
+            absolute_path = new AbsolutePath(home.toString());
+            
+            first_element = this_path.shift();
+        }else{
+            while(first_element === ".."){
+                home.pop();
+                first_element = this_path.shift();
+            }
+
+            absolute_path = new AbsolutePath(home.toString());
+        }
+
+        while(first_element !== undefined){
+            absolute_path.push(first_element);
+            first_element = this_path.shift();
+        }
+    
+        return absolute_path;
+    }
+
+    //converts a relative path to a string
     public override toString(): string {
         let path = "";
 
@@ -83,8 +138,8 @@ export class RelativePath extends Path{
     }
 }
 
-//Class to manage file paths (making file paths relative/absolute)
-export class FilePath extends Path{
+//Stores an absolute path to a file
+export class AbsolutePath extends Path{
     override type: "Relative" | "Absolute";
     override components: Array<string>;
     override separator: "\\" | "/";
@@ -93,7 +148,6 @@ export class FilePath extends Path{
     public constructor(path: URI);
     public constructor(path: string | URI){
         super();
-
         this.type = "Absolute"
 
         if(typeof path === "string"){
@@ -106,38 +160,29 @@ export class FilePath extends Path{
                 this.components.shift(); //necessary because linux paths start with /
             }
         }else{
-            let file_path = new FilePath(path.path);
+            let file_path = new AbsolutePath(path.path);
 
             this.components = file_path.components;
             this.separator = file_path.separator;
         }
     }
     
-    //Determines if an object is a FilePath
-    public static isFilePath(value: any): value is FilePath{
-        if(Path.isPath(value) && value.type === "Absolute"){
-            return true;
-        }else{
-            return false;
-        }
-    }
-    
+
     //Function to find the relative path to a file, using the current file path as home
     public getRelativePathTo(dest: string): RelativePath;
-    public getRelativePathTo(dest: FilePath): RelativePath;
-    public getRelativePathTo(dest: string | FilePath): RelativePath{
-        if(FilePath.isFilePath(dest)){
-            let reduced_path = this.reduceComponents(new FilePath(this.toString()), dest);
-
+    public getRelativePathTo(dest: AbsolutePath): RelativePath;
+    public getRelativePathTo(dest: string | AbsolutePath): RelativePath{
+        if(AbsolutePath.isAbsolutePath(dest)){
+            let reduced_path = this.reduceComponents(new AbsolutePath(this.toString()), dest);
             return new RelativePath(reduced_path.home, reduced_path.dest);
 
         }else{
-            return this.getRelativePathTo(new FilePath(dest));
+            return this.getRelativePathTo(new AbsolutePath(dest));
         }
     }
 
     //helper function to remove all same components at the start of 2 file paths and return their reduced forms
-    private reduceComponents(home: FilePath, dest: FilePath): {home: FilePath, dest: FilePath}{
+    private reduceComponents(home: AbsolutePath, dest: AbsolutePath): {home: AbsolutePath, dest: AbsolutePath}{
         let home_first_element = home.shift();
         let dest_first_element = dest.shift();
 
@@ -172,7 +217,6 @@ export class FilePath extends Path{
         if(this.separator === "/"){
             path = "/" + path;
         }
-
 
         return path;
     }
