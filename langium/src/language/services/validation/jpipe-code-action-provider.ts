@@ -2,7 +2,7 @@ import { IndexManager, LangiumDocument, LinkingErrorData, MaybePromise, URI } fr
 import { CodeActionProvider, LangiumServices } from "langium/lsp";
 import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
 import { RemoveLine, ChangeDeclaration, ResolveReference } from "./code-actions/index.js";
-import { getDocument } from "/home/braunc8/summer/langium/jpipegit/jpipe/langium/node_modules/langium/lib/utils/ast-utils.js";
+import { getDocument } from "../../../../node_modules/langium/lib/utils/ast-utils.js";
 
 //class which provides all code actions (quick fixes)
 export class JpipeCodeActionProvider implements CodeActionProvider{
