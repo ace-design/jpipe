@@ -11,10 +11,6 @@ abstract class Path{
         if(!Object.keys(value).includes("components")) return false;
         if(!Object.keys(value).includes("separator")) return false;
         if(!Object.keys(value).includes("type")) return false;
-        
-        if(!Array.isArray(value.components)) return false;
-        if(!(value.type === "\\" || value.type === "/")) return false;
-        if(!(value.type === "Relative" || value.type === "Absolute")) return false;
 
         return true;
     }
@@ -116,7 +112,6 @@ export class FilePath extends Path{
             this.separator = file_path.separator;
         }
     }
-
     
     //Determines if an object is a FilePath
     public static isFilePath(value: any): value is FilePath{
@@ -131,7 +126,7 @@ export class FilePath extends Path{
     public getRelativePathTo(dest: string): RelativePath;
     public getRelativePathTo(dest: FilePath): RelativePath;
     public getRelativePathTo(dest: string | FilePath): RelativePath{
-        if(typeof dest !== "string"){
+        if(FilePath.isFilePath(dest)){
             let reduced_path = this.reduceComponents(new FilePath(this.toString()), dest);
 
             return new RelativePath(reduced_path.home, reduced_path.dest);
