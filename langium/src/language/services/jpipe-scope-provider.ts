@@ -1,5 +1,5 @@
 import { AstNode, DefaultScopeProvider, LangiumCoreServices, LangiumDocuments, MapScope, ReferenceInfo, Scope, URI } from "langium";
-import { Class, isClass, isModel, Load, Model } from "../generated/ast.js";
+import { Declaration, isDeclaration, isModel, Load, Model } from "../generated/ast.js";
 import { AbsolutePath, Path, RelativePath } from "./validation/code-actions/path-utilities.js";
 
 export class JpipeScopeProvider extends DefaultScopeProvider{
@@ -140,13 +140,13 @@ export function getModelNode(node: AstNode): Model | undefined{
     }
 }
 
-export function getDeclaration(node: AstNode): Class{
+export function getDeclaration(node: AstNode): Declaration{
     let container: AstNode | undefined = node;
-    while(container !== undefined && !isClass(container)){
+    while(container !== undefined && !isDeclaration(container)){
         container = container.$container;
     }
     
-    if(isClass(container)){
+    if(isDeclaration(container)){
         return container;
     }else{
         throw new Error("Class not found");

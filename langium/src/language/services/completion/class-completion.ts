@@ -1,9 +1,9 @@
 import { AstNodeDescription, ReferenceInfo } from "langium";
 import { JpipeCompletion } from "./jpipe-completion-provider.js";
-import { isClass } from "../../generated/ast.js";
+import { isDeclaration } from "../../generated/ast.js";
 
 //Provides completion for class references
-export class ClassCompletionProvider implements JpipeCompletion{
+export class DeclarationCompletionProvider implements JpipeCompletion{
     //provides reference candidates
     getCandidates(potential_references: Set<AstNodeDescription>, refInfo: ReferenceInfo): Set<AstNodeDescription> {
         let candidates = new Set<AstNodeDescription>(); 
@@ -27,7 +27,7 @@ export class ClassCompletionProvider implements JpipeCompletion{
         let candidates = new Set<AstNodeDescription>(); 
 
         potential_references.forEach(ref =>{
-            if(isClass(ref.node)){
+            if(isDeclaration(ref.node)){
                 if(ref.node.kind === property){
                     candidates.add(ref);
                 }

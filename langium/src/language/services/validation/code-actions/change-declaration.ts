@@ -1,7 +1,7 @@
 import { AstNode, AstNodeDescription, LangiumDocument, PrecomputedScopes, TextDocument } from "langium";
 import { CodeActionParams, CodeAction, CodeActionKind, Range, Position, WorkspaceEdit, Diagnostic, TextEdit, integer } from "vscode-languageserver";
 import { getDeclaration, getModelNode } from "../../jpipe-scope-provider.js";
-import { Class } from "../../../generated/ast.js";
+import { Declaration } from "../../../generated/ast.js";
 import { contains } from "./range-utilities.js";
 
 //custom type to store map entries
@@ -46,7 +46,7 @@ export class ChangeDeclaration implements CodeAction{
     }
 
     //helper function to make the text edit
-    private getEdit(declaration: Class, change_to: string, document: LangiumDocument): WorkspaceEdit{
+    private getEdit(declaration: Declaration, change_to: string, document: LangiumDocument): WorkspaceEdit{
         let edit: WorkspaceEdit | undefined;
         
         let model = getModelNode(declaration);
