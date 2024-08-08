@@ -26,12 +26,13 @@ export class ResolveReference implements CodeAction{
 
     //helper function to get the title of a resolve reference code action
     private getTitle(document: LangiumDocument, path: URI): string{
-        let home_path = new FilePath(document.uri);
         let import_path: string;
-        
+        let home_path = new FilePath(document.uri);
+
         try{
-            import_path = home_path.getRelativePathTo(path).toString();
+            import_path = home_path.getRelativePathTo(path.path).toString();
         }catch(error: any){
+            console.log(error.toString());
             import_path = path.path;
         }
 
