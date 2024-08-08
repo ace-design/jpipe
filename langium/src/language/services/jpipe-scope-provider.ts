@@ -1,5 +1,6 @@
 import { AstNode, DefaultScopeProvider, LangiumCoreServices, LangiumDocuments, MapScope, ReferenceInfo, Scope, URI } from "langium";
 import { Class, isClass, isModel, Load, Model } from "../generated/ast.js";
+import { AbsolutePath, Path, RelativePath } from "./validation/code-actions/path-utilities.js";
 
 export class JpipeScopeProvider extends DefaultScopeProvider{
     private langiumDocuments: () => LangiumDocuments;
@@ -34,7 +35,7 @@ export class JpipeScopeProvider extends DefaultScopeProvider{
             all_imports.add(current_URI);        
             
             if(node){
-                load_URIs = getURIs(node);
+                load_URIs = getURIs(node, current_URI);
             }
         
             if(load_URIs){
@@ -88,13 +89,24 @@ function getCurrentURI(node: AstNode): URI | undefined{
 }
 
 //gets all URIs within a certain document from a node
-function getURIs(node: AstNode): Set<URI>{
+function getURIs(node: AstNode, current_URI: URI): Set<URI>{
     let links = new Set<URI>;
 
     let load_statements = findLoadStatements(node);
 
-    load_statements.forEach(load_statement =>{
-        links.add(URI.file(load_statement.name));
+    load_statements.forEach(load_statement => {
+        let uri: URI;
+        //add in path resolution here
+        if(Path.isAbsoluteString(load_statement.name)){
+            uri = URI.file(load_statement.name);
+        }else{
+            let relative_path = new RelativePath(load_statement.name);
+            let home_absolute = new AbsolutePath(current_URI);
+
+            uri = URI.file(relative_path.toAbsolutePath(home_absolute).toString());
+        }
+        
+        links.add(uri);
     });
 
     return links;

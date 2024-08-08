@@ -1,7 +1,7 @@
 import { URI } from "langium";
 
 //Stores a Path to a file
-abstract class Path{
+export abstract class Path{
     abstract components: Array<string>;
     abstract separator: "\\" | "/";
     abstract type: "Relative" | "Absolute";
@@ -14,6 +14,21 @@ abstract class Path{
         if(!Object.keys(value).includes("type")) return false;
 
         return true;
+    }
+
+    //WONT WORK FOR WINDOWS
+    public static isRelativeString(value: string): boolean{
+        console.log("\t" + value.at(0))
+        if(value.at(0) === "."){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    
+    public static isAbsoluteString(value: string): boolean{
+        return !Path.isRelativeString(value);
     }
 
     //Determines if an object is a RelativePath
@@ -100,7 +115,8 @@ export class RelativePath extends Path{
         }
     }
 
-    public toAbsolutePath(home: AbsolutePath): AbsolutePath{
+    //gets an absolute path from a home file
+    public toAbsolutePath(home: AbsolutePath): AbsolutePath{// **** ADD METHOD OVERLOAD FOR URIs FOR SCOPE PROVIDER
         let absolute_path: AbsolutePath;
         let this_path = this.clone();
 
@@ -142,6 +158,7 @@ export class RelativePath extends Path{
         return path;
     }
 
+    //returns a copy of the original path
     public override clone(): RelativePath{
         let components = new Array<string>();
         let separator = this.separator;
@@ -242,6 +259,7 @@ export class AbsolutePath extends Path{
         return path;
     }
 
+    //returns a copy of the original path
     public override clone(): AbsolutePath{
         let components = new Array<string>();
         let separator = this.separator;
