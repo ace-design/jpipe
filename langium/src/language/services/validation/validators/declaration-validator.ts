@@ -2,7 +2,9 @@ import { diagnosticData, ValidationAcceptor } from "langium";
 import { Declaration } from "../../../generated/ast.js";
 import { Validator } from "./abstract-validator.js";
 
-export class DeclarationValidator extends Validator<"Declaration", Declaration>{
+//Class to validate declarations in the jpipe language
+export class DeclarationValidator extends Validator<Declaration, "Declaration">{
+    //function to validate the document
     validate(declaration: Declaration, accept: ValidationAcceptor): void {
         if(declaration.implemented){
             if(declaration.kind !== "justification"){ //validating that justification is implementing
@@ -16,8 +18,6 @@ export class DeclarationValidator extends Validator<"Declaration", Declaration>{
                 
             }
         }
-
-
     }
     
 }

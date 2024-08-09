@@ -11,7 +11,7 @@ type MapEntry<K,T> = {
 }
 
 //Code action to change the declaration
-export class ChangeDeclaration implements CodeAction{
+export class ChangeDeclarationKind implements CodeAction{
     public title!: string;
     public kind = CodeActionKind.QuickFix;
 

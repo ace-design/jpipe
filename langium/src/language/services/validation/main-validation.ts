@@ -3,8 +3,10 @@ import { PatternValidator, JustificationVariableValidator, SupportValidator, Dec
 import { AstNodeType, Validator } from './validators/abstract-validator.js';
 import { JpipeAstType } from '../../generated/ast.js';
 
+//Class to register validation services
 export class JpipeValidationRegistrar{
-    private validators: Array<Validator<keyof JpipeAstType, AstNodeType<keyof JpipeAstType>>>;
+    private readonly validators: Array<Validator<AstNodeType<keyof JpipeAstType>, keyof JpipeAstType>>;
+    
     constructor(services: JpipeServices){
         const registry = services.validation.ValidationRegistry;
 
@@ -20,7 +22,6 @@ export class JpipeValidationRegistrar{
         })
     }
 }
-
 
 //data structure to represent which elements can support which, format is ['a', ['b', 'c']], where "a supports b" or "a supports c"
 export var possible_supports = new Map<string,string[]>([

@@ -1,7 +1,7 @@
 import { IndexManager, LangiumDocument, LinkingErrorData, MaybePromise, URI } from "langium";
 import { CodeActionProvider, LangiumServices } from "langium/lsp";
 import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
-import { RemoveLine, ChangeDeclaration, ResolveReference } from "./code-actions/index.js";
+import { RemoveLine, ChangeDeclarationKind, ResolveReference } from "./code-actions/index.js";
 import { getDocument } from "../../../../node_modules/langium/lib/utils/ast-utils.js";
 
 //class which provides all code actions (quick fixes)
@@ -27,13 +27,13 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
             switch (code) {
                 case "supportInJustification":
                     code_actions.push(
-                        new ChangeDeclaration(document, params, diagnostic),
+                        new ChangeDeclarationKind(document, params, diagnostic),
                         new RemoveLine(document, params, diagnostic)
                     );
                     break;
                 case "noSupportInPattern":
                     code_actions.push(
-                        new ChangeDeclaration(document, params, diagnostic)
+                        new ChangeDeclarationKind(document, params, diagnostic)
                     );
                     break;
                 case "supportNotMatching":

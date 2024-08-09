@@ -3,7 +3,7 @@ import { Variable } from "../../../generated/ast.js";
 import { Validator } from "./abstract-validator.js";
 
 //class to validate variables in justification diagrams
-export class JustificationVariableValidator extends Validator<"Variable", Variable>{
+export class JustificationVariableValidator extends Validator<Variable, "Variable">{
     //actual function to validate the variable
     validate(variable: Variable, accept: ValidationAcceptor): void {
         let declaration_kind = variable.$container.kind;

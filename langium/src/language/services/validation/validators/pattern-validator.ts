@@ -2,8 +2,9 @@ import { diagnosticData, ValidationAcceptor } from "langium";
 import { JustificationPattern } from "../../../generated/ast.js";
 import { Validator } from "./abstract-validator.js";
 
-
-export class PatternValidator extends Validator<"JustificationPattern", JustificationPattern>{
+//Class to validate patterns in the jpipe language
+export class PatternValidator extends Validator<JustificationPattern, "JustificationPattern">{
+    //function to provide validation of a given node
     validate(model: JustificationPattern, accept: ValidationAcceptor): void {
         if(model.kind === "pattern"){
             let support_found = false;
