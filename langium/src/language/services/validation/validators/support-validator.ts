@@ -1,12 +1,10 @@
-import { diagnosticData, Reference, ValidationAcceptor, ValidationChecks } from "langium";
-import { JpipeAstType, Support, Variable } from "../../../generated/ast.js";
-import { possible_supports, Validator } from "../main-validation.js";
+import { diagnosticData, Reference, ValidationAcceptor } from "langium";
+import { Support, Variable } from "../../../generated/ast.js";
+import { possible_supports } from "../main-validation.js";
+import { Validator } from "./abstract-validator.js";
 
 //class to validate supporting statements found in the document
-export class SupportValidator implements Validator<Support>{
-    public readonly checks: ValidationChecks<JpipeAstType> = {
-        Support: this.validate,
-    } 
+export class SupportValidator extends Validator<"Support", Support>{
     //validator function
     public validate(support: Support, accept: ValidationAcceptor): void {
         if(SupportValidator.referencesCorrect(support, accept)){

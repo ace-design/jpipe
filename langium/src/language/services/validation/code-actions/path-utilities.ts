@@ -18,7 +18,6 @@ export abstract class Path{
 
     //WONT WORK FOR WINDOWS
     public static isRelativeString(value: string): boolean{
-        console.log("\t" + value.at(0))
         if(value.at(0) === "."){
             return true;
         }else{
