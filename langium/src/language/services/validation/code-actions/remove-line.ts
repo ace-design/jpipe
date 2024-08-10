@@ -1,5 +1,5 @@
 import { LangiumDocument } from "langium";
-import { CodeAction, CodeActionKind, Range, WorkspaceEdit, Diagnostic, TextEdit, integer, CodeActionParams } from "vscode-languageserver";
+import { CodeActionKind, Range, WorkspaceEdit, Diagnostic, TextEdit, integer, CodeActionParams, CodeAction } from "vscode-languageserver";
 
 //Code action to remove a line
 export class RemoveLine implements CodeAction{

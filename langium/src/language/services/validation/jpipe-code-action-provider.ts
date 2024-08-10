@@ -50,7 +50,9 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
                     });
                     break;
                 case "nonJustificationImplementing":
-                    //To Do: Add actions
+                    code_actions.push(
+                        new ChangeDeclarationKind(document, params, diagnostic)
+                    )
                     break;
                 case "nonPatternImplemented":
                     //To Do: Add actions
