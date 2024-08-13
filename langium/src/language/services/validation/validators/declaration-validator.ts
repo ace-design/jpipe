@@ -7,8 +7,8 @@ export class DeclarationValidator extends Validator<Declaration, "Declaration">{
     //function to validate the document
     validate(declaration: Declaration, accept: ValidationAcceptor): void {
         if(declaration.implemented){
-            if(declaration.kind !== "justification"){ //validating that justification is implementing
-                accept("error", "Only justifications can implement other declarations", {node: declaration, property: "kind", data: diagnosticData("nonJustificationImplementing")});
+            if(!(declaration.kind === "justification" || declaration.kind === "pattern")){ //validating that justification is implementing
+                accept("error", "Compositions cannot implement other declarations", {node: declaration, property: "kind", data: diagnosticData("compositionImplementing")});
             }
 
             if(declaration.implemented.ref){

@@ -49,9 +49,10 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
                         code_actions.push(new ResolveReference(document, diagnostic, path))
                     });
                     break;
-                case "nonJustificationImplementing":
+                case "compositionImplementing":
                     code_actions.push(
-                        new ChangeDeclarationKind(document, params, diagnostic)
+                        new ChangeDeclarationKind(document, params, diagnostic, "pattern"),
+                        new ChangeDeclarationKind(document, params, diagnostic, "justification")
                     )
                     break;
                 case "nonPatternImplemented":
