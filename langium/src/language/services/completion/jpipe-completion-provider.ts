@@ -1,7 +1,6 @@
-import { AstNodeDescription, ReferenceInfo, Stream } from "langium";
+import { AstNodeDescription, ReferenceInfo, Stream, stream } from "langium";
 import { CompletionContext, DefaultCompletionProvider } from "langium/lsp";
 import { isDeclaration, isCompositionInformation, isSupport } from "../../generated/ast.js";
-import { stream } from "../../../../node_modules/langium/src/utils/stream.js"
 import { SupportCompletionProvider } from "./support-completion.js";
 import { DeclarationCompletionProvider } from "./class-completion.js";
 

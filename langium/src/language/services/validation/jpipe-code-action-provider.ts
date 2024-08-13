@@ -1,8 +1,9 @@
-import { IndexManager, LangiumDocument, LinkingErrorData, MaybePromise, URI } from "langium";
+import { IndexManager, LangiumDocument, LinkingErrorData, MaybePromise, URI} from "langium";
 import { CodeActionProvider, LangiumServices } from "langium/lsp";
 import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
 import { RemoveLine, ChangeDeclarationKind, ResolveReference } from "./code-actions/index.js";
-import { getDocument } from "../../../../node_modules/langium/lib/utils/ast-utils.js";
+import { AstUtils } from "langium";
+
 
 //class which provides all code actions (quick fixes)
 export class JpipeCodeActionProvider implements CodeActionProvider{
@@ -100,7 +101,7 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
         this.index_manager.allElements(data.containerType).forEach(e=>{
             if(e.name === data.refText){
                 if(e.node){
-                    let home_doc = getDocument(e.node);
+                    let home_doc = AstUtils.getDocument(e.node);
 
                     paths.add(home_doc.uri);
                 }
