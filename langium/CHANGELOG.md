@@ -1,6 +1,8 @@
 ## Changelog
 
 ### Unreleased
+
+### v0.2.2 (2024-08-13)
 - Leader: Cass Braun
   - Features:
     - Added QuickFix to change justification to pattern if it includes an instruction labelled @support
