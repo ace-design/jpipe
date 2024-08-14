@@ -107,7 +107,7 @@
             {
                 "language": "jpipe",
                 "scopeName": "source.jpipe",
-                "path": "syntaxes/jpipe.tmLanguage.json"
+                "path": "syntaxes/jpipe.syntax.json"
             }
         ],
         "commands": [
