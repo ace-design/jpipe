@@ -1,14 +1,10 @@
-import { AstNode, AstNodeDescription, LangiumDocument, PrecomputedScopes, TextDocument } from "langium";
-import { CodeActionParams, CodeAction, CodeActionKind, Range, Position, WorkspaceEdit, Diagnostic, TextEdit, integer } from "vscode-languageserver";
+import { AstNode, AstNodeDescription, LangiumDocument, TextDocument } from "langium";
+import { CodeActionParams, CodeAction, CodeActionKind, Range, Position, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
 import { getDeclaration, getModelNode } from "../../jpipe-scope-provider.js";
 import { Declaration } from "../../../generated/ast.js";
-import { contains } from "./range-utilities.js";
+import { getAnyNode as getNode } from "./node-utilities.js";
 
-//custom type to store map entries
-type MapEntry<K,T> = {
-    key?: K
-    value: T
-}
+
 
 //Code action to change the declaration
 export class ChangeDeclarationKind implements CodeAction{
@@ -26,7 +22,7 @@ export class ChangeDeclarationKind implements CodeAction{
     //set what you want the declaration to be changed to
     constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic, change: string);
     constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic, change?: string){
-        let node = this.findNode(document.precomputedScopes, params.range);  
+        let node = getNode(params.range, document.precomputedScopes);  
 
         if(node.node){
             let declaration = getDeclaration(node.node);
@@ -126,41 +122,5 @@ export class ChangeDeclarationKind implements CodeAction{
         }else{
             throw new Error("text not found");
         }
-    }
-
-    //helper function to find the smallest node which contains a given range
-    private findNode(scopes: PrecomputedScopes | undefined, range: Range): AstNodeDescription {        
-        let smallest_container: MapEntry<AstNodeDescription, Range> = {
-            value: {start: {line: 0, character: 0}, end: {line: integer.MAX_VALUE, character: integer.MAX_VALUE} },
-        }
-
-        scopes?.forEach((description) =>{
-            if(description.selectionSegment){
-                if(contains(description.selectionSegment.range, range)){
-                    smallest_container = this.getSmallestContainer(smallest_container, {key: description, value: description.selectionSegment.range});
-                }
-            }
-        });
-
-        if(smallest_container.key){
-            return smallest_container.key;
-        }else{
-            throw new Error("Smallest container cannot be found");
-        }
-
-    }
-
-    //helper function to determine which container is the smallest between a current and a new range
-    private getSmallestContainer(current_smallest: MapEntry<AstNodeDescription, Range>, new_comparison: MapEntry<AstNodeDescription, Range>): MapEntry<AstNodeDescription, Range>{
-        let new_smallest: MapEntry<AstNodeDescription, Range>;
-        let smaller_than_smallest = contains(current_smallest.value, new_comparison.value);
-
-        if(smaller_than_smallest){
-            new_smallest = new_comparison;
-        }else{
-            new_smallest = current_smallest;
-        }
-
-        return new_smallest;
     }
 }

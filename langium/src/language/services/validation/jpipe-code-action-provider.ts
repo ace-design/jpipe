@@ -25,43 +25,40 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
         params.context.diagnostics.forEach(diagnostic => {
             let code = this.getCode(diagnostic);
 
-            switch (code) {
-                case "supportInJustification":
-                    code_actions.push(
-                        new ChangeDeclarationKind(document, params, diagnostic),
-                        new RemoveLine(document, params, diagnostic)
-                    );
-                    break;
-                case "noSupportInPattern":
-                    code_actions.push(
-                        new ChangeDeclarationKind(document, params, diagnostic)
-                    );
-                    break;
-                case "supportNotMatching":
-                    code_actions.push(
-                        new RemoveLine(document, params, diagnostic)
-                    );
-                    break;
-                case "linking-error":
-                    let data = this.toLinkingError(diagnostic.data);
-                    let paths = this.getPaths(document, data);
+            if (code === "supportInJustification") {
+                code_actions.push(
+                    new ChangeDeclarationKind(document, params, diagnostic),
+                    new RemoveLine(document, params, diagnostic)
+                );
 
-                    paths.forEach(path =>{
-                        code_actions.push(new ResolveReference(document, diagnostic, path))
-                    });
-                    break;
-                case "compositionImplementing":
-                    code_actions.push(
-                        new ChangeDeclarationKind(document, params, diagnostic, "pattern"),
-                        new ChangeDeclarationKind(document, params, diagnostic, "justification")
-                    )
-                    break;
-                case "nonPatternImplemented":
-                    //To Do: Add actions
-                    break;
-                default:
-                    break;
+            }else if (code === "noSupportInPattern") {
+                code_actions.push(
+                    new ChangeDeclarationKind(document, params, diagnostic)
+                );
+
+            }else if (code === "supportNotMatching") {
+                code_actions.push(
+                    new RemoveLine(document, params, diagnostic)
+                );
+            }else if (code === "linking-error") {
+                let data = this.toLinkingError(diagnostic.data);
+                let paths = this.getPaths(document, data);
+
+                paths.forEach(path => {
+                    code_actions.push(new ResolveReference(document, diagnostic, path))
+                });
+                
+            }else if (code === "compositionImplementing") {
+                code_actions.push(
+                    new ChangeDeclarationKind(document, params, diagnostic, "pattern"),
+                    new ChangeDeclarationKind(document, params, diagnostic, "justification")
+                )
+                //To Do: Add remove implements actions
             }
+            else if (code === "nonPatternImplemented") {
+                //To Do: Add remove implements actions
+            }
+
         })
 
         return code_actions;
