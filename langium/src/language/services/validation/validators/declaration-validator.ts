@@ -1,11 +1,11 @@
 import { diagnosticData, ValidationAcceptor } from "langium";
-import { Declaration } from "../../../generated/ast.js";
+import { DeclarationName } from "../../../generated/ast.js";
 import { Validator } from "./abstract-validator.js";
 
 //Class to validate declarations in the jpipe language
-export class DeclarationValidator extends Validator<Declaration, "Declaration">{
+export class DeclarationValidator extends Validator<DeclarationName, "Declaration">{
     //function to validate the document
-    validate(declaration: Declaration, accept: ValidationAcceptor): void {
+    validate(declaration: DeclarationName, accept: ValidationAcceptor): void {
         if(declaration.implemented){
             if(!(declaration.kind === "justification" || declaration.kind === "pattern")){ //validating that justification is implementing
                 accept("error", "Compositions cannot implement other declarations", {node: declaration, property: "kind", data: diagnosticData("compositionImplementing")});

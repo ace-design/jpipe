@@ -1,7 +1,7 @@
 import { AstNode, AstNodeDescription, LangiumDocument, TextDocument } from "langium";
 import { CodeActionParams, CodeAction, CodeActionKind, Range, Position, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
-import { getDeclaration, getModelNode } from "../../jpipe-scope-provider.js";
-import { Declaration } from "../../../generated/ast.js";
+import { getDeclarationName, getModelNode } from "../../jpipe-scope-provider.js";
+import { DeclarationName } from "../../../generated/ast.js";
 import { getAnyNode as getNode } from "./utilities/node-utilities.js";
 
 
@@ -25,10 +25,10 @@ export class ChangeDeclarationKind implements CodeAction{
         let node = getNode(params.range, document.precomputedScopes);  
 
         if(node.node){
-            let declaration = getDeclaration(node.node);
+            let declaration_name = getDeclarationName(node.node);
             
             if(change === undefined){
-                change = this.getChangeType(declaration.kind);
+                change = this.getChangeType(declaration_name.kind);
             }
 
             this.title = "Change declaration type to " + change;
@@ -36,13 +36,13 @@ export class ChangeDeclarationKind implements CodeAction{
             this.diagnostics = [diagnostic];
             this.isPreferred = true;
             this.data = diagnostic.data;
-            this.edit = this.getEdit(declaration, change, document);
+            this.edit = this.getEdit(declaration_name, change, document);
         }
     
     }
 
     //helper function to make the text edit
-    private getEdit(declaration: Declaration, change_to: string, document: LangiumDocument): WorkspaceEdit{
+    private getEdit(declaration: DeclarationName, change_to: string, document: LangiumDocument): WorkspaceEdit{
         let edit: WorkspaceEdit | undefined;
         
         let model = getModelNode(declaration);
