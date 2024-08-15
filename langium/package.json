@@ -107,9 +107,22 @@
             {
                 "language": "jpipe",
                 "scopeName": "source.jpipe",
-                "path": "syntaxes/jpipe.tmLanguage.json"
+                "path": "syntaxes/jpipe.syntax.json"
             }
         ],
+        "customEditors": [
+            {
+              "viewType": "jpipe.vis",
+              "displayName": "jPipe Visualizer",
+              "selector": [
+                {
+                  "filenamePattern": "*.jd"
+                }
+              ],
+              "priority": "default",
+              "preview": "false"
+            }
+          ],
         "commands": [
             {
                 "command": "jpipe.downloadPNG",
@@ -121,11 +134,15 @@
             },
             {
                 "command": "jpipe.vis.preview",
-                "title": "Preview Diagram"
+                "title": "Preview Diagram",
+                "category": "jPipeVis",
+                "icon": "$(open-preview)"
             },
             {
                 "command": "jpipe.vis",
-                "title": "Visualize Jpipe"
+                "title": "Visualize Jpipe",
+                "category": "jPipeVis",
+                "icon": "$(open-preview)"
             }
         ],
         "submenus": [
@@ -141,6 +158,13 @@
                 },
                 {
                     "command": "jpipe.downloadPNG"
+                }
+            ],
+            "editor/title":[
+                {
+                    "command": "jpipe.vis.preview",
+                    "group": "navigation",
+                    "when": "resourceLangId==jpipe"
                 }
             ],
             "editor/context": [
