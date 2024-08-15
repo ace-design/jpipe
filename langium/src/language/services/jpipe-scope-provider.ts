@@ -95,16 +95,24 @@ function getURIs(node: AstNode, current_URI: URI): Set<URI>{
     let load_statements = findLoadStatements(node);
 
     load_statements.forEach(load_statement => {
+        console.log("link: " + load_statement.name);
         let uri: URI;
         //add in path resolution here
         if(Path.isAbsoluteString(load_statement.name)){
             uri = URI.file(load_statement.name);
+
+            console.log("\tis absolute");
+            console.log("\turi found: " + uri.toString());
         }else{
             let relative_path = new RelativePath(load_statement.name);
             let home_absolute = new AbsolutePath(current_URI);
 
             uri = URI.file(relative_path.toAbsolutePath(home_absolute).toString());
+            console.log("\tis relative");
+            console.log("\turi found: " + uri.toString());
+            console.log("\trelative found: " + relative_path.toString());
         }
+
         
         links.add(uri);
     });

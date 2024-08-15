@@ -1,11 +1,16 @@
 import { URI } from "langium";
+import * as fs from "fs";
 
 //Stores a Path to a file
 export abstract class Path{
+    protected platform: NodeJS.Platform;
     abstract components: Array<string>;
     abstract separator: "\\" | "/";
     abstract type: "Relative" | "Absolute";
 
+    constructor(){
+        this.platform = process.platform;
+    }
     //Determines if an object is a FilePath
     public static isPath(value: any): value is Path{
         if(!(value && typeof value === 'object' && !Array.isArray(value))) return false;
@@ -16,18 +21,28 @@ export abstract class Path{
         return true;
     }
 
-    //WONT WORK FOR WINDOWS
-    public static isRelativeString(value: string): boolean{
-        if(value.at(0) === "."){
-            return true;
-        }else{
-            return false;
+    //Add testing
+    public static isRelativeString(home: string, dest: string): boolean{
+        let is_relative_string = false;
+
+        let home_path = new AbsolutePath(home);
+        let dest_path = new RelativePath(dest);
+
+        try{
+            let maybe_path = dest_path.toAbsolutePath(home_path);
+            let maybe_URI = URI.file(maybe_path.toString());
+            is_relative_string = fs.existsSync(maybe_URI.fsPath);
+        }catch(error: any){
+            console.log("Relative path does not exist");
+            console.log("Error:\n" + error.toString());
         }
+
+        return is_relative_string;
     }
 
-    
+    //Add testing
     public static isAbsoluteString(value: string): boolean{
-        return !Path.isRelativeString(value);
+        return fs.existsSync(URI.file(value).fsPath);
     }
 
     //Determines if an object is a RelativePath
@@ -90,11 +105,11 @@ export class RelativePath extends Path{
         if(typeof path === "string"){
             if(path.includes("\\")){
                 this.separator = "\\";
-                this.components = path.split("\\");
             }else{
                 this.separator = "/";
-                this.components = path.split("/");
             }
+
+            this.components = path.split(this.separator);
         }else if(Array.isArray(path) && (next === "\\" || next === "/")){
             this.components = path;
             this.separator = next;
@@ -123,10 +138,12 @@ export class RelativePath extends Path{
         
         let first_element = this_path.shift();
 
-        if(first_element === "."){
+        if(first_element !== ".."){
             absolute_path = new AbsolutePath(home.toString());
-            
-            first_element = this_path.shift();
+
+            if(first_element === "."){
+                first_element = this_path.shift();
+            }
         }else{
             while(first_element === ".."){
                 home.pop();
