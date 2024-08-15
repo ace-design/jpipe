@@ -182,7 +182,7 @@ export class RelativePath extends Path{
         this.components.forEach(component =>{
             components.push(component);
         })
-
+        
         return new RelativePath(components, separator);
     }
 }
