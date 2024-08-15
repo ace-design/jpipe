@@ -2,7 +2,7 @@ import { AstNode, AstNodeDescription, LangiumDocument, TextDocument } from "lang
 import { CodeActionParams, CodeAction, CodeActionKind, Range, Position, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
 import { getDeclaration, getModelNode } from "../../jpipe-scope-provider.js";
 import { Declaration } from "../../../generated/ast.js";
-import { getAnyNode as getNode } from "./node-utilities.js";
+import { getAnyNode as getNode } from "./utilities/node-utilities.js";
 
 
 

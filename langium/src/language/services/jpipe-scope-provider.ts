@@ -1,6 +1,6 @@
 import { AstNode, DefaultScopeProvider, LangiumCoreServices, LangiumDocuments, MapScope, ReferenceInfo, Scope, URI } from "langium";
 import { Declaration, isDeclaration, isModel, Load, Model } from "../generated/ast.js";
-import { AbsolutePath, Path, RelativePath } from "./validation/code-actions/path-utilities.js";
+import { AbsolutePath, Path, RelativePath } from "./validation/code-actions/utilities/path-utilities.js";
 
 export class JpipeScopeProvider extends DefaultScopeProvider{
     private langiumDocuments: () => LangiumDocuments;

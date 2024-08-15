@@ -1,6 +1,6 @@
 import { LangiumDocument, URI } from "langium";
 import { CodeAction, CodeActionKind, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
-import { AbsolutePath } from "./path-utilities.js";
+import { AbsolutePath } from "./utilities/path-utilities.js";
 
 //Code action to provide load statements to a given path
 export class ResolveReference implements CodeAction{
