@@ -1,7 +1,7 @@
 import { AstNode, AstNodeDescription, LangiumDocument, TextDocument } from "langium";
 import { CodeActionParams, CodeAction, CodeActionKind, Range, Position, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
-import { getDeclarationName, getModelNode } from "../../jpipe-scope-provider.js";
-import { DeclarationName } from "../../../generated/ast.js";
+import { getDeclaration, getModelNode } from "../../jpipe-scope-provider.js";
+import { Declaration } from "../../../generated/ast.js";
 import { getAnyNode as getNode } from "./utilities/node-utilities.js";
 
 
@@ -25,7 +25,7 @@ export class ChangeDeclarationKind implements CodeAction{
         let node = getNode(params.range, document.precomputedScopes);  
 
         if(node.node){
-            let declaration_name = getDeclarationName(node.node);
+            let declaration_name = getDeclaration(node.node);
             
             if(change === undefined){
                 change = this.getChangeType(declaration_name.kind);
@@ -42,7 +42,7 @@ export class ChangeDeclarationKind implements CodeAction{
     }
 
     //helper function to make the text edit
-    private getEdit(declaration: DeclarationName, change_to: string, document: LangiumDocument): WorkspaceEdit{
+    private getEdit(declaration: Declaration, change_to: string, document: LangiumDocument): WorkspaceEdit{
         let edit: WorkspaceEdit | undefined;
         
         let model = getModelNode(declaration);
