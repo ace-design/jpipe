@@ -4,16 +4,16 @@ import { AbsolutePath } from "./utilities/path-utilities.js";
 
 //Code action to provide load statements to a given path
 export class ResolveReference implements CodeAction{
-    title!: string;
-    kind = CodeActionKind.QuickFix;
+    public title!: string;
+    public kind = CodeActionKind.QuickFix;
 
-    diagnostics?: Diagnostic[] | undefined;
-    isPreferred?: boolean | undefined;
+    public diagnostics?: Diagnostic[] | undefined;
+    public isPreferred?: boolean | undefined;
 
-    edit?: WorkspaceEdit | undefined;
-    data?: any;
+    public edit?: WorkspaceEdit | undefined;
+    public data?: any;
 
-    constructor(document: LangiumDocument, diagnostic: Diagnostic, path: URI){
+    public constructor(document: LangiumDocument, diagnostic: Diagnostic, path: URI){
         let relative_path = this.getRelativePath(document.uri, path);
         this.title = "Add import from " + relative_path;
 

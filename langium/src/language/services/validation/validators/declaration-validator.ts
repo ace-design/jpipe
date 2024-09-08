@@ -1,23 +1,22 @@
 import { diagnosticData, ValidationAcceptor } from "langium";
-import { Declaration} from "../../../generated/ast.js";
+import { Implementation} from "../../../generated/ast.js";
 import { Validator } from "./abstract-validator.js";
 
 //Class to validate declarations in the jpipe language
-export class DeclarationValidator extends Validator<Declaration, "Declaration">{
+export class ImplementationValidator extends Validator<Implementation, "Implementation">{
     //function to validate the document
-    validate(declaration: Declaration, accept: ValidationAcceptor): void {
-        if(declaration.implemented){
-            if(!(declaration.kind === "justification" || declaration.kind === "pattern")){ //validating that justification is implementing
-                accept("error", "Compositions cannot implement other declarations", {node: declaration, property: "kind", data: diagnosticData("compositionImplementing")});
-            }
+    validate(implementation: Implementation, accept: ValidationAcceptor): void {
+        let declaration = implementation.$container;
 
-            if(declaration.implemented.ref){
-                if(declaration.implemented.ref.kind !== "pattern"){
-                    accept("error", "Only patterns can be implemented by other declarations", {node: declaration, property: "implemented", data: diagnosticData("nonPatternImplemented")})
-                }
-                
-            }
+        if(!(declaration.kind === "justification" || declaration.kind === "pattern")){ //validating that justification is implementing
+            accept("error", "Compositions cannot implement other declarations", {node: implementation, data: diagnosticData("compositionImplementing")});
         }
+
+        if(implementation.implemented.ref){
+            if(implementation.implemented.ref.kind !== "pattern"){
+                accept("error", "Only patterns can be implemented by other declarations", {node: implementation, data: diagnosticData("nonPatternImplemented")})
+            }
+            
+        }  
     }
-    
 }

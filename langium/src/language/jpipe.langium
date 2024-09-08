@@ -9,11 +9,14 @@ Load:
 interface Declaration{
     kind: ('justification' | 'pattern' | 'composition')
     name: string
-    implemented?: @Declaration
+    implementation?: Implementation
 }
 
 Declaration returns Declaration:
-    kind=('justification' | 'pattern' | 'composition') (name=ID | name=ID "implements" implemented=[Declaration:ID]) (JustificationPattern | Composition);
+    kind=('justification' | 'pattern' | 'composition') (name=ID | name=ID implementation=Implementation) (JustificationPattern | Composition);
+
+Implementation:
+    "implements" implemented=[Declaration:ID];
 
 JustificationPattern:
     '{' (variables+=Variable | instructions+=Instruction | supports += Support)* '}';

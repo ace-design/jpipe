@@ -19,10 +19,10 @@ export class ChangeDeclarationKind implements CodeAction{
     public data?: any;
 
     //automatically detects and changes pattern => justification, justification -> pattern, and composition -> composition
-    constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic);
+    public constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic);
     //set what you want the declaration to be changed to
-    constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic, change: string);
-    constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic, change?: string){
+    public constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic, change: string);
+    public constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic, change?: string){
         let node = getNode(params.range, document.precomputedScopes);  
 
         if(node.node){
