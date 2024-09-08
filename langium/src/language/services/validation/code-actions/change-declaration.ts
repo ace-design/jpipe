@@ -5,7 +5,7 @@ import { Declaration } from "../../../generated/ast.js";
 import { getAnyNode as getNode } from "./utilities/node-utilities.js";
 import { makePosition } from "./utilities/range-utilities.js";
 
-
+type DeclarationType = 'composition' | 'justification' | 'pattern';
 
 //Code action to change the declaration
 export class ChangeDeclarationKind implements CodeAction{
@@ -88,8 +88,8 @@ export class ChangeDeclarationKind implements CodeAction{
     }
 
     //helper function to automatically determine what the declaration kind should change to
-    private getChangeType(declaration_kind: 'composition' | 'justification' | 'pattern'): 'composition' | 'justification' | 'pattern'{
-        let change_to: 'composition' | 'justification' | 'pattern';
+    private getChangeType(declaration_kind: DeclarationType): DeclarationType{
+        let change_to: DeclarationType;
 
         if(declaration_kind === "justification"){
             change_to =  "pattern";
