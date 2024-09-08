@@ -1,4 +1,4 @@
-import { Range, Position } from "vscode-languageserver/node.js";
+import { Range, Position, uinteger } from "vscode-languageserver/node.js";
 //Contains various range utilities
 
 //takes a range and turns it into a string
@@ -37,4 +37,9 @@ export function compare(p1: Position, p2: Position): number{
             return 0;
         }
     }
+}
+
+//helper function to make a position
+export function makePosition(line: uinteger, character: uinteger): Position{
+    return {line: line, character: character};
 }

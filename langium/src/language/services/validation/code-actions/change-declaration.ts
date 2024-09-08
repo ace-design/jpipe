@@ -3,6 +3,7 @@ import { CodeActionParams, CodeAction, CodeActionKind, Range, Position, Workspac
 import { getDeclaration, getModelNode } from "../../jpipe-scope-provider.js";
 import { Declaration } from "../../../generated/ast.js";
 import { getAnyNode as getNode } from "./utilities/node-utilities.js";
+import { makePosition } from "./utilities/range-utilities.js";
 
 
 
@@ -104,14 +105,15 @@ export class ChangeDeclarationKind implements CodeAction{
     //helper function to get the range of a text element given a search range and a document
     private getRange(document: TextDocument, search_range: Range, kind: string): Range {
         let check_start = search_range.start;
-        let check_end: Position = {character: check_start.character + kind.length, line: check_start.line};
+
+        let check_end: Position = makePosition(check_start.line, check_start.character + kind.length);
 
         let check_range = Range.create(check_start, check_end);
         let check_text = document.getText(check_range);
         
         while(check_text !== "" && check_text !== kind){
-            check_start = {character: check_start.character + 1, line: check_start.line};
-            check_end = {character: check_start.character + kind.length, line: check_start.line};
+            check_start = makePosition(check_start.line, check_start.character +1);
+            check_end = makePosition(check_start.line, check_start.character + kind.length);
             
             check_range = Range.create(check_start, check_end);
             check_text = document.getText(check_range);
