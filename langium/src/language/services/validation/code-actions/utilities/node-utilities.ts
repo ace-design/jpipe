@@ -7,6 +7,7 @@ type MapEntry<K,T> = {
     key?: K
     value: T
 }
+
 //finds the smallest node which contains the given range or returns undefined if no node contains the given range
 export function findNode(type: string, range: Range, scopes: PrecomputedScopes | undefined): AstNodeDescription | undefined{
     let smallest_container: MapEntry<AstNodeDescription, Range> | undefined;
@@ -27,6 +28,7 @@ export function findNode(type: string, range: Range, scopes: PrecomputedScopes |
         return smallest_container;
     }
 }
+
 //helper function to find the smallest node which contains a given range
 export function getAnyNode(range: Range, scopes: PrecomputedScopes | undefined): AstNodeDescription {        
     let smallest_container: MapEntry<AstNodeDescription, Range> = {

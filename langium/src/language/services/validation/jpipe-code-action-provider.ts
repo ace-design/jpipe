@@ -1,7 +1,7 @@
 import { IndexManager, LangiumDocument, LinkingErrorData, MaybePromise, URI} from "langium";
 import { CodeActionProvider, LangiumServices } from "langium/lsp";
 import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
-import { RemoveLine, ChangeDeclarationKind, ResolveReference } from "./code-actions/index.js";
+import { RemoveLine, ChangeDeclarationKind, ResolveReference, RemoveImplemented } from "./code-actions/index.js";
 import { AstUtils } from "langium";
 
 
@@ -51,12 +51,13 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
             }else if (code === "compositionImplementing") {
                 code_actions.push(
                     new ChangeDeclarationKind(document, params, diagnostic, "pattern"),
-                    new ChangeDeclarationKind(document, params, diagnostic, "justification")
+                    new ChangeDeclarationKind(document, params, diagnostic, "justification"),
+                    new RemoveImplemented(document,params, diagnostic)
                 )
-                //To Do: Add remove implements actions
-            }
-            else if (code === "nonPatternImplemented") {
-                //To Do: Add remove implements actions
+            }else if (code === "nonPatternImplemented") {
+                code_actions.push(
+                    new RemoveImplemented(document,params, diagnostic)
+                )
             }
 
         })
