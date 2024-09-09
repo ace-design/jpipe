@@ -1,7 +1,10 @@
 ## Changelog
 
 ### Unreleased
-
+- Leader: Cass Braun
+  - Features:
+    - Added QuickFix to remove implemented element of justification, pattern, and composition when there is incorrect syntax
+ 
 ### v0.2.2 (2024-08-13)
 - Leader: Cass Braun
   - Features:

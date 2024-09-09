@@ -2,6 +2,7 @@ import type { JpipeServices } from '../../jpipe-module.js';
 import { PatternValidator, JustificationVariableValidator, SupportValidator, ImplementationValidator } from './validators/index.js';
 import { AstNodeType, Validator } from './validators/abstract-validator.js';
 import { JpipeAstType } from '../../generated/ast.js';
+import { JustificationValidator } from './validators/justification-validator.js';
 
 //Class to register validation services
 export class JpipeValidationRegistrar{
@@ -14,7 +15,8 @@ export class JpipeValidationRegistrar{
             new SupportValidator("Support"),
             new JustificationVariableValidator("Variable"),
             new PatternValidator("JustificationPattern"),
-            new ImplementationValidator("Implementation")
+            new ImplementationValidator("Implementation"),
+            new JustificationValidator("JustificationPattern")
         );
 
         this.validators.forEach(validator =>{
