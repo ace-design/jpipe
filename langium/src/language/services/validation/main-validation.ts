@@ -1,8 +1,7 @@
 import type { JpipeServices } from '../../jpipe-module.js';
-import { PatternValidator, JustificationVariableValidator, SupportValidator, ImplementationValidator } from './validators/index.js';
+import { PatternValidator, JustificationVariableValidator, SupportValidator, ImplementationValidator, JustificationValidator } from './validators/index.js';
 import { AstNodeType, Validator } from './validators/abstract-validator.js';
 import { JpipeAstType } from '../../generated/ast.js';
-import { JustificationValidator } from './validators/justification-validator.js';
 
 //Class to register validation services
 export class JpipeValidationRegistrar{
