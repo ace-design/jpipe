@@ -1,5 +1,5 @@
 import { LangiumDocument } from "langium";
-import { CodeAction, CodeActionKind, CodeActionParams, Diagnostic, TextEdit, WorkspaceEdit } from "vscode-languageserver";
+import { CodeAction, CodeActionKind, Diagnostic, TextEdit, WorkspaceEdit } from "vscode-languageserver";
 
 
 export class RemoveImplemented implements CodeAction{
@@ -13,7 +13,7 @@ export class RemoveImplemented implements CodeAction{
     public data?: any;
    
     
-    public constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic){
+    public constructor(document: LangiumDocument, diagnostic: Diagnostic){
         this.diagnostics = [diagnostic];
         this.isPreferred = false;
 

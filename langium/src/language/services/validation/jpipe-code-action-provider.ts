@@ -3,6 +3,7 @@ import { CodeActionProvider, LangiumServices } from "langium/lsp";
 import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
 import { RemoveLine, ChangeDeclarationKind, ResolveReference, RemoveImplemented } from "./code-actions/index.js";
 import { AstUtils } from "langium";
+import { AddConclusion } from "./code-actions/add-conclustion.js";
 
 
 //class which provides all code actions (quick fixes)
@@ -52,11 +53,16 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
                 code_actions.push(
                     new ChangeDeclarationKind(document, params, diagnostic, "pattern"),
                     new ChangeDeclarationKind(document, params, diagnostic, "justification"),
-                    new RemoveImplemented(document,params, diagnostic)
+                    new RemoveImplemented(document, diagnostic)
                 )
             }else if (code === "nonPatternImplemented") {
                 code_actions.push(
-                    new RemoveImplemented(document,params, diagnostic)
+                    new RemoveImplemented(document, diagnostic)
+                )
+            }else if(code === "noConclusionInJustification"){
+                code_actions.push(                    
+                    new AddConclusion(document, diagnostic),
+                    new ChangeDeclarationKind(document, params, diagnostic, "pattern")
                 )
             }
 
