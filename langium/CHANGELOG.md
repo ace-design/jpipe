@@ -4,6 +4,8 @@
 - Leader: Cass Braun
   - Features:
     - Added QuickFix to remove implemented element of justification, pattern, and composition when there is incorrect syntax
+    - Added validation to throw error when there is no conclusion found in a justification diagram
+    - Added QuickFix to add a conclusion to a justification diagram
  
 ### v0.2.2 (2024-08-13)
 - Leader: Cass Braun
