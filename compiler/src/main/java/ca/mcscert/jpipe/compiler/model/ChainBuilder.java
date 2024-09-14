@@ -43,4 +43,9 @@ public final class ChainBuilder<I, O> {
         return new ChainCompiler<>(this.source, this.chain, sink);
     }
 
+
+    public Transformation<I, O> asTransformation() {
+        return this.chain;
+    }
+
 }
