@@ -7,9 +7,12 @@ import ca.mcscert.jpipe.actions.CreateJustification;
 import ca.mcscert.jpipe.actions.CreateRelation;
 import ca.mcscert.jpipe.actions.CreateStrategy;
 import ca.mcscert.jpipe.actions.CreateSubConclusion;
+import ca.mcscert.jpipe.actions.LoadFile;
 import ca.mcscert.jpipe.compiler.model.Transformation;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -59,6 +62,13 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         }
 
         @Override
+        public void enterLoad(JPipeParser.LoadContext ctx) {
+            String relativePath = linearize(this.buildContext.unitFileName,
+                                            strip(ctx.path.getText()));
+            result.add(new LoadFile(relativePath));
+        }
+
+        @Override
         public void enterJustification(JPipeParser.JustificationContext ctx) {
             this.buildContext = buildContext.updateCurrentJustification(ctx.id.getText());
             result.add(new CreateJustification(buildContext.unitFileName, ctx.id.getText()));
@@ -101,6 +111,13 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         private String strip(String s) {
             return s.substring(1, s.length() - 1);
         }
+
+        private String linearize(String rootFile, String fileName) {
+            Path root = Paths.get(rootFile).getParent();
+            Path target = Paths.get(fileName);
+            return root.resolve(target).toString();
+        }
+
     }
 
 }

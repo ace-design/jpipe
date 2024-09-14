@@ -1,6 +1,10 @@
 package ca.mcscert.jpipe.compiler;
 
+import ca.mcscert.jpipe.actions.Action;
 import ca.mcscert.jpipe.cli.Configuration;
+import ca.mcscert.jpipe.compiler.model.ChainBuilder;
+import ca.mcscert.jpipe.compiler.model.ChainCompiler;
+import ca.mcscert.jpipe.compiler.model.Transformation;
 import ca.mcscert.jpipe.compiler.steps.ActionListInterpretation;
 import ca.mcscert.jpipe.compiler.steps.ActionListProvider;
 import ca.mcscert.jpipe.compiler.steps.Apply;
@@ -14,6 +18,7 @@ import ca.mcscert.jpipe.compiler.steps.ScopeFiltering;
 import ca.mcscert.jpipe.compiler.steps.io.FileReader;
 import ca.mcscert.jpipe.compiler.steps.io.GraphVizRenderer;
 import ca.mcscert.jpipe.visitors.exporters.GraphVizExporter;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +59,23 @@ public final class CompilerFactory {
                      .andThen(new ScopeFiltering(config.getDiagramName()))
                      .andThen(new ModelVisit<>(new GraphVizExporter()))
                      .andThen(new GraphVizRenderer(config.getFormat()));
+    }
+
+
+    /**
+     * Provide a partial compilation chain to get actions out of a given filename.
+     *
+     * @return a default instance of Compiler.
+     */
+    public static Transformation<InputStream, List<Action>> actionProvider() {
+        List<Throwable> errors = new ArrayList<>();
+        return new FileReader()
+                    .andThen(new CharStreamProvider())
+                    .andThen(new Lexer(errors))
+                    .andThen(new Parser(errors))
+                    .andThen(new LazyHaltAndCatchFire<>(errors))
+                    .andThen(new ActionListProvider())
+                    .asTransformation();
     }
 
 }
