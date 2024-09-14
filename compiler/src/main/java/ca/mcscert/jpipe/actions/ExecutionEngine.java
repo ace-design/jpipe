@@ -3,6 +3,8 @@ package ca.mcscert.jpipe.actions;
 import ca.mcscert.jpipe.error.ErrorManager;
 import ca.mcscert.jpipe.error.FatalException;
 import ca.mcscert.jpipe.model.Unit;
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -41,9 +43,21 @@ public final class ExecutionEngine {
      * @return the Unit after all the actions have been applied.
      */
     public Unit spawn(String fileName, List<Action> actions) {
-        Unit unit = new Unit(fileName);
+        Unit unit = new Unit(fileName, Paths.get(fileName));
         this.update(unit, actions);
         return unit;
+    }
+
+    /**
+     * Enrich an existing compilation unit with actions (coming from a load for example).
+     *
+     * @param context the unit to enrich.
+     * @param actions the actions to execute.
+     * @return the enriched unit.
+     */
+    public Unit enrich(Unit context, List<Action> actions) {
+        this.update(context, actions);
+        return context;
     }
 
     private void update(Unit u, List<Action> actions) {

@@ -4,7 +4,7 @@
     "description": "Language Support for the jPipe language",
     "author": "McMaster Centre for Software Certification (McSCert)",
     "publisher": "mcscert",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "license": "MIT",
     "icon": "images/logo.png",
     "repository": {
