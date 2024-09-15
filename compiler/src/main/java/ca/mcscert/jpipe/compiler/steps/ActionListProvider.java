@@ -73,7 +73,13 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         @Override
         public void enterJustification(JPipeParser.JustificationContext ctx) {
             this.buildContext = buildContext.updateCurrentJustification(ctx.id.getText());
-            result.add(new CreateJustification(buildContext.unitFileName, ctx.id.getText()));
+            if (ctx.parent == null) {
+                result.add(new CreateJustification(buildContext.unitFileName, ctx.id.getText()));
+            } else {
+                result.add(new CreateJustification(buildContext.unitFileName,
+                                                    ctx.id.getText(), ctx.parent.getText()));
+            }
+
         }
 
         @Override
@@ -84,7 +90,12 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         @Override
         public void enterPattern(JPipeParser.PatternContext ctx) {
             this.buildContext = buildContext.updateCurrentJustification(ctx.id.getText());
-            result.add(new CreatePattern(buildContext.unitFileName, ctx.id.getText()));
+            if (ctx.parent == null) {
+                result.add(new CreatePattern(buildContext.unitFileName, ctx.id.getText()));
+            } else {
+                result.add(new CreatePattern(buildContext.unitFileName,
+                                                ctx.id.getText(), ctx.parent.getText()));
+            }
         }
 
         @Override

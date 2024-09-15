@@ -1,6 +1,7 @@
 package ca.mcscert.jpipe.actions;
 
 import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.model.Pattern;
 import ca.mcscert.jpipe.model.Unit;
 
 /**
@@ -10,6 +11,7 @@ public final class CreateJustification implements Action {
 
     private final String fileName;
     private final String identifier;
+    private final String parent;
 
     /**
      * Provides information necessary to create a justification.
@@ -20,18 +22,35 @@ public final class CreateJustification implements Action {
     public CreateJustification(String fileName, String identifier) {
         this.fileName = fileName;
         this.identifier = identifier;
+        this.parent = null;
     }
+
+    /**
+     * Provides information necessary to create a justification.
+     *
+     * @param fileName the file name containing the justification.
+     * @param identifier the identified to be used to access it.
+     */
+    public CreateJustification(String fileName, String identifier, String parentId) {
+        this.fileName = fileName;
+        this.identifier = identifier;
+        this.parent = parentId;
+    }
+
 
     @Override
     public void execute(Unit context) throws Exception {
-        context.add(new Justification(this.identifier));
+        if (this.parent == null) {
+            context.add(new Justification(this.identifier));
+        } else {
+            Pattern p = (Pattern) context.get(this.parent);
+            context.add(new Justification(this.identifier, p));
+        }
     }
 
     @Override
     public String toString() {
-        return "CreateJustification{"
-                + "fileName='" + fileName + '\''
-                + ", identifier='" + identifier + '\''
-                + '}';
+        return "CreateJustification{" + "identifier='" + identifier + '\''
+                + ", parent='" + parent + '\'' + '}';
     }
 }

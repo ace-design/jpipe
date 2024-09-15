@@ -13,10 +13,18 @@ public abstract class JustificationModel implements Visitable {
     protected final String name;
     protected final SymbolTable<JustificationElement> symbols;
     protected Conclusion conclusion;
+    protected final Pattern parent;
 
     protected JustificationModel(String name) {
         this.name = name;
         this.symbols = new SymbolTable<>();
+        this.parent = null;
+    }
+
+    protected JustificationModel(String name, Pattern parent) {
+        this.name = name;
+        this.symbols = new SymbolTable<>();
+        this.parent = parent;
     }
 
     public String getName() {
@@ -54,4 +62,13 @@ public abstract class JustificationModel implements Visitable {
         return this.symbols.values();
     }
 
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("name='").append(name).append('\'');
+        sb.append(", symbols=").append(symbols);
+        sb.append(", conclusion=").append(conclusion);
+        sb.append(", parent=").append(parent);
+        return sb.toString();
+    }
 }

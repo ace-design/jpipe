@@ -21,6 +21,16 @@ public final class Justification extends JustificationModel {
         super(name);
     }
 
+    /**
+     * Creates a justification based on its name and its parent.
+     *
+     * @param name the name (identifier) to be used.
+     * @param parent the pattern used as parent.
+     */
+    public Justification(String name, Pattern parent) {
+        super(name, parent);
+    }
+
     @Override
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
@@ -28,12 +38,9 @@ public final class Justification extends JustificationModel {
 
     @Override
     public String toString() {
-        StringJoiner joiner =
-                new StringJoiner("\n")
-                        .add("Justification " + name)
-                        .add("  Conclusion: " + this.conclusion)
-                        .add("  Symbol table: ")
-                        .add(this.symbols.toString());
-        return joiner.toString();
+        StringBuilder sb = new StringBuilder("Justification{");
+        sb.append(super.toString());
+        sb.append('}');
+        return sb.toString();
     }
 }
