@@ -4,7 +4,9 @@ import ca.mcscert.jpipe.error.DuplicateSymbol;
 import ca.mcscert.jpipe.error.UnknownSymbol;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringJoiner;
 
 /**
@@ -17,9 +19,16 @@ import java.util.StringJoiner;
 public final class SymbolTable<T> {
 
     private final Map<String, T> symbols;
+    private final SymbolTable<T> parent;
 
     public SymbolTable() {
         this.symbols = new HashMap<>();
+        this.parent = null;
+    }
+
+    public SymbolTable(SymbolTable<T> parent) {
+        this.symbols = new HashMap<>();
+        this.parent = parent;
     }
 
     /**
@@ -46,6 +55,8 @@ public final class SymbolTable<T> {
     public T get(String identifier) throws UnknownSymbol {
         if (this.symbols.containsKey(identifier)) {
             return this.symbols.get(identifier);
+        } else if (hasParent()) {
+            return this.parent.get(identifier);
         }
         throw new UnknownSymbol(identifier);
     }
@@ -56,8 +67,26 @@ public final class SymbolTable<T> {
      * @return a collection of elements.
      */
     public Collection<T> values() {
-        return this.symbols.values();
+        Collection<T> result = new HashSet<>();
+        for (String key : this.keys()) {
+            result.add(this.get(key));
+        }
+        return result;
     }
+
+
+    private Set<String> keys() {
+        Set<String> locals = this.symbols.keySet();
+        Set<String> parents = (this.parent != null ? this.parent.keys() : Set.of());
+        Set<String> overridden =  new HashSet<>(locals);
+        overridden.retainAll(parents);
+        Set<String> inherited = new HashSet<>(parents);
+        inherited.removeAll(overridden);
+        Set<String> keys = new HashSet<>(locals);
+        keys.addAll(inherited);
+        return keys;
+    }
+
 
     @Override
     public String toString() {
@@ -67,4 +96,10 @@ public final class SymbolTable<T> {
         }
         return joiner.toString();
     }
+
+
+    private boolean hasParent() {
+        return this.parent != null;
+    }
+
 }

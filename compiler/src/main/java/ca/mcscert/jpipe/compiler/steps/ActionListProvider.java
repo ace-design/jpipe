@@ -79,7 +79,6 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
                 result.add(new CreateJustification(buildContext.unitFileName,
                                                     ctx.id.getText(), ctx.parent.getText()));
             }
-
         }
 
         @Override

@@ -24,7 +24,6 @@ public class AbstractSupport extends Support {
 
     @Override
     public String toString() {
-        return "AbstractSupport{" + "identifier='" + identifier + '\''
-                + ", label='" + label + '\'' + '}';
+        return "AbstractSupport::" + identifier;
     }
 }
