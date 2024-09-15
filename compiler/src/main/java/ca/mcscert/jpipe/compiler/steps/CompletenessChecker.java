@@ -4,7 +4,9 @@ import ca.mcscert.jpipe.compiler.model.Checker;
 import ca.mcscert.jpipe.error.ErrorManager;
 import ca.mcscert.jpipe.error.SemanticError;
 import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.model.Pattern;
 import ca.mcscert.jpipe.model.Unit;
+import ca.mcscert.jpipe.model.elements.AbstractSupport;
 import ca.mcscert.jpipe.model.elements.Conclusion;
 import ca.mcscert.jpipe.model.elements.Evidence;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
@@ -69,6 +71,14 @@ public final class CompletenessChecker extends Checker<Unit> {
         }
 
         @Override
+        public void visit(Pattern p) {
+            // we're visiting all declared symbols, not just the entry point (the conclusion)
+            for (JustificationElement je : p.contents()) {
+                je.accept(this);
+            }
+        }
+
+        @Override
         public void visit(Conclusion c) {
             this.visited.add(c);
             this.used.add(c); // conclusion is always "used": it's the output of the justification.
@@ -102,6 +112,11 @@ public final class CompletenessChecker extends Checker<Unit> {
             } else {
                 this.used.add(sc.getStrategy());
             }
+        }
+
+        @Override
+        public void visit(AbstractSupport as) {
+            this.visited.add(as);
         }
 
     }

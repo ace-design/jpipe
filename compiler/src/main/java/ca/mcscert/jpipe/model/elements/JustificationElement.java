@@ -102,6 +102,11 @@ public abstract class JustificationElement implements Visitable {
                 + this + " cannot be supported by " + sc);
     }
 
+    protected void acceptAsSupport(AbstractSupport as) {
+        throw new IllegalArgumentException("Justification element "
+                + this + " cannot be supported by " + as);
+    }
+
 
     @Override
     public String toString() {

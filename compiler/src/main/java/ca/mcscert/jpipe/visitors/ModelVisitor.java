@@ -1,7 +1,9 @@
 package ca.mcscert.jpipe.visitors;
 
 import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.model.Pattern;
 import ca.mcscert.jpipe.model.Unit;
+import ca.mcscert.jpipe.model.elements.AbstractSupport;
 import ca.mcscert.jpipe.model.elements.Conclusion;
 import ca.mcscert.jpipe.model.elements.Evidence;
 import ca.mcscert.jpipe.model.elements.Strategy;
@@ -59,11 +61,25 @@ public abstract class ModelVisitor<O> {
     public abstract void visit(SubConclusion sc);
 
     /**
+     * Visiting an abstract support.
+     *
+     * @param as the abstract support to visit.
+     */
+    public abstract void visit(AbstractSupport as);
+
+    /**
      * Visiting a justification.
      *
      * @param j the justification to visit.
      */
     public abstract void visit(Justification j);
+
+    /**
+     * Visiting a justification pattern.
+     *
+     * @param p the pattern to visit.
+     */
+    public abstract void visit(Pattern p);
 
     /**
      * Visiting a compilation unit.
