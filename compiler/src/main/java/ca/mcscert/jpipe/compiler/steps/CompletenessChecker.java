@@ -4,6 +4,7 @@ import ca.mcscert.jpipe.compiler.model.Checker;
 import ca.mcscert.jpipe.error.ErrorManager;
 import ca.mcscert.jpipe.error.SemanticError;
 import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.model.JustificationModel;
 import ca.mcscert.jpipe.model.Pattern;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.AbstractSupport;
@@ -49,7 +50,7 @@ public final class CompletenessChecker extends Checker<Unit> {
 
         @Override
         public void visit(Unit u) {
-            for (Justification justification : u.getContents()) {
+            for (JustificationModel justification : u.getContents()) {
                 justification.accept(this);
             }
             if (!this.used.containsAll(this.visited)) {

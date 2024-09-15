@@ -42,6 +42,11 @@ public final class Strategy extends JustificationElement {
     }
 
     @Override
+    protected void acceptAsSupport(AbstractSupport as) {
+        this.supports.add(as);
+    }
+
+    @Override
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
     }

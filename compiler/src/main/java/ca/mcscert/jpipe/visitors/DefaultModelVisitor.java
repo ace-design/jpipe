@@ -1,6 +1,7 @@
 package ca.mcscert.jpipe.visitors;
 
 import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.model.JustificationModel;
 import ca.mcscert.jpipe.model.Pattern;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.AbstractSupport;
@@ -61,11 +62,10 @@ public abstract class DefaultModelVisitor<T> extends ModelVisitor<T> {
 
     @Override
     public void visit(Unit u) {
-        for (Justification justification : u.getContents()) {
+        for (JustificationModel justification : u.getContents()) {
             justification.accept(this);
         }
     }
-
 
 
     @Override

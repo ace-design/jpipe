@@ -2,12 +2,13 @@ package ca.mcscert.jpipe.compiler.steps;
 
 import ca.mcscert.jpipe.compiler.model.Transformation;
 import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.model.JustificationModel;
 import ca.mcscert.jpipe.model.Unit;
 
 /**
  * Filter a unit to extract one given justification element inside this unit.
  */
-public class ScopeFiltering extends Transformation<Unit, Justification> {
+public class ScopeFiltering extends Transformation<Unit, JustificationModel> {
 
     private final String identifier;
 
@@ -21,7 +22,7 @@ public class ScopeFiltering extends Transformation<Unit, Justification> {
     }
 
     @Override
-    protected Justification run(Unit input, String source) throws Exception {
+    protected JustificationModel run(Unit input, String source) throws Exception {
         return input.get(this.identifier);
     }
 

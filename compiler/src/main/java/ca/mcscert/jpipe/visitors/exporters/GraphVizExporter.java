@@ -56,8 +56,8 @@ public class GraphVizExporter extends ModelVisitor<MutableGraph> {
 
     @Override
     public void visit(Pattern p) {
-        String label = "_[pattern]_ " + p.getName();
-        this.accumulator.graphAttrs().add(Label.markdown(label));
+        String label = "&lt;&lt;pattern&gt;&gt;&nbsp;" + p.getName();
+        this.accumulator.graphAttrs().add(Label.html(label));
         for (JustificationElement je : p.contents()) {
             je.accept(this);
         }
@@ -92,11 +92,11 @@ public class GraphVizExporter extends ModelVisitor<MutableGraph> {
     @Override
     public void visit(AbstractSupport as) {
         MutableNode n = mutNode(as.getIdentifier())
-                .add(Label.markdown(as.getLabel()))
-                .add(Shape.R_ARROW)
-                .add(Color.LIGHTPINK.fill())
-                .add(Style.FILLED)
-                .add(Style.lineWidth(1.01));
+                .add(Label.html("<i>" + as.getLabel() + "</i>"))
+                .add(Shape.NONE)
+                .add(Color.LIGHTPINK.fill());
+                //.add(Style.FILLED)
+                //.add(Style.lineWidth(1.01));
         n.addTo(this.accumulator);
     }
 
