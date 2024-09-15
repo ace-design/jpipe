@@ -9,12 +9,22 @@ public final class Pattern extends JustificationModel {
 
 
     /**
-     * Creates a justification based on its name.
+     * Creates a pattern based on its name.
      *
      * @param name the name (identifier) of the pattern
      */
     public Pattern(String name) {
         super(name);
+    }
+
+    /**
+     * Creates a pattern based on its name and parent.
+     *
+     * @param name the name (identifier) of the pattern
+     * @param parent the pattern used as parent
+     */
+    public Pattern(String name, Pattern parent) {
+        super(name, parent);
     }
 
     @Override
@@ -24,12 +34,9 @@ public final class Pattern extends JustificationModel {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Pattern{");
-        sb.append("name='").append(name).append('\'');
-        sb.append(", symbols=").append(symbols);
-        sb.append(", conclusion=").append(conclusion);
+        StringBuffer sb = new StringBuffer("Pattern{");
+        sb.append(super.toString());
         sb.append('}');
         return sb.toString();
     }
-
 }
