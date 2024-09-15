@@ -1,6 +1,7 @@
 package ca.mcscert.jpipe.actions;
 
 import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.model.JustificationModel;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.Conclusion;
 
@@ -31,7 +32,7 @@ public final class CreateConclusion implements Action {
     public void execute(Unit context) throws Exception {
         Conclusion conclusion = new Conclusion(identifier, label);
         context.addInto(justificationId, conclusion);
-        Justification j = context.get(justificationId);
+        JustificationModel j = context.get(justificationId);
         j.setConclusion(conclusion);
     }
 

@@ -13,7 +13,7 @@ import java.util.Set;
 public final class Unit implements Visitable {
 
     private final String name;
-    private final SymbolTable<Justification> contents;
+    private final SymbolTable<JustificationModel> contents;
     private final Set<String> loaded;
 
     /**
@@ -52,7 +52,7 @@ public final class Unit implements Visitable {
      *
      * @param j the justification to record.
      */
-    public void add(Justification j) {
+    public void add(JustificationModel j) {
         this.contents.record(j.getName(), j);
     }
 
@@ -63,15 +63,15 @@ public final class Unit implements Visitable {
      * @param e the element to add.
      */
     public void addInto(String container, JustificationElement e) {
-        Justification justification = contents.get(container);
+        JustificationModel justification = contents.get(container);
         justification.add(e);
     }
 
-    public Justification get(String identifier) {
+    public JustificationModel get(String identifier) {
         return this.contents.get(identifier);
     }
 
-    public Collection<Justification> getContents() {
+    public Collection<JustificationModel> getContents() {
         return this.contents.values();
     }
 

@@ -1,9 +1,11 @@
 package ca.mcscert.jpipe.compiler.steps;
 
 import ca.mcscert.jpipe.actions.Action;
+import ca.mcscert.jpipe.actions.CreateAbstractSupport;
 import ca.mcscert.jpipe.actions.CreateConclusion;
 import ca.mcscert.jpipe.actions.CreateEvidence;
 import ca.mcscert.jpipe.actions.CreateJustification;
+import ca.mcscert.jpipe.actions.CreatePattern;
 import ca.mcscert.jpipe.actions.CreateRelation;
 import ca.mcscert.jpipe.actions.CreateStrategy;
 import ca.mcscert.jpipe.actions.CreateSubConclusion;
@@ -63,7 +65,7 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
 
         @Override
         public void enterLoad(JPipeParser.LoadContext ctx) {
-            String relativePath = linearize(this.buildContext.unitFileName,
+            String relativePath = normalizePath(this.buildContext.unitFileName,
                                             strip(ctx.path.getText()));
             result.add(new LoadFile(relativePath));
         }
@@ -75,10 +77,33 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         }
 
         @Override
+        public void exitJustification(JPipeParser.JustificationContext ctx) {
+            this.buildContext = buildContext.updateCurrentJustification(null);
+        }
+
+        @Override
+        public void enterPattern(JPipeParser.PatternContext ctx) {
+            this.buildContext = buildContext.updateCurrentJustification(ctx.id.getText());
+            result.add(new CreatePattern(buildContext.unitFileName, ctx.id.getText()));
+        }
+
+        @Override
+        public void exitPattern(JPipeParser.PatternContext ctx) {
+            this.buildContext = buildContext.updateCurrentJustification(null);
+        }
+
+        @Override
         public void enterEvidence(JPipeParser.EvidenceContext ctx) {
             String identifier = ctx.element().id.getText();
             result.add(new CreateEvidence(buildContext.justificationId,
                         identifier, strip(ctx.element().name.getText())));
+        }
+
+        @Override
+        public void enterAbstract(JPipeParser.AbstractContext ctx) {
+            String identifier = ctx.element().id.getText();
+            result.add(new CreateAbstractSupport(buildContext.justificationId,
+                    identifier, strip(ctx.element().name.getText())));
         }
 
         @Override
@@ -112,7 +137,7 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             return s.substring(1, s.length() - 1);
         }
 
-        private String linearize(String rootFile, String fileName) {
+        private String normalizePath(String rootFile, String fileName) {
             Path root = Paths.get(rootFile).getParent();
             Path target = Paths.get(fileName);
             return root.resolve(target).toString();
