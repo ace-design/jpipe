@@ -23,7 +23,7 @@ public abstract class JustificationModel implements Visitable {
 
     protected JustificationModel(String name, Pattern parent) {
         this.name = name;
-        this.symbols = new SymbolTable<>();
+        this.symbols = new SymbolTable<>(parent.symbols);
         this.parent = parent;
     }
 

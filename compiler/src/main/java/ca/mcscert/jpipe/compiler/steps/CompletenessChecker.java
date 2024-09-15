@@ -57,6 +57,7 @@ public final class CompletenessChecker extends Checker<Unit> {
                 // some visited elements are not part of the global justification
                 this.visited.removeAll(this.used);
                 for (JustificationElement je : this.visited) {
+                    System.out.println(je);
                     accumulator.add(new SemanticError("Dangling justification element: ["
                                                     + je.getIdentifier() + "]"));
                 }
@@ -117,7 +118,7 @@ public final class CompletenessChecker extends Checker<Unit> {
 
         @Override
         public void visit(AbstractSupport as) {
-            this.visited.add(as);
+
         }
 
     }
