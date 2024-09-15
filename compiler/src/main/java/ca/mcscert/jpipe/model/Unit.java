@@ -2,7 +2,6 @@ package ca.mcscert.jpipe.model;
 
 import ca.mcscert.jpipe.model.elements.JustificationElement;
 import ca.mcscert.jpipe.visitors.ModelVisitor;
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;

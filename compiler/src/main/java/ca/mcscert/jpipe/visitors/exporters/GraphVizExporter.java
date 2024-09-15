@@ -5,7 +5,9 @@ import static guru.nidi.graphviz.model.Factory.mutNode;
 import static guru.nidi.graphviz.model.Factory.node;
 
 import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.model.Pattern;
 import ca.mcscert.jpipe.model.Unit;
+import ca.mcscert.jpipe.model.elements.AbstractSupport;
 import ca.mcscert.jpipe.model.elements.Conclusion;
 import ca.mcscert.jpipe.model.elements.Evidence;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
@@ -53,6 +55,15 @@ public class GraphVizExporter extends ModelVisitor<MutableGraph> {
     }
 
     @Override
+    public void visit(Pattern p) {
+        String label = "_[pattern]_ " + p.getName();
+        this.accumulator.graphAttrs().add(Label.markdown(label));
+        for (JustificationElement je : p.contents()) {
+            je.accept(this);
+        }
+    }
+
+    @Override
     public void visit(Conclusion c) {
         MutableNode n = mutNode(c.getIdentifier())
                 .add(Label.markdown(c.getLabel()))
@@ -73,6 +84,17 @@ public class GraphVizExporter extends ModelVisitor<MutableGraph> {
                 .add(Label.markdown(e.getLabel()))
                 .add(Shape.NOTE)
                 .add(Color.LIGHTSKYBLUE2.fill())
+                .add(Style.FILLED)
+                .add(Style.lineWidth(1.01));
+        n.addTo(this.accumulator);
+    }
+
+    @Override
+    public void visit(AbstractSupport as) {
+        MutableNode n = mutNode(as.getIdentifier())
+                .add(Label.markdown(as.getLabel()))
+                .add(Shape.R_ARROW)
+                .add(Color.LIGHTPINK.fill())
                 .add(Style.FILLED)
                 .add(Style.lineWidth(1.01));
         n.addTo(this.accumulator);
