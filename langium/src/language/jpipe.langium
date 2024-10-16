@@ -1,16 +1,19 @@
 grammar Jpipe
 
 entry Model:
-    (loads+=(Load))* (declaration_kinds+=Declaration )*;
+    (loads+=(Load) | links += Link)* (declaration_kinds+=Declaration )*;
 
 Load: 
-    "load" name=STRING;
+    "load" link=[Link];
 
 interface Declaration{
     kind: ('justification' | 'pattern' | 'composition')
     name: string
     implementation?: Implementation
 }
+
+Link:
+    name=STRING;
 
 Declaration returns Declaration:
     kind=('justification' | 'pattern' | 'composition') (name=ID | name=ID implementation=Implementation) (JustificationPattern | Composition);

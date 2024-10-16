@@ -97,10 +97,10 @@ function getURIs(node: AstNode, current_URI: URI): Set<URI>{
     load_statements.forEach(load_statement => {
         let uri: URI;
         //add in path resolution here
-        if(Path.isAbsoluteString(load_statement.name)){
-            uri = URI.file(load_statement.name);
+        if(Path.isAbsoluteString(load_statement.link.$refText)){
+            uri = URI.file(load_statement.link.$refText);
         }else{
-            let relative_path = new RelativePath(load_statement.name);
+            let relative_path = new RelativePath(load_statement.link.$refText);
             let home_absolute = new AbsolutePath(current_URI);
 
             uri = URI.file(relative_path.toAbsolutePath(home_absolute).toString());

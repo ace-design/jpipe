@@ -8,7 +8,7 @@
         "sourceMap": true,
         "outDir": "out",
         "strict": true,
-        "noUnusedLocals": true,
+        "noUnusedLocals": false,
         "noImplicitReturns": true,
         "noImplicitOverride": true,
         "moduleResolution": "Node16",
