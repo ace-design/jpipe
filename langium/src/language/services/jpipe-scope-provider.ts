@@ -1,4 +1,4 @@
-import { AstNode, DefaultScopeProvider, LangiumCoreServices, LangiumDocuments, MapScope, ReferenceInfo, Scope, URI } from "langium";
+import { AstNode, AstNodeDescription, AstUtils, DefaultScopeProvider, LangiumCoreServices, LangiumDocuments, MapScope, ReferenceInfo, Scope, Stream, stream, URI } from "langium";
 import { Declaration, isDeclaration, isModel, Load, Model } from "../generated/ast.js";
 import { AbsolutePath, Path, RelativePath } from "./validation/code-actions/utilities/path-utilities.js";
 
@@ -19,9 +19,13 @@ export class JpipeScopeProvider extends DefaultScopeProvider{
         if(current_URI){
             included_URIs = this.getImports(current_URI, new Set<URI>(), this.langiumDocuments());
         }
-        
 
-        return this.globalScopeCache.get(referenceType, () => new MapScope(this.indexManager.allElements(referenceType, toString(included_URIs))));
+        //Special case for links which can be mapped to any node which exists in the other file, non-specific to type
+        if(referenceType == "Link"){
+            return this.globalScopeCache.get(referenceType, () => new MapScope(this.indexManager.allElements(undefined, toString(included_URIs))));
+        }else{
+            return this.globalScopeCache.get(referenceType, () => new MapScope(this.indexManager.allElements(referenceType, toString(included_URIs))));
+        }
     }
 
     //gets all imports from the current document recursively
