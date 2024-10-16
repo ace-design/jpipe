@@ -1,21 +1,33 @@
-import { AstNodeDescription, DefaultLinker, LinkingError, ReferenceInfo, Stream } from "langium";
+import { AstNodeDescription, DefaultLinker, LinkingError, ReferenceInfo, Scope, Stream } from "langium";
 import { JpipeAstType } from "../generated/ast.js";
 
+//Linker which resolves references 
 export class JpipeLinker extends DefaultLinker{
+    
     //Links candidates to their references, with a special case being for load statements
     override getCandidate(refInfo: ReferenceInfo): AstNodeDescription | LinkingError {
-        const scope = this.scopeProvider.getScope(refInfo);
         let description: AstNodeDescription | undefined = undefined;
-        
+
+        const scope = this.scopeProvider.getScope(refInfo);
+
+        description = scope.getElement(this.getElementName(refInfo, scope));
+
+        return description ?? this.createLinkingError(refInfo);
+    }
+
+    //helper function to get the searched for element name (added for future potential cases)
+    private getElementName(refInfo: ReferenceInfo, scope: Scope): string{
+        let element_name: string;
+
         if(refInfo.container.$type as keyof JpipeAstType === "Load"){
             let node = this.getEntryNode(scope.getAllElements());
             
-            description = scope.getElement(node.name);
+            element_name = node.name;
         }else{
-            description = scope.getElement(refInfo.reference.$refText);
+            element_name = refInfo.reference.$refText;
         }
-        
-        return description ?? this.createLinkingError(refInfo);
+
+        return element_name;
     }
 
     //Finds the first node which defines a diagram to link to

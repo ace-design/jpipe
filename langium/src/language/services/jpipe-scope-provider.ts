@@ -1,4 +1,4 @@
-import { AstNode, AstNodeDescription, AstUtils, DefaultScopeProvider, LangiumCoreServices, LangiumDocuments, MapScope, ReferenceInfo, Scope, Stream, stream, URI } from "langium";
+import { AstNode, DefaultScopeProvider, LangiumCoreServices, LangiumDocuments, MapScope, ReferenceInfo, Scope, URI } from "langium";
 import { Declaration, isDeclaration, isModel, Load, Model } from "../generated/ast.js";
 import { AbsolutePath, Path, RelativePath } from "./validation/code-actions/utilities/path-utilities.js";
 
@@ -20,12 +20,16 @@ export class JpipeScopeProvider extends DefaultScopeProvider{
             included_URIs = this.getImports(current_URI, new Set<URI>(), this.langiumDocuments());
         }
 
-        //Special case for links which can be mapped to any node which exists in the other file, non-specific to type
-        if(referenceType == "Link"){
-            return this.globalScopeCache.get(referenceType, () => new MapScope(this.indexManager.allElements(undefined, toString(included_URIs))));
-        }else{
-            return this.globalScopeCache.get(referenceType, () => new MapScope(this.indexManager.allElements(referenceType, toString(included_URIs))));
-        }
+        return this.getScopesFromURIs(referenceType, included_URIs);
+    }
+
+    //helper function to use the included uris to convert to a scope
+    private getScopesFromURIs(reference_type: string, included_URIs: Set<URI>): Scope{
+        let element_type = reference_type === "Link" ? undefined : reference_type;
+        
+        let descriptions = this.indexManager.allElements(element_type, toString(included_URIs));
+        
+        return this.globalScopeCache.get(reference_type, () => new MapScope(descriptions));
     }
 
     //gets all imports from the current document recursively
