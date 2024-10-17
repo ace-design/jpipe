@@ -1,11 +1,65 @@
-import { AstNode, AstNodeDescription, LangiumDocument, TextDocument } from "langium";
+import { AstNode, AstNodeDescription, LangiumDocument, MultiMap, TextDocument } from "langium";
 import { CodeActionParams, CodeAction, CodeActionKind, Range, Position, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
 import { getDeclaration, getModelNode } from "../../jpipe-scope-provider.js";
 import { Declaration } from "../../../generated/ast.js";
 import { getAnyNode as getNode } from "./utilities/node-utilities.js";
 import { makePosition } from "./utilities/range-utilities.js";
+import { CodeActionRegistrar } from "./code-action-registration.js";
+import { LangiumServices } from "langium/lsp";
 
-type DeclarationType = 'composition' | 'justification' | 'pattern';
+export class ChangeDeclarationRegistrar extends CodeActionRegistrar{
+    protected override getActions: (document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => Array<CodeAction>;
+
+    private codes: Map<string, Array<(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) =>CodeAction>> = this.registerActions();;
+
+    constructor(services: LangiumServices, code: string){
+        super(services, code);
+
+        let actions: ((document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => CodeAction)[] | undefined = this.codes.get(code);
+
+        this.getActions = actions ? this.unpackActions(actions) : this.emptyActions;
+    }
+    
+    private registerActions(): Map<string, Array<(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) =>CodeAction>>{
+        let map = new Map<string, Array<(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => CodeAction>>();
+
+        map.set("supportInJustification", [this.pattern]);
+        map.set("noSupportInPattern", [this.justification]);
+        map.set("compositionImplementing", [this.pattern, this.justification]);
+
+        return map;
+    } 
+
+    private justification(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): ChangeDeclarationKind{
+        return new ChangeDeclarationKind(document,params, diagnostic, "justification");
+    }
+
+    private pattern(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): ChangeDeclarationKind{
+        return new ChangeDeclarationKind(document,params, diagnostic, "pattern");
+    }
+
+    private composition(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): ChangeDeclarationKind{
+        return new ChangeDeclarationKind(document,params, diagnostic, "composition");
+    }
+
+    private unpackActions(actions: ((document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => CodeAction)[]): (document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => Array<CodeAction>{
+        return (document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => {
+            let code_action_array = new Array<CodeAction>();
+            
+            actions.forEach(action =>
+                {
+                code_action_array.push(action(document, params,diagnostic));
+                }
+            )
+            
+            return code_action_array;
+        }
+    }
+
+    private emptyActions = () =>{
+        return [];
+    }
+}
 
 //Code action to change the declaration
 export class ChangeDeclarationKind implements CodeAction{
@@ -18,19 +72,12 @@ export class ChangeDeclarationKind implements CodeAction{
     public edit?: WorkspaceEdit | undefined;
     public data?: any;
 
-    //automatically detects and changes pattern => justification, justification -> pattern, and composition -> composition
-    public constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic);
     //set what you want the declaration to be changed to
-    public constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic, change: string);
-    public constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic, change?: string){
+    public constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic, change: string){
         let node = getNode(params.range, document.precomputedScopes);  
 
         if(node.node){
             let declaration_name = getDeclaration(node.node);
-            
-            if(change === undefined){
-                change = this.getChangeType(declaration_name.kind);
-            }
 
             this.title = "Change declaration type to " + change;
 
@@ -85,21 +132,6 @@ export class ChangeDeclarationKind implements CodeAction{
         }else{
             throw new Error("Final description is undefined");
         }
-    }
-
-    //helper function to automatically determine what the declaration kind should change to
-    private getChangeType(declaration_kind: DeclarationType): DeclarationType{
-        let change_to: DeclarationType;
-
-        if(declaration_kind === "justification"){
-            change_to =  "pattern";
-        }else if(declaration_kind === "pattern"){
-            change_to = "justification";
-        }else{
-            change_to = "composition";
-        }
-
-        return change_to;        
     }
 
     //helper function to get the range of a text element given a search range and a document

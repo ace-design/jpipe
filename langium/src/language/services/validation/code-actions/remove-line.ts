@@ -1,8 +1,10 @@
 import { LangiumDocument } from "langium";
 import { CodeActionKind, Range, WorkspaceEdit, Diagnostic, TextEdit, integer, CodeActionParams, CodeAction } from "vscode-languageserver";
+import { RegistrableCodeAction } from "./code-action-registration.js";
+import { LangiumServices } from "langium/lsp";
 
 //Code action to remove a line
-export class RemoveLine implements CodeAction{
+export class RemoveLine extends RegistrableCodeAction{
     public title = "Remove line";
     public kind = CodeActionKind.QuickFix;
 
@@ -12,7 +14,11 @@ export class RemoveLine implements CodeAction{
     public edit?: WorkspaceEdit | undefined;
     public data?: any;
 
-    constructor(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic){
+    constructor(services: LangiumServices, code: string){
+        super(services, code);
+    }
+
+    protected override getActions(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): Array<CodeAction> {
         this.diagnostics = [diagnostic];
 
         this.edit = {
@@ -22,6 +28,7 @@ export class RemoveLine implements CodeAction{
         }
 
         this.data = diagnostic.data;
+        return [this];
     }
 
     //helper function to get the line which contains the range

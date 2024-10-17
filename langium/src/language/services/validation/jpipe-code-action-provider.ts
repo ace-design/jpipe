@@ -1,7 +1,7 @@
 import { IndexManager, LangiumDocument, LinkingErrorData, MaybePromise, URI} from "langium";
 import { CodeActionProvider, LangiumServices } from "langium/lsp";
 import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
-import { RemoveLine, ChangeDeclarationKind, ResolveReference, RemoveImplemented } from "./code-actions/index.js";
+import { RemoveLine, ChangeDeclarationKind, ResolveReference, RemoveImplemented, ChangeDeclarationRegistrar } from "./code-actions/index.js";
 import { AstUtils } from "langium";
 import { AddConclusion } from "./code-actions/add-conclustion.js";
 import { CodeActionRegistrar } from "./code-actions/code-action-registration.js";
@@ -16,7 +16,9 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
         this.index_manager = services.shared.workspace.IndexManager;
         this.diagnostic_registrars = new Map();
 
-        this.register("supportInJustification", [new ChangeDeclarationKind(this.services), new RemoveLine(this.services)])
+        this.register("supportInJustification", [
+            new ChangeDeclarationRegistrar(this.services, "supportInJustification"), 
+            new RemoveLine(this.services, "supportInJustification")])
     }
 
     public register(diagnostic_data_code: string, registrars: Array<CodeActionRegistrar>): void{
@@ -32,51 +34,68 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
         }
         
         let code_actions = new Array<CodeAction>();
-
         params.context.diagnostics.forEach(diagnostic => {
             let code = this.getCode(diagnostic);
+            let action_registrars: Array<CodeActionRegistrar> = [];
+            if(code){
+                let registrars = this.diagnostic_registrars.get(code);
 
-            if (code === "supportInJustification") {
-                code_actions.push(
-                    new ChangeDeclarationKind(document, params, diagnostic),
-                    new RemoveLine(document, params, diagnostic)
-                );
-
-            }else if (code === "noSupportInPattern") {
-                code_actions.push(
-                    new ChangeDeclarationKind(document, params, diagnostic)
-                );
-
-            }else if (code === "supportNotMatching") {
-                code_actions.push(
-                    new RemoveLine(document, params, diagnostic)
-                );
-            }else if (code === "linking-error") {
-                let data = this.toLinkingError(diagnostic.data);
-                let paths = this.getPaths(document, data);
-
-                paths.forEach(path => {
-                    code_actions.push(new ResolveReference(document, diagnostic, path))
-                });
-                
-            }else if (code === "compositionImplementing") {
-                code_actions.push(
-                    new ChangeDeclarationKind(document, params, diagnostic, "pattern"),
-                    new ChangeDeclarationKind(document, params, diagnostic, "justification"),
-                    new RemoveImplemented(document, diagnostic)
-                )
-            }else if (code === "nonPatternImplemented") {
-                code_actions.push(
-                    new RemoveImplemented(document, diagnostic)
-                )
-            }else if(code === "noConclusionInJustification"){
-                code_actions.push(                    
-                    new AddConclusion(document, diagnostic),
-                    new ChangeDeclarationKind(document, params, diagnostic, "pattern")
-                )
+                if(registrars){
+                    registrars.forEach( registrar => {
+                        action_registrars.push(registrar)
+                    })
+                }
             }
 
+            action_registrars.forEach(registrar => {
+                registrar.register(code_actions, document, params, diagnostic);
+            })
         })
+
+        // params.context.diagnostics.forEach(diagnostic => {
+        //     let code = this.getCode(diagnostic);
+
+        //     if (code === "supportInJustification") {
+        //         code_actions.push(
+        //             new ChangeDeclarationKind(document, params, diagnostic),
+        //             new RemoveLine(document, params, diagnostic)
+        //         );
+
+        //     }else if (code === "noSupportInPattern") {
+        //         code_actions.push(
+        //             new ChangeDeclarationKind(document, params, diagnostic)
+        //         );
+
+        //     }else if (code === "supportNotMatching") {
+        //         code_actions.push(
+        //             new RemoveLine(document, params, diagnostic)
+        //         );
+        //     }else if (code === "linking-error") {
+        //         let data = this.toLinkingError(diagnostic.data);
+        //         let paths = this.getPaths(document, data);
+
+        //         paths.forEach(path => {
+        //             code_actions.push(new ResolveReference(document, diagnostic, path))
+        //         });
+                
+        //     }else if (code === "compositionImplementing") {
+        //         code_actions.push(
+        //             new ChangeDeclarationKind(document, params, diagnostic, "pattern"),
+        //             new ChangeDeclarationKind(document, params, diagnostic, "justification"),
+        //             new RemoveImplemented(document, diagnostic)
+        //         )
+        //     }else if (code === "nonPatternImplemented") {
+        //         code_actions.push(
+        //             new RemoveImplemented(document, diagnostic)
+        //         )
+        //     }else if(code === "noConclusionInJustification"){
+        //         code_actions.push(                    
+        //             new AddConclusion(document, diagnostic),
+        //             new ChangeDeclarationKind(document, params, diagnostic, "pattern")
+        //         )
+        //     }
+
+        // })
 
         return code_actions;
     }
