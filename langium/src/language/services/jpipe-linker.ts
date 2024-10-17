@@ -48,6 +48,6 @@ export class JpipeLinker extends DefaultLinker{
 
     //helper function to clarify code
     private typeIncorrect(type: string): boolean{
-        return !(type === "JustificationPattern" || type === "Composition");
+        return !(type === "JustificationPattern" || type === "Composition" || type == "Load");
     }
 }
