@@ -4,15 +4,25 @@ import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } 
 import { RemoveLine, ChangeDeclarationKind, ResolveReference, RemoveImplemented } from "./code-actions/index.js";
 import { AstUtils } from "langium";
 import { AddConclusion } from "./code-actions/add-conclustion.js";
+import { CodeActionRegistrar } from "./code-actions/code-action-registration.js";
 
 
 //class which provides all code actions (quick fixes)
 export class JpipeCodeActionProvider implements CodeActionProvider{
     private readonly index_manager: IndexManager;
-
-    constructor(services: LangiumServices){
+    private diagnostic_registrars: Map<string, Array<CodeActionRegistrar>>;
+    
+    constructor(readonly services: LangiumServices){
         this.index_manager = services.shared.workspace.IndexManager;
+        this.diagnostic_registrars = new Map();
+
+        this.register("supportInJustification", [new ChangeDeclarationKind(this.services), new RemoveLine(this.services)])
     }
+
+    public register(diagnostic_data_code: string, registrars: Array<CodeActionRegistrar>): void{
+        this.diagnostic_registrars.set(diagnostic_data_code, registrars);
+    }
+
     //returns codes based on diagnostics
     getCodeActions(document: LangiumDocument, params: CodeActionParams, cancelToken?: CancellationToken): MaybePromise<Array<Command | CodeAction> | undefined> {
         if(cancelToken){
