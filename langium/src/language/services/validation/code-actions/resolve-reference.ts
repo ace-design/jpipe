@@ -46,8 +46,9 @@ export class ResolveReferenceRegistrar extends CodeActionRegistrar{
 
     private getPaths(document: LangiumDocument, data: LinkingErrorData): Set<URI>{
         let paths = new Set<URI>();
-
-        this.index_manager.allElements(data.containerType).forEach(e=>{
+        
+        this.index_manager.allElements().forEach(e => {
+            console.log("elements found")
             if(e.name === data.refText){
                 if(e.node){
                     let home_doc = AstUtils.getDocument(e.node);

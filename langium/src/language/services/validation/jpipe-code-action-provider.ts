@@ -43,9 +43,9 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
             new ChangeDeclarationRegistrar(this.services, "noConclusionInJustification")
         ]);
 
-        // this.register("linking-error", [
-        //     new ResolveReferenceRegistrar(this.services, "linking-error")
-        // ])
+        this.register("linking-error", [
+            new ResolveReferenceRegistrar(this.services, "linking-error")
+        ])
 
     }
 
@@ -68,16 +68,8 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
         params.context.diagnostics.forEach(diagnostic => {
             let code = this.getCode(diagnostic);
             let action_registrars: Array<CodeActionRegistrar> = [];
-            if (code === "linking-error") {
-                let data = this.toLinkingError(diagnostic.data);
-                let paths = this.getPaths(document, data);
-    
-                paths.forEach(path => {
-                    code_actions.push(new ResolveReference(document, diagnostic, path))
-                });
-                
-            }
-            else if(code){
+            
+            if(code){
                 let registrars = this.diagnostic_registrars.get(code);
 
                 if(registrars){
