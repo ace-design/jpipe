@@ -18,7 +18,7 @@ export class RemoveLine extends RegistrableCodeAction{
         super(services, code);
     }
 
-    protected override getActions(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): Array<CodeAction> {
+    protected override getAction(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): CodeAction {
         this.diagnostics = [diagnostic];
 
         this.edit = {
@@ -28,7 +28,7 @@ export class RemoveLine extends RegistrableCodeAction{
         }
 
         this.data = diagnostic.data;
-        return [this];
+        return this;
     }
 
     //helper function to get the line which contains the range

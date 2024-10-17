@@ -1,6 +1,66 @@
-import { LangiumDocument, URI } from "langium";
-import { CodeAction, CodeActionKind, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
+import { AstUtils, IndexManager, LangiumDocument, LinkingErrorData, URI } from "langium";
+import { CodeAction, CodeActionKind, WorkspaceEdit, Diagnostic, TextEdit, CodeActionParams } from "vscode-languageserver";
 import { AbsolutePath } from "./utilities/path-utilities.js";
+import { CodeActionRegistrar } from "./code-action-registration.js";
+import { LangiumServices } from "langium/lsp";
+
+
+export class ResolveReferenceRegistrar extends CodeActionRegistrar{
+    private readonly index_manager: IndexManager;
+
+    constructor(services: LangiumServices, code: string){
+        super(services, code)
+
+        this.index_manager = services.shared.workspace.IndexManager;
+    }
+
+    protected override getActions(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): Array<CodeAction> {
+        console.log("linking error found");
+        let code_actions = new Array<CodeAction>();
+        
+        let data = this.toLinkingError(diagnostic.data);
+        let paths = this.getPaths(document, data);
+        console.log("Path founds")
+
+        paths.forEach(path => {
+            code_actions.push(new ResolveReference(document, diagnostic, path))
+        });
+
+        return code_actions;        
+    }
+
+    private toLinkingError(data: any): LinkingErrorData{
+        if(data.code && data.containerType && data.property && data.refText){
+            return {
+                code: data.code,
+                containerType: data.containerType,
+                property: data.property,
+                refText: data.refText,
+                actionSegment: data.actionSegment,
+                actionRange: data.actionRange
+            }
+        }else{
+            throw new Error("Diagnostic data not in correct form");
+        }
+    }
+
+    private getPaths(document: LangiumDocument, data: LinkingErrorData): Set<URI>{
+        let paths = new Set<URI>();
+
+        this.index_manager.allElements(data.containerType).forEach(e=>{
+            if(e.name === data.refText){
+                if(e.node){
+                    let home_doc = AstUtils.getDocument(e.node);
+
+                    paths.add(home_doc.uri);
+                }
+            }
+        });
+
+        return paths;
+    }
+}
+
 
 //Code action to provide load statements to a given path
 export class ResolveReference implements CodeAction{

@@ -3,6 +3,10 @@ import { LangiumServices } from "langium/lsp";
 import { CodeAction, CodeActionParams, Diagnostic } from "vscode-languageserver";
 
 
+
+
+
+
 export abstract class CodeActionRegistrar{
     constructor(services: LangiumServices, code: string){
         
@@ -26,4 +30,10 @@ export abstract class RegistrableCodeAction extends CodeActionRegistrar implemen
     constructor(services: LangiumServices, code: string){
        super(services, code); 
     }
+
+    protected getActions(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): Array<CodeAction>{
+        return [this.getAction(document, params, diagnostic)];
+    };
+
+    protected abstract getAction(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): CodeAction;
 }

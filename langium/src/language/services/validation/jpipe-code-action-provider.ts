@@ -1,7 +1,7 @@
 import { IndexManager, LangiumDocument, LinkingErrorData, MaybePromise, URI} from "langium";
 import { CodeActionProvider, LangiumServices } from "langium/lsp";
 import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
-import { RemoveLine, ChangeDeclarationKind, ResolveReference, RemoveImplemented, ChangeDeclarationRegistrar } from "./code-actions/index.js";
+import { RemoveLine, ChangeDeclarationKind, ResolveReference, RemoveImplemented, ChangeDeclarationRegistrar, ResolveReferenceRegistrar } from "./code-actions/index.js";
 import { AstUtils } from "langium";
 import { AddConclusion } from "./code-actions/add-conclustion.js";
 import { CodeActionRegistrar } from "./code-actions/code-action-registration.js";
@@ -18,7 +18,34 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
 
         this.register("supportInJustification", [
             new ChangeDeclarationRegistrar(this.services, "supportInJustification"), 
-            new RemoveLine(this.services, "supportInJustification")])
+            new RemoveLine(this.services, "supportInJustification")
+        ])
+
+        this.register("noSupportInPattern",[
+            new ChangeDeclarationRegistrar(this.services, "noSupportInPattern")
+        ])
+        
+        this.register("supportNotMatching", [
+            new RemoveLine(services, "supportNotMatching")
+        ])
+
+        this.register("compositionImplementing", [
+            new ChangeDeclarationRegistrar(this.services, "compositionImplementing"),
+            new RemoveImplemented(this.services, "compositionImplementing")     
+        ])
+
+        this.register("nonPatternImplemented", [
+            new RemoveImplemented(this.services, "nonPatternImplementing")
+        ])
+
+        this.register("noConclusionInJustification", [
+            new AddConclusion(this.services, "noConclusionInJustification"),
+            new ChangeDeclarationRegistrar(this.services, "noConclusionInJustification")
+        ]);
+
+        // this.register("linking-error", [
+        //     new ResolveReferenceRegistrar(this.services, "linking-error")
+        // ])
     }
 
     public register(diagnostic_data_code: string, registrars: Array<CodeActionRegistrar>): void{
@@ -34,9 +61,13 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
         }
         
         let code_actions = new Array<CodeAction>();
+
+                    
+                
         params.context.diagnostics.forEach(diagnostic => {
             let code = this.getCode(diagnostic);
             let action_registrars: Array<CodeActionRegistrar> = [];
+
             if(code){
                 let registrars = this.diagnostic_registrars.get(code);
 
@@ -70,15 +101,7 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
         //         code_actions.push(
         //             new RemoveLine(document, params, diagnostic)
         //         );
-        //     }else if (code === "linking-error") {
-        //         let data = this.toLinkingError(diagnostic.data);
-        //         let paths = this.getPaths(document, data);
-
-        //         paths.forEach(path => {
-        //             code_actions.push(new ResolveReference(document, diagnostic, path))
-        //         });
-                
-        //     }else if (code === "compositionImplementing") {
+        //     }else }else if (code === "compositionImplementing") {
         //         code_actions.push(
         //             new ChangeDeclarationKind(document, params, diagnostic, "pattern"),
         //             new ChangeDeclarationKind(document, params, diagnostic, "justification"),

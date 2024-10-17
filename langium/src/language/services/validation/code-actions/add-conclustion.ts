@@ -1,23 +1,32 @@
 import { LangiumDocument } from "langium";
-import { CodeAction, CodeActionKind, Diagnostic, WorkspaceEdit, TextEdit } from "vscode-languageserver";
+import { CodeAction, CodeActionKind, Diagnostic, WorkspaceEdit, TextEdit, CodeActionParams } from "vscode-languageserver";
+import { RegistrableCodeAction } from "./code-action-registration.js";
+import { LangiumServices } from "langium/lsp";
 
 
-export class AddConclusion implements CodeAction{
+export class AddConclusion extends RegistrableCodeAction{
+
     public title = "Add conclusion";
     public kind = CodeActionKind.QuickFix;
 
-    public diagnostics: Diagnostic[];
-    public isPreferred: boolean;
+    public diagnostics?: Diagnostic[];
+    public isPreferred?: boolean;
 
-    public edit: WorkspaceEdit;
+    public edit?: WorkspaceEdit;
     public data: any;
 
-    public constructor(document: LangiumDocument, diagnostic: Diagnostic){
+    public constructor(services: LangiumServices, code: string){
+        super(services, code);
+    }
+
+    protected override getAction(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): CodeAction {
         this.diagnostics = [diagnostic];
         this.isPreferred = true;
 
         this.edit = this.getEdit(document, diagnostic);
         this.data = diagnostic.data;
+
+        return this;
     }
 
     private getEdit(document: LangiumDocument, diagnostic: Diagnostic): WorkspaceEdit {
