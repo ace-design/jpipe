@@ -8,7 +8,7 @@ type Configuration<T> = {
 }
 
 //keeps track of values of configuration settings
-export class ConfigurationManager implements EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.ConfigurationChangeEvent>{
+export class ConfigurationManager implements EventSubscriber<vscode.ConfigurationChangeEvent>{
     // Output channel used for debugging
     private output_channel: vscode.OutputChannel;
 
@@ -47,14 +47,22 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
         }))  
     }
 
+    //getter function to return the current value of any configuration being monitored
+    public getConfiguration(configuration_key: ConfigKey): any{
+        let configuration = this.configurations.get(configuration_key)
+
+        if(configuration === undefined){    
+            throw new Error("Configuration: " + configuration_key + " cannot be found in configuration key list");
+        }
+
+        return configuration.value; 
+    }
 
     //updater functions
 	public async update(change: vscode.ConfigurationChangeEvent): Promise<void>;
     public async update(editor: vscode.TextEditor | undefined): Promise<void>;
 	public async update(data: vscode.ConfigurationChangeEvent | vscode.TextEditor | undefined): Promise<void>{
-        if(isTextEditor(data)){
-            this.updateEditor(data);
-        }else if(isConfigurationChangeEvent(data)){
+        if(isConfigurationChangeEvent(data)){
             this.updateConfiguration(data);
 		}
     }
@@ -71,18 +79,6 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
                 
             }
         });
-    }
-    
-    //helper function to manage editor updates
-    private updateEditor(editor: vscode.TextEditor | undefined): void{
-        if(editor){
-            let document = editor.document
-            let directory = vscode.workspace.getWorkspaceFolder(document.uri);
-
-            if(directory){
-                this.directory = directory;
-            }
-        }
     }
 
     //helper function to fetch the current log level
@@ -117,10 +113,11 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
 	private updateJarFile(): string{
 		let jar_file: string;
         let default_path: string;
-
+        
 		let default_value = "";//must be kept in sync with the actual default value manually
 		let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.JARFILE)?.globalValue;
 		
+
 		if(typeof configuration === "string"){
 			jar_file = configuration;
 		}else{
@@ -146,16 +143,6 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
 	}
 
 
-    //getter function to return the current value of any configuration being monitored
-    public getConfiguration(configuration_key: ConfigKey): any{
-        let configuration = this.configurations.get(configuration_key)
-
-        if(configuration === undefined){    
-            throw new Error("Configuration: " + configuration_key + " cannot be found in configuration key list");
-        }
-
-        return configuration.value; 
-    }
 
     //helper function to verify jar file path
 	private jarPathExists(file_path: string): boolean{
@@ -176,21 +163,6 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
 		}
 		return jar_path_exists;
 	}
-
-    //helper function to parse through the configuration array, and set a search location based on configuration key
-    private setIndices(array: Configuration<any>[]): Map<string, number>{
-        let map: Map<string, number> = new Map();
-        
-        let counter = 0;
-        
-        array.forEach(configuration =>{
-            map.set(configuration.key, counter);
-
-            counter++;
-        })
-
-        return map;
-    }
 }
 
 export enum ConfigKey{
