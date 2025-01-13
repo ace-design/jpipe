@@ -42,6 +42,18 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
                 update_function: () => this.updateDeveloperMode(),
                 value: this.updateDeveloperMode(),
                 default_value: () => false
+            },
+            {
+                key: ConfigKey.CHECKGRAPHVIZ,
+                update_function: () => this.updateCheckGraphViz(),
+                value: this.updateCheckGraphViz(),
+                default_value: () => true
+            },
+            {
+                key: ConfigKey.CHECKJAVA,
+                update_function: () => this.updateCheckJava(),
+                value: this.updateCheckJava(),
+                default_value: () => true
             }
         ]
 
@@ -111,7 +123,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
 		let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.DEVMODE)?.globalValue;
 
         if(typeof configuration === "boolean"){
-            developer_mode = configuration;
+            developer_mode = true;
         }else{
             developer_mode = false;
         }
@@ -138,6 +150,34 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
 		return jar_file;
 	}
 
+    //helper function to update the option to check graphviz
+    private updateCheckGraphViz(): boolean{
+        let check_graphviz: boolean;
+		let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.CHECKGRAPHVIZ)?.globalValue;
+
+        if(typeof configuration === "boolean"){
+            check_graphviz = true;
+        }else{
+            check_graphviz = false;
+        }
+
+        return check_graphviz;
+    }
+
+    //helper function to update the option to check graphviz
+    private updateCheckJava(): boolean{
+        let check_java: boolean;
+        let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.CHECKJAVA)?.globalValue;
+
+        if(typeof configuration === "boolean"){
+            check_java = true;
+        }else{
+            check_java = false;
+        }
+
+        return check_java;
+    }
+
     //helper function to get the default jar path
     private getDefaultJar(): string{
         return vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').path;
@@ -163,5 +203,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
 export enum ConfigKey{
     LOGLEVEL = "jpipe.logLevel",
     JARFILE = "jpipe.jarFile",
-    DEVMODE = "jpipe.developerMode"
+    DEVMODE = "jpipe.developerMode",
+    CHECKGRAPHVIZ = "jpipe.checkGraphviz",
+    CHECKJAVA = "jpipe.checkJava"
 }

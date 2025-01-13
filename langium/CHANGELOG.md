@@ -3,6 +3,11 @@
 ### Unreleased
 - Leader: Cass Braun
   - Features:
+    - Added ability to activate and deactivate installation checks on startup for Java and GraphViz
+ 
+### Unreleased
+- Leader: Cass Braun
+  - Features:
     - Added QuickFix to remove implemented element of justification, pattern, and composition when there is incorrect syntax
     - Added validation to throw error when there is no conclusion found in a justification diagram
     - Added QuickFix to add a conclusion to a justification diagram

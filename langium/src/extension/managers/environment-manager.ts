@@ -1,21 +1,50 @@
 import { AbstractEnvironmentCheck, EnvironmentCommand, GraphvizEnvironmentCheck, JavaEnvironmentCheck } from "../environment-tests/index.js";
 import * as vscode from 'vscode';
+import { ConfigKey, ConfigurationManager } from "./configuration-manager.js";
+
+type EnvironmentCheck = {
+    env_check: AbstractEnvironmentCheck
+    config_key?: ConfigKey
+}
 
 //Manager class to run all environment checks on startup
 export class EnvironmentCheckManager{
-    private environment_checkers: Set<AbstractEnvironmentCheck>;
+    //list of all environment checks to run on startup
+    private environment_checkers: Set<EnvironmentCheck>;
 
-    constructor(){
-        this.environment_checkers = new Set<AbstractEnvironmentCheck>([
-            new JavaEnvironmentCheck(),
-            new GraphvizEnvironmentCheck()
-        ])
+    //manages configurations
+    private configuration: ConfigurationManager; 
+
+    constructor(configuration: ConfigurationManager){
+        const environment_checkers_list: Array<EnvironmentCheck> = [
+            {
+                env_check: new JavaEnvironmentCheck(),
+                config_key: ConfigKey.CHECKJAVA
+            },
+            {
+                env_check: new GraphvizEnvironmentCheck(),
+                config_key: ConfigKey.CHECKGRAPHVIZ
+            }
+        ]
+
+        this.environment_checkers = new Set<EnvironmentCheck>();
+
+        environment_checkers_list.forEach((check) => {
+            this.environment_checkers.add(check);
+        })
+
+        this.configuration = configuration;
     }
 
     //main function to run all environment checks
     public run(): void{
-        this.environment_checkers.forEach(check =>
-            this.runCheck(check)
+        this.environment_checkers.forEach(check =>{
+                let enabled = check.config_key ? this.configuration.getConfiguration(check.config_key) : true; //checks the configuration if it exists (BOOLEANS ONLY), otherwise just runs checks
+
+                if(enabled){
+                    this.runCheck(check.env_check);
+                }
+            }
         )
     }
 

@@ -18,14 +18,11 @@ export function activate(context: vscode.ExtensionContext): void {
     const event_manager = new EventManager();
     const context_manager = new ContextManager(vscode.window.activeTextEditor);
     const configuration_manager = new ConfigurationManager(context, output_channel);
-    const environment_manager = new EnvironmentCheckManager();
+    const environment_manager = new EnvironmentCheckManager(configuration_manager);
     
     //create needs for image generation
     const image_generator = new ImageGenerator(configuration_manager, output_channel);
     const preview_provider = new PreviewProvider(image_generator, output_channel);
-
-    //check the environment for needed installations
-    environment_manager.run()
 
     //register commands from classes
     command_manager.register(
@@ -40,6 +37,9 @@ export function activate(context: vscode.ExtensionContext): void {
 
     //activate listening for events
     event_manager.listen();  
+
+    //check the environment for needed installations
+    environment_manager.run()
 }
 
 // This function is called when the extension is deactivated.

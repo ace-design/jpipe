@@ -65,11 +65,17 @@
                     "default": "",
                     "markdownDescription": "Set the path to the jar file compiler"
                 },
-                "jpipe.strictLeftFiltering": {
+                "jpipe.checkGraphviz":{
                     "type": "boolean",
                     "scope": "window",
-                    "default": true,
-                    "markdownDescription": "For code completion suggestions on the left variables in supporting statements, consider the scope of all variables previously defined. With strict left filtering on, only variables which can support a pre-defined variable will be suggested."
+                    "default": false,
+                    "markdownDescription": "Check for GraphViz installation on startup"
+                },
+                "jpipe.checkJava":{
+                    "type": "boolean",
+                    "scope": "window",
+                    "default": false,
+                    "markdownDescription": "Check for Java installation on startup"
                 },
                 "jpipe.logLevel": {
                     "type": "string",
