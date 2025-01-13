@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { EventSubscriber, isConfigurationChangeEvent } from './event-manager.js';
+import { EventSubscriber } from './event-manager.js';
 import { } from '../configuration/abstract-configuration.js';
 import { LogLevel, AbstractConfiguration, ConfigKey, DeveloperMode, CheckGraphviz, CheckJava, JarFile } from '../configuration/index.js';
 

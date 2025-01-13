@@ -1,4 +1,4 @@
-import { AstNode, AstNodeDescription, LangiumDocument, MultiMap, TextDocument } from "langium";
+import { AstNode, AstNodeDescription, LangiumDocument, TextDocument } from "langium";
 import { CodeActionParams, CodeAction, CodeActionKind, Range, Position, WorkspaceEdit, Diagnostic, TextEdit } from "vscode-languageserver";
 import { getDeclaration, getModelNode } from "../../jpipe-scope-provider.js";
 import { Declaration } from "../../../generated/ast.js";
@@ -38,9 +38,9 @@ export class ChangeDeclarationRegistrar extends CodeActionRegistrar{
         return new ChangeDeclarationKind(document,params, diagnostic, "pattern");
     }
 
-    private composition(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): ChangeDeclarationKind{
-        return new ChangeDeclarationKind(document,params, diagnostic, "composition");
-    }
+    // private composition(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): ChangeDeclarationKind{
+    //     return new ChangeDeclarationKind(document,params, diagnostic, "composition");
+    // }
 
     private unpackActions(actions: ((document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => CodeAction)[]): (document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => Array<CodeAction>{
         return (document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => {

@@ -42,17 +42,6 @@ export class JarFile implements AbstractConfiguration<string>{
 
     //helper function to verify jar file path
     private jarPathExists(file_path: string): boolean{
-        let jar_path_exists: boolean;
-        let uri = vscode.Uri.file(file_path);
-
-        try {
-            vscode.workspace.fs.stat(uri);
-            jar_path_exists = true;
-        } catch {
-            vscode.window.showInformationMessage(`${uri.toString(true)} file does *not* exist`);
-            jar_path_exists = false;
-        }
-
         return this.fs.existsSync(file_path);
     }
 }
