@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 import util from "node:util";
 import { Command, CommandUser } from '../managers/command-manager.js';
 import { EventSubscriber, isTextEditor } from '../managers/event-manager.js';
-import { ConfigKey, ConfigurationManager } from '../managers/configuration-manager.js';
+import { ConfigurationManager } from '../managers/configuration-manager.js';
+import { ConfigKey } from '../configuration/index.js';
 
 export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextEditor | undefined>{
 	// New channel created in vscode terminal for user debugging.

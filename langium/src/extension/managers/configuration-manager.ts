@@ -1,13 +1,10 @@
 import * as vscode from 'vscode';
-import { EventSubscriber, isConfigurationChangeEvent, isTextEditor } from './event-manager.js';
+import { EventSubscriber, isConfigurationChangeEvent } from './event-manager.js';
+import { } from '../configuration/abstract-configuration.js';
+import { LogLevel, AbstractConfiguration, ConfigKey, DeveloperMode, CheckGraphviz, CheckJava, JarFile } from '../configuration/index.js';
+
 const fs = require("fs");
 
-type Configuration<T> = {
-    readonly key: ConfigKey,
-    readonly update_function: () => T,
-    value: T
-    default_value: () => T
-}
 
 //keeps track of values of configuration settings
 export class ConfigurationManager implements EventSubscriber<vscode.ConfigurationChangeEvent>{
@@ -16,45 +13,19 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
     private output_channel: vscode.OutputChannel;
 
     //list of all configurations including their key, update function, and current associated value
-    private configurations: Map<ConfigKey, Configuration<any>>;
+    private configurations: Map<ConfigKey, AbstractConfiguration<any>>;
     
-    constructor(private readonly context: vscode.ExtensionContext, output_channel: vscode.OutputChannel){
+    constructor(context: vscode.ExtensionContext, output_channel: vscode.OutputChannel){
         this.output_channel = output_channel;
 
-        this.update(vscode.window.activeTextEditor);
-        this.configurations = new Map<ConfigKey, Configuration<any>>;
+        this.configurations = new Map<ConfigKey, AbstractConfiguration<any>>;
         
-        const configurations_list: Configuration<any>[] = [
-            {
-                key: ConfigKey.LOGLEVEL,
-                update_function: () => this.updateLogLevel(),
-                value: this.updateLogLevel(),
-                default_value: () => "error"
-            },
-            {
-                key: ConfigKey.JARFILE,
-                update_function: () => this.updateJarFile(),
-                value: this.updateJarFile(),
-                default_value: () => this.getDefaultJar()
-            },
-            {
-                key: ConfigKey.DEVMODE,
-                update_function: () => this.updateDeveloperMode(),
-                value: this.updateDeveloperMode(),
-                default_value: () => false
-            },
-            {
-                key: ConfigKey.CHECKGRAPHVIZ,
-                update_function: () => this.updateCheckGraphViz(),
-                value: this.updateCheckGraphViz(),
-                default_value: () => true
-            },
-            {
-                key: ConfigKey.CHECKJAVA,
-                update_function: () => this.updateCheckJava(),
-                value: this.updateCheckJava(),
-                default_value: () => true
-            }
+        const configurations_list: AbstractConfiguration<any>[] = [
+            new LogLevel(),
+            new DeveloperMode(),
+            new CheckGraphviz(),
+            new CheckJava(),
+            new JarFile(context, fs)
         ]
 
         configurations_list.forEach((config =>{
@@ -70,140 +41,28 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
             throw new Error("Configuration: " + configuration_key + " cannot be found in configuration key list");
         }
 
-        return configuration.value; 
+        return configuration.getConfiguration(); 
     }
 
-    //updater functions
-	public async update(change: vscode.ConfigurationChangeEvent): Promise<void>;
-    public async update(editor: vscode.TextEditor | undefined): Promise<void>;
-	public async update(data: vscode.ConfigurationChangeEvent | vscode.TextEditor | undefined): Promise<void>{
-        if(isConfigurationChangeEvent(data)){
-            this.updateConfiguration(data);
-		}
-    }
-
-    //helper function to manage configuration updates
-    private updateConfiguration(configuration_change: vscode.ConfigurationChangeEvent): void{
+    //updates on configuration change events
+	public async update(change: vscode.ConfigurationChangeEvent): Promise<void>{
         this.configurations.forEach((configuration)=>{
-            if(configuration_change.affectsConfiguration(configuration.key)){
-                try{
-                    configuration.value = configuration.update_function();
-                }catch(error: any){
-                    if(this.getConfiguration(ConfigKey.DEVMODE)){
-                        configuration.value = undefined;
-                        this.output_channel.appendLine("Configuration: " + error);
-                    }else{
-                        configuration.value = configuration.default_value();
-                        this.output_channel.appendLine("Configuration: Error found, using default value!");
-                    }
-
-                }
-                
+            if(change.affectsConfiguration(configuration.key)){
+                this.tryUpdate(configuration);
             }
         });
     }
 
-    //helper function to fetch the current log level
-    private updateLogLevel(): string{
-        let log_level: string;
-		let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.LOGLEVEL)?.globalValue;
-			
-		if(typeof configuration === "string"){
-			log_level = configuration;
-		}else{
-			log_level = "error";
-		}
-
-		return log_level;
-    }
-
-    //helper function to fetch the current developer mode setting
-    private updateDeveloperMode(): boolean {
-        let developer_mode: boolean;
-		let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.DEVMODE)?.globalValue;
-
-        if(typeof configuration === "boolean"){
-            developer_mode = true;
-        }else{
-            developer_mode = false;
+    //helper function to attempt update and check dev mode or set to default
+    private tryUpdate(configuration: AbstractConfiguration<any>): void{
+        try{
+            configuration.update();
+        }catch(error: any){
+            if(this.getConfiguration(ConfigKey.DEVMODE)){
+                this.output_channel.appendLine("Configuration: " + error);
+            }else{
+                this.output_channel.appendLine("Configuration: Error found, using default value!");
+            }
         }
-
-        return developer_mode;
     }
-
-    //helper function to fetch and verify the input jar file path
-	private updateJarFile(): string{
-		let jar_file: string;
-        
-		let default_value = "";//must be kept in sync with the actual default value manually
-		let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.JARFILE)?.globalValue;
-		
-        jar_file = typeof configuration === "string" ? configuration : default_value;
-		
-        if(jar_file === default_value){//on startup, sets jar_file to default value
-			jar_file = this.getDefaultJar();
-			vscode.workspace.getConfiguration().update(ConfigKey.JARFILE, jar_file);
-		}else if(!this.jarPathExists(jar_file)){
-            throw new Error("This file does not exist");
-		}
-
-		return jar_file;
-	}
-
-    //helper function to update the option to check graphviz
-    private updateCheckGraphViz(): boolean{
-        let check_graphviz: boolean;
-		let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.CHECKGRAPHVIZ)?.globalValue;
-
-        if(typeof configuration === "boolean"){
-            check_graphviz = true;
-        }else{
-            check_graphviz = false;
-        }
-
-        return check_graphviz;
-    }
-
-    //helper function to update the option to check graphviz
-    private updateCheckJava(): boolean{
-        let check_java: boolean;
-        let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.CHECKJAVA)?.globalValue;
-
-        if(typeof configuration === "boolean"){
-            check_java = true;
-        }else{
-            check_java = false;
-        }
-
-        return check_java;
-    }
-
-    //helper function to get the default jar path
-    private getDefaultJar(): string{
-        return vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').path;
-    }
-
-    //helper function to verify jar file path
-	private jarPathExists(file_path: string): boolean{
-		let jar_path_exists: boolean;
-        let uri = vscode.Uri.file(file_path);
-
-        try {
-            vscode.workspace.fs.stat(uri);
-            jar_path_exists = true;
-        } catch {
-            vscode.window.showInformationMessage(`${uri.toString(true)} file does *not* exist`);
-            jar_path_exists = false;
-        }
-
-		return fs.existsSync(file_path);
-	}
-}
-
-export enum ConfigKey{
-    LOGLEVEL = "jpipe.logLevel",
-    JARFILE = "jpipe.jarFile",
-    DEVMODE = "jpipe.developerMode",
-    CHECKGRAPHVIZ = "jpipe.checkGraphviz",
-    CHECKJAVA = "jpipe.checkJava"
 }

@@ -1,6 +1,7 @@
 import { AbstractEnvironmentCheck, EnvironmentCommand, GraphvizEnvironmentCheck, JavaEnvironmentCheck } from "../environment-tests/index.js";
 import * as vscode from 'vscode';
-import { ConfigKey, ConfigurationManager } from "./configuration-manager.js";
+import { ConfigurationManager } from "./configuration-manager.js";
+import { ConfigKey } from "../configuration/index.js";
 
 type EnvironmentCheck = {
     env_check: AbstractEnvironmentCheck
