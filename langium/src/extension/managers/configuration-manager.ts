@@ -13,10 +13,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
     private output_channel: vscode.OutputChannel;
 
     //list of all configurations including their key, update function, and current associated value
-    private configurations: Configuration<any>[];
-
-    //map to reference from key, the location of the configuration values in configurations array
-    private configuration_indices: Map<string, number>;
+    private configurations: Map<ConfigKey, Configuration<any>>;
 
     //current directory
     private directory!: vscode.WorkspaceFolder;
@@ -25,8 +22,9 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
         this.output_channel = output_channel;
 
         this.update(vscode.window.activeTextEditor);
-
-        this.configurations = [
+        this.configurations = new Map<ConfigKey, Configuration<any>>;
+        
+        const configurations_list: Configuration<any>[] = [
             {
                 key: ConfigKey.LOGLEVEL,
                 update_function: this.updateLogLevel,
@@ -44,7 +42,9 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
             }
         ]
 
-        this.configuration_indices = this.setIndices(this.configurations);   
+        configurations_list.forEach((config =>{
+            this.configurations.set(config.key,config);
+        }))  
     }
 
 
@@ -64,7 +64,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
         this.configurations.forEach((configuration)=>{
             if(configuration_change.affectsConfiguration(configuration.key)){
                 try{
-                    configuration.value = configuration.update_function.call(this);
+                    configuration.value = configuration.update_function();
                 }catch(error: any){
                     this.output_channel.appendLine(error);
                 }
@@ -148,17 +148,13 @@ export class ConfigurationManager implements EventSubscriber<vscode.TextEditor |
 
     //getter function to return the current value of any configuration being monitored
     public getConfiguration(configuration_key: ConfigKey): any{
-        let target_config: any;
-        
-        let config_index = this.configuration_indices.get(configuration_key);
+        let configuration = this.configurations.get(configuration_key)
 
-        if(config_index !== undefined){    
-            target_config = this.configurations[config_index].value;
-        }else{
+        if(configuration === undefined){    
             throw new Error("Configuration: " + configuration_key + " cannot be found in configuration key list");
         }
 
-        return target_config; 
+        return configuration.value; 
     }
 
     //helper function to verify jar file path
