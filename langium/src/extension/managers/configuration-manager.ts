@@ -27,17 +27,17 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
         const configurations_list: Configuration<any>[] = [
             {
                 key: ConfigKey.LOGLEVEL,
-                update_function: this.updateLogLevel,
+                update_function: () => this.updateLogLevel(),
                 value: this.updateLogLevel()
             },
             {
                 key: ConfigKey.JARFILE,
-                update_function: this.updateJarFile,
+                update_function: () => this.updateJarFile(),
                 value: this.updateJarFile()
             },
             {
                 key: ConfigKey.DEVMODE,
-                update_function: this.updateDeveloperMode,
+                update_function: () => this.updateDeveloperMode(),
                 value: this.updateDeveloperMode()
             }
         ]
@@ -74,7 +74,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
                 try{
                     configuration.value = configuration.update_function();
                 }catch(error: any){
-                    this.output_channel.appendLine(error);
+                    this.output_channel.appendLine("Configuration: " + error);
                 }
                 
             }
@@ -117,12 +117,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
 		let default_value = "";//must be kept in sync with the actual default value manually
 		let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.JARFILE)?.globalValue;
 		
-
-		if(typeof configuration === "string"){
-			jar_file = configuration;
-		}else{
-			jar_file = default_value;
-		}
+        jar_file = typeof configuration === "string" ? configuration : default_value;
 		
         default_path = vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').path;
 		
@@ -131,9 +126,9 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
 			vscode.workspace.getConfiguration().update(ConfigKey.JARFILE, jar_file);
 		}else if(!this.jarPathExists(jar_file)){
             let developer_mode = this.getConfiguration(ConfigKey.DEVMODE);
-            if(developer_mode){
+            if(developer_mode){//file does not exist, try again
                 throw new Error("This file does not exist, please try again");
-            }else{
+            }else{//sets to default value
                 jar_file = vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').path;
             }
             
@@ -142,25 +137,19 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
 		return jar_file;
 	}
 
-
-
     //helper function to verify jar file path
 	private jarPathExists(file_path: string): boolean{
 		let jar_path_exists: boolean;
-		
-		try{
-			let file = vscode.Uri.file(file_path);
-			let new_uri =  vscode.Uri.joinPath(this.directory.uri, "example.jar");
+        let uri = vscode.Uri.file(file_path);
 
-			vscode.workspace.fs.copy(file, new_uri);
-			vscode.workspace.fs.delete(new_uri);
-			
-			jar_path_exists = true;
-		}catch(error: any){
-			this.output_channel.appendLine(error.toString());
+        try {
+            vscode.workspace.fs.stat(uri);
+            jar_path_exists = true;
+        } catch {
+            vscode.window.showInformationMessage(`${uri.toString(true)} file does *not* exist`);
+            jar_path_exists = false;
+        }
 
-			jar_path_exists = false;
-		}
 		return jar_path_exists;
 	}
 }
