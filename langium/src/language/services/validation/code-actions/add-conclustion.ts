@@ -1,9 +1,8 @@
 import { LangiumDocument } from "langium";
 import { CodeAction, CodeActionKind, Diagnostic, WorkspaceEdit, TextEdit, CodeActionParams } from "vscode-languageserver";
 import { RegistrableCodeAction } from "./code-action-registration.js";
-import { LangiumServices } from "langium/lsp";
 
-
+//Class that adds a conclusion into the first line of the diagram selected
 export class AddConclusion extends RegistrableCodeAction{
 
     public title = "Add conclusion";
@@ -15,10 +14,11 @@ export class AddConclusion extends RegistrableCodeAction{
     public edit?: WorkspaceEdit;
     public data: any;
 
-    public constructor(services: LangiumServices, code: string){
-        super(services, code);
+    public constructor(code: string){
+        super(code);
     }
 
+    //returns the associated code action given diagnostic information
     protected override getAction(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): CodeAction {
         this.diagnostics = [diagnostic];
         this.isPreferred = true;
@@ -29,6 +29,7 @@ export class AddConclusion extends RegistrableCodeAction{
         return this;
     }
 
+    //helper function to determine the edit provided
     private getEdit(document: LangiumDocument, diagnostic: Diagnostic): WorkspaceEdit {
         return {
             changes: {

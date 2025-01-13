@@ -4,22 +4,23 @@ import { AbsolutePath } from "./utilities/path-utilities.js";
 import { CodeActionRegistrar } from "./code-action-registration.js";
 import { LangiumServices } from "langium/lsp";
 
-
+//class to resolve regerences automatically
 export class ResolveReferenceRegistrar extends CodeActionRegistrar{
     private readonly index_manager: IndexManager;
 
     constructor(services: LangiumServices, code: string){
-        super(services, code)
+        super(code)
 
         this.index_manager = services.shared.workspace.IndexManager;
     }
 
+    //returns the actions associated to resolving the reference associated with the diagnostic
     protected override getActions(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): Array<CodeAction> {
         console.log("linking error found");
         let code_actions = new Array<CodeAction>();
         
         let data = this.toLinkingError(diagnostic.data);
-        let paths = this.getPaths(document, data);
+        let paths = this.getPaths(data);
         console.log("Path founds")
 
         paths.forEach(path => {
@@ -29,6 +30,7 @@ export class ResolveReferenceRegistrar extends CodeActionRegistrar{
         return code_actions;        
     }
 
+    //helper function to convert an error to a linking error
     private toLinkingError(data: any): LinkingErrorData{
         if(data.code && data.containerType && data.property && data.refText){
             return {
@@ -44,7 +46,8 @@ export class ResolveReferenceRegistrar extends CodeActionRegistrar{
         }
     }
 
-    private getPaths(document: LangiumDocument, data: LinkingErrorData): Set<URI>{
+    //helper function to get the associated possible source uris to a certain linking error
+    private getPaths(data: LinkingErrorData): Set<URI>{
         let paths = new Set<URI>();
         
         this.index_manager.allElements().forEach(e => {

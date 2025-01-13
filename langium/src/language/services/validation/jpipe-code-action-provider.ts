@@ -1,57 +1,36 @@
-import { LangiumDocument, MaybePromise} from "langium";
+import { LangiumDocument, MaybePromise, MultiMap} from "langium";
 import { CodeActionProvider, LangiumServices } from "langium/lsp";
 import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
-import { RemoveLine, RemoveImplemented, ChangeDeclarationRegistrar, ResolveReferenceRegistrar } from "./code-actions/index.js";
-import { AddConclusion } from "./code-actions/add-conclustion.js";
-import { CodeActionRegistrar } from "./code-actions/code-action-registration.js";
-
+import { RemoveLine, RemoveImplemented, ChangeDeclarationRegistrar, ResolveReferenceRegistrar, AddConclusion, CodeActionRegistrar } from "./code-actions/index.js";
 
 //class which provides all code actions (quick fixes)
 export class JpipeCodeActionProvider implements CodeActionProvider{
-    private diagnostic_registrars: Map<string, Array<CodeActionRegistrar>>;
+    private diagnostic_registrars: MultiMap<string, CodeActionRegistrar>;
     
     constructor(readonly services: LangiumServices){
-        this.diagnostic_registrars = new Map();
+        this.diagnostic_registrars = new MultiMap<string, CodeActionRegistrar>();
 
-        this.register("supportInJustification", [
-            new ChangeDeclarationRegistrar(this.services, "supportInJustification"), 
-            new RemoveLine(this.services, "supportInJustification")
-        ])
-
-        this.register("noSupportInPattern",[
-            new ChangeDeclarationRegistrar(this.services, "noSupportInPattern")
-        ])
-        
-        this.register("supportNotMatching", [
-            new RemoveLine(services, "supportNotMatching")
-        ])
-
-        this.register("compositionImplementing", [
-            new ChangeDeclarationRegistrar(this.services, "compositionImplementing"),
-            new RemoveImplemented(this.services, "compositionImplementing")     
-        ])
-
-        this.register("nonPatternImplemented", [
-            new RemoveImplemented(this.services, "nonPatternImplementing")
-        ])
-
-        this.register("noConclusionInJustification", [
-            new AddConclusion(this.services, "noConclusionInJustification"),
-            new ChangeDeclarationRegistrar(this.services, "noConclusionInJustification")
-        ]);
-
-        this.register("linking-error", [
+        //array of all registrars and their associated error codes
+        const registrars: Array<CodeActionRegistrar> = [
+            new ChangeDeclarationRegistrar("supportInJustification"), 
+            new ChangeDeclarationRegistrar("noSupportInPattern"),
+            new ChangeDeclarationRegistrar("compositionImplementing"),
+            new ChangeDeclarationRegistrar("noConclusionInJustification"),
+            new RemoveLine("supportInJustification"),
+            new RemoveLine("supportNotMatching"),
+            new RemoveImplemented("compositionImplementing"),
+            new RemoveImplemented("nonPatternImplementing"),
+            new AddConclusion("noConclusionInJustification"),
             new ResolveReferenceRegistrar(this.services, "linking-error")
-        ])
+        ]
 
-    }
-
-    public register(diagnostic_data_code: string, registrars: Array<CodeActionRegistrar>): void{
-        this.diagnostic_registrars.set(diagnostic_data_code, registrars);
+        registrars.forEach(registrar => {
+            this.diagnostic_registrars.add(registrar.code, registrar)
+        })
     }
 
     //returns codes based on diagnostics
-    getCodeActions(document: LangiumDocument, params: CodeActionParams, cancelToken?: CancellationToken): MaybePromise<Array<Command | CodeAction> | undefined> {
+    public getCodeActions(document: LangiumDocument, params: CodeActionParams, cancelToken?: CancellationToken): MaybePromise<Array<Command | CodeAction> | undefined> {
         if(cancelToken){
             if(cancelToken.isCancellationRequested){
                 return undefined;
@@ -59,9 +38,7 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
         }
         
         let code_actions = new Array<CodeAction>();
-
-                    
-                
+      
         params.context.diagnostics.forEach(diagnostic => {
             let code = this.getCode(diagnostic);
             let action_registrars: Array<CodeActionRegistrar> = [];

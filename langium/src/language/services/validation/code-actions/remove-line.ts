@@ -1,7 +1,6 @@
 import { LangiumDocument } from "langium";
 import { CodeActionKind, Range, WorkspaceEdit, Diagnostic, TextEdit, integer, CodeActionParams, CodeAction } from "vscode-languageserver";
 import { RegistrableCodeAction } from "./code-action-registration.js";
-import { LangiumServices } from "langium/lsp";
 
 //Code action to remove a line
 export class RemoveLine extends RegistrableCodeAction{
@@ -14,10 +13,11 @@ export class RemoveLine extends RegistrableCodeAction{
     public edit?: WorkspaceEdit | undefined;
     public data?: any;
 
-    constructor(services: LangiumServices, code: string){
-        super(services, code);
+    constructor(code: string){
+        super(code);
     }
 
+    //returns the code action to remove the line
     protected override getAction(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): CodeAction {
         this.diagnostics = [diagnostic];
 

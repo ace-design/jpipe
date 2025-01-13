@@ -5,21 +5,22 @@ import { Declaration } from "../../../generated/ast.js";
 import { getAnyNode as getNode } from "./utilities/node-utilities.js";
 import { makePosition } from "./utilities/range-utilities.js";
 import { CodeActionRegistrar } from "./code-action-registration.js";
-import { LangiumServices } from "langium/lsp";
 
+//class which registers change declaration code actions
 export class ChangeDeclarationRegistrar extends CodeActionRegistrar{
     protected override getActions: (document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => Array<CodeAction>;
 
     private codes: Map<string, Array<(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) =>CodeAction>> = this.registerActions();;
 
-    constructor(services: LangiumServices, code: string){
-        super(services, code);
+    constructor(code: string){
+        super(code);
 
         let actions: ((document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => CodeAction)[] | undefined = this.codes.get(code);
 
         this.getActions = actions ? this.unpackActions(actions) : this.emptyActions;
     }
     
+    //helper function to register code actions to their associated codes
     private registerActions(): Map<string, Array<(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) =>CodeAction>>{
         let map = new Map<string, Array<(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => CodeAction>>();
 
@@ -30,18 +31,22 @@ export class ChangeDeclarationRegistrar extends CodeActionRegistrar{
         return map;
     } 
 
+    //helper function to create the justification change declaration kind
     private justification(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): ChangeDeclarationKind{
         return new ChangeDeclarationKind(document,params, diagnostic, "justification");
     }
 
+    //helper function to create the pattern change declaration kind
     private pattern(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): ChangeDeclarationKind{
         return new ChangeDeclarationKind(document,params, diagnostic, "pattern");
     }
 
+    //helper function to create the composition change declaraion kind
     // private composition(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): ChangeDeclarationKind{
     //     return new ChangeDeclarationKind(document,params, diagnostic, "composition");
     // }
 
+    //returns a function to create the change declaration array
     private unpackActions(actions: ((document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => CodeAction)[]): (document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => Array<CodeAction>{
         return (document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic) => {
             let code_action_array = new Array<CodeAction>();
@@ -56,6 +61,7 @@ export class ChangeDeclarationRegistrar extends CodeActionRegistrar{
         }
     }
 
+    //helper function to create an empty action array
     private emptyActions = () =>{
         return [];
     }

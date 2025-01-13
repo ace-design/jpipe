@@ -1,9 +1,8 @@
 import { LangiumDocument } from "langium";
 import { CodeAction, CodeActionKind, CodeActionParams, Diagnostic, TextEdit, WorkspaceEdit } from "vscode-languageserver";
 import { RegistrableCodeAction } from "./code-action-registration.js";
-import { LangiumServices } from "langium/lsp";
 
-
+//removes an implemented diagram
 export class RemoveImplemented extends RegistrableCodeAction{
     public title = "Remove implementation";
     public kind = CodeActionKind.QuickFix;
@@ -14,10 +13,11 @@ export class RemoveImplemented extends RegistrableCodeAction{
     public edit?: WorkspaceEdit | undefined;
     public data?: any;
 
-    constructor(services: LangiumServices, code: string){
-        super(services, code);
+    constructor(code: string){
+        super(code);
     }
 
+    //returns the action to remove the implemented pattern/justification
     protected override getAction(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): CodeAction {
         this.diagnostics = [diagnostic];
         this.isPreferred = false;
@@ -28,6 +28,7 @@ export class RemoveImplemented extends RegistrableCodeAction{
         return this;
     }
 
+    //helper function to create the edit associated with removing the implemented pattern/justification
     private getEdit(document: LangiumDocument, diagnostic: Diagnostic): WorkspaceEdit{
         return {
             changes: {
