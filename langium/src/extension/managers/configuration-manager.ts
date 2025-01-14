@@ -1,22 +1,16 @@
 import * as vscode from 'vscode';
 import { EventSubscriber } from './event-manager.js';
-import { } from '../configuration/abstract-configuration.js';
 import { LogLevel, AbstractConfiguration, ConfigKey, DeveloperMode, CheckGraphviz, CheckJava, JarFile } from '../configuration/index.js';
 
 const fs = require("fs");
 
-
 //keeps track of values of configuration settings
 export class ConfigurationManager implements EventSubscriber<vscode.ConfigurationChangeEvent>{
-    
-    // Output channel used for debugging
-    private output_channel: vscode.OutputChannel;
 
-    //list of all configurations including their key, update function, and current associated value
+    //list of all configurations including their key, update function, and cgiturrent associated value
     private configurations: Map<ConfigKey, AbstractConfiguration<any>>;
     
-    constructor(context: vscode.ExtensionContext, output_channel: vscode.OutputChannel){
-        this.output_channel = output_channel;
+    constructor(context: vscode.ExtensionContext, private readonly output_channel: vscode.OutputChannel, reset?: boolean){
 
         this.configurations = new Map<ConfigKey, AbstractConfiguration<any>>;
         
@@ -25,12 +19,12 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
             new DeveloperMode(),
             new CheckGraphviz(),
             new CheckJava(),
-            new JarFile(context, fs)
+            new JarFile(context, fs, output_channel)
         ]
 
         configurations_list.forEach((config =>{
             this.configurations.set(config.key,config);
-        }))  
+        }))
     }
 
     //getter function to return the current value of any configuration being monitored
