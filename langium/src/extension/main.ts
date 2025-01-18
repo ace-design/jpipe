@@ -20,6 +20,7 @@ export function activate(context: vscode.ExtensionContext): void {
     const configuration_manager = new ConfigurationManager(context, output_channel);
     const environment_manager = new EnvironmentCheckManager(configuration_manager);
     
+
     //create needs for image generation
     const image_generator = new ImageGenerator(configuration_manager, output_channel);
     const preview_provider = new PreviewProvider(image_generator, output_channel);
