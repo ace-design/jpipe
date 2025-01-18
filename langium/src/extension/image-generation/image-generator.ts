@@ -65,9 +65,7 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 		const execPromise = util.promisify(exec);
 
 		const command = await this.makeCommand(command_settings);
-		const output: {stdout: any, stderr: any} = await execPromise(command);
-	
-		this.output_manager.log(JPipeOutput.CONSOLE, output.stderr.toString()); //added to both outputs
+		const output: {error: any, stdout: any, stderr: any} = await execPromise(command);
 
 		return {stdout: output.stdout};
 	}
@@ -84,8 +82,10 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 		
 		let log_level = this.configuration.getConfiguration(ConfigKey.LOGLEVEL);
 		
+
 		let command = 'java -jar ' + jar_file + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
 		
+
 		this.output_manager.log(JPipeOutput.USER, this.generateUserMessage(jar_file));
 
 		this.output_manager.log(JPipeOutput.CONSOLE, "Image made using jar file: " + jar_file.toString()); //Shows user relevant info
@@ -96,6 +96,7 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 			command += ' -o ' + output_file.path;
 		}
 		
+
 		return command;
 	}
 

@@ -10,7 +10,7 @@ let client: LanguageClient;
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
     client = startLanguageClient(context);
-
+    
     
     //managers for updating and registration
     const output_manager = new OutputManager();

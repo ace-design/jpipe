@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { Format, ImageGenerator } from './image-generator.js';
-
 import { JPipeOutput, OutputManager, EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent, Command, CommandUser } from '../managers/index.js';
 
 
@@ -43,6 +42,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 		return {command: PreviewProvider.ext_command_preview, callback: () => this.createWebview()};
 	}
 
+	//updates webview on change events
 	public async update(editor: vscode.TextEditor | undefined): Promise<void>;
     public async update(changes: vscode.TextEditorSelectionChangeEvent): Promise<void>;
     public async update(data: (vscode.TextEditor | undefined) | vscode.TextEditorSelectionChangeEvent): Promise<void>{
@@ -147,9 +147,11 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 			
 			PreviewProvider.webviewPanel.title = PreviewProvider.image_generator.getDiagramName();
 			PreviewProvider.svg_data = stdout;
+			this.output_manager.log(JPipeOutput.IMAGE, stdout +"\n\n");
+
 		}catch (error: any){
 			this.output_manager.log(JPipeOutput.USER, "Error found!");//logs to both
-			this.output_manager.log(JPipeOutput.CONSOLE, error.toString());
+			this.output_manager.log(JPipeOutput.CONSOLE, "[Preview Provider]" + error.toString());
 		}
 
 		this.output_manager.log(JPipeOutput.CONSOLE, "Executed Jar");

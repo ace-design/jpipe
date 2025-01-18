@@ -3,7 +3,8 @@ import * as vscode from "vscode"
 //All output channels that can be accessed by output manager
 export enum JPipeOutput{
     USER = "jpipe_user",
-    CONSOLE = "jpipe_console"
+    CONSOLE = "jpipe_console",
+    IMAGE = "jpipe_image"
 }
 
 //helper class so that all objects needing logs can access all log channels, automatically generates new output channels when they are added to the enum
