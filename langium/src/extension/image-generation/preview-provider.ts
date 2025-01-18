@@ -113,7 +113,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 			await this.updateSVG();
 			
 			webviewPanel.webview.html = PreviewProvider.getHtmlForWebview();
-			this.output_manager.log(JPipeOutput.USER, "Updated HTML to most recent code"); //user information
+			this.output_manager.log(JPipeOutput.CONSOLE, "Updated HTML to most recent code"); //user information
 			PreviewProvider.updating = false;
 		}
 
@@ -152,7 +152,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 			this.output_manager.log(JPipeOutput.CONSOLE, error.toString());
 		}
 
-		this.output_manager.log(JPipeOutput.USER, "Executed Jar");
+		this.output_manager.log(JPipeOutput.CONSOLE, "Executed Jar");
     }	
 
 	//helper function to update editor

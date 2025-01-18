@@ -25,10 +25,7 @@ export function activate(context: vscode.ExtensionContext): void {
     const preview_provider = new PreviewProvider(image_generator, output_manager);
 
     //register commands from classes
-    command_manager.register(
-        image_generator,
-        preview_provider
-    );
+    command_manager.register(image_generator,preview_provider);
 
     //register subscribers for events that need to monitor changes
     event_manager.register(new EventRunner(vscode.window.onDidChangeTextEditorSelection), context_manager, preview_provider);

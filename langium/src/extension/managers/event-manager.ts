@@ -34,31 +34,31 @@ export class EventRunner<T>{
 
 //manages subscribers of more than one event runner, provides registration service
 export class EventManager{
-    private events: EventRunner<any>[];
+    private event_runners: EventRunner<any>[];
     
     constructor(){
-        this.events = [];
+        this.event_runners = [];
     }
 
     //register an event runner with its subscribers to be listened to
-    public register<T>(event: EventRunner<T>, ...subscribers: EventSubscriber<T>[]){
-        if(this.events.includes(event)){
-            this.addToExisting(event, subscribers);
+    public register<T>(event_runner: EventRunner<T>, ...subscribers: EventSubscriber<T>[]){
+        if(this.event_runners.includes(event_runner)){
+            this.addToExisting(event_runner, subscribers);
         }else{
-            this.addNewEvent(event, subscribers);
+            this.addNewEvent(event_runner, subscribers);
         }
     }
 
     //activate listening
     public listen(){
-        this.events.forEach((event)=> {
-            event.listen();
+        this.event_runners.forEach((event_runner)=> {
+            event_runner.listen();
         });
     }
 
     //helper function to add subscribers to an existing event
     private addToExisting(event: EventRunner<any>, subscribers: EventSubscriber<any>[]): void{
-        let new_event = this.events[this.events.indexOf(event)];
+        let new_event = this.event_runners[this.event_runners.indexOf(event)];
         
         subscribers.forEach((subscriber) =>{
             new_event.addSubscribers(subscriber);
@@ -66,12 +66,12 @@ export class EventManager{
     }
 
     //helper function to add a new registered event (previously unregistered)
-    private addNewEvent(event: EventRunner<any>, subscribers: EventSubscriber<any>[]): void{
+    private addNewEvent(event_runner: EventRunner<any>, subscribers: EventSubscriber<any>[]): void{
         subscribers.forEach((subscriber) =>{
-            event.addSubscribers(subscriber);
+            event_runner.addSubscribers(subscriber);
         });
         
-        this.events.push(event);  
+        this.event_runners.push(event_runner);  
     }
 }
 

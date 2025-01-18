@@ -14,10 +14,13 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 
 	//possible image types and associated commands
 	private types: ImageType[]; 
+
+	private current_jar_file: string ;
     
 	constructor(configuration: ConfigurationManager, private readonly output_manager: OutputManager) {
 		this.configuration = configuration;
-
+		this.current_jar_file = "";
+		
 		this.types = [
 			{
 				exe_command: "jpipe.downloadPNG", 
@@ -83,7 +86,10 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 		
 		let command = 'java -jar ' + jar_file + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
 		
-		this.output_manager.log(JPipeOutput.USER, "Image made using jar file: " + jar_file.toString()); //Shows user relevant info
+		this.output_manager.log(JPipeOutput.USER, this.generateUserMessage(jar_file));
+
+		this.output_manager.log(JPipeOutput.CONSOLE, "Image made using jar file: " + jar_file.toString()); //Shows user relevant info
+
 
 		if(command_settings.save_image){
 			let output_file = await this.makeOutputPath(diagram_name, command_settings);
@@ -186,6 +192,27 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 		}
 
 		return directory;
+	}
+		
+	//helper function to generate the user message upon image generation
+	private generateUserMessage(jar_file: string): string{
+		let user_message: string = "";
+		
+		if(jar_file !== ""){
+			user_message += "\nImage Changed! Generating new image "
+			
+			if(jar_file !== this.current_jar_file){
+				user_message += "using jar file: " + jar_file;
+			}else{
+				user_message += "using previous jar file"
+			}
+		}else{
+			user_message += "Using jar file: " + jar_file;
+		}
+
+		this.current_jar_file = jar_file;
+		
+		return user_message;
 	}
 }
 
