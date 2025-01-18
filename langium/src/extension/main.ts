@@ -2,7 +2,7 @@ import type { LanguageClientOptions, ServerOptions} from 'vscode-languageclient/
 import * as vscode from 'vscode';
 import * as path from 'node:path';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
-import { CommandManager, ConfigurationManager, ContextManager, EnvironmentCheckManager, EventManager, EventRunner, OutputManager } from './managers/index.js';
+import { CommandManager, ConfigurationManager, ContextManager, EnvironmentCheckManager, EventManager, OutputManager } from './managers/index.js';
 import { ImageGenerator, PreviewProvider } from './image-generation/index.js';
 
 let client: LanguageClient;
@@ -11,6 +11,7 @@ let client: LanguageClient;
 export function activate(context: vscode.ExtensionContext): void {
     client = startLanguageClient(context);
 
+    
     //managers for updating and registration
     const output_manager = new OutputManager();
     const command_manager = new CommandManager(context);
@@ -24,13 +25,28 @@ export function activate(context: vscode.ExtensionContext): void {
     const image_generator = new ImageGenerator(configuration_manager, output_manager);
     const preview_provider = new PreviewProvider(image_generator, output_manager);
 
+
     //register commands from classes
-    command_manager.register(image_generator,preview_provider);
+    command_manager.register(
+        image_generator,
+        preview_provider
+    );
+
 
     //register subscribers for events that need to monitor changes
-    event_manager.register(new EventRunner(vscode.window.onDidChangeTextEditorSelection), context_manager, preview_provider);
-    event_manager.register(new EventRunner(vscode.window.onDidChangeActiveTextEditor), context_manager, image_generator, preview_provider);
-    event_manager.register(new EventRunner(vscode.workspace.onDidChangeConfiguration), configuration_manager);
+    event_manager.register(vscode.window.onDidChangeTextEditorSelection, 
+        context_manager, 
+        preview_provider
+    );
+    event_manager.register(vscode.window.onDidChangeActiveTextEditor, 
+        context_manager, 
+        image_generator, 
+        preview_provider
+    );
+    event_manager.register(vscode.workspace.onDidChangeConfiguration, 
+        configuration_manager
+    );
+
 
     //activate listening for events
     event_manager.listen();  
