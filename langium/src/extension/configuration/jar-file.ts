@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { AbstractConfiguration, ConfigKey } from "./abstract-configuration.js"
+import { JPipeOutput, OutputManager } from '../managers/index.js';
 
 //class to monitor jarFile setting
 export class JarFile implements AbstractConfiguration<string>{
@@ -7,11 +8,11 @@ export class JarFile implements AbstractConfiguration<string>{
     public readonly default_value = this.getDefaultJar();
     private value: string;
 
-    public constructor(private readonly context: vscode.ExtensionContext, private readonly fs: any, private readonly output_channel: vscode.OutputChannel){
+    public constructor(private readonly context: vscode.ExtensionContext, private readonly fs: any, private readonly output_channel: OutputManager){
         try{
             this.value = this.update();
         }catch(error){
-            this.output_channel.appendLine("Using default jar file")
+            this.output_channel.log(JPipeOutput.USER, "Using default jar file")
             this.value = this.default_value;
         }
 

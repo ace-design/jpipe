@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { Format, ImageGenerator } from './image-generator.js';
-import { Command, CommandUser } from '../managers/command-manager.js';
-import { EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent } from '../managers/event-manager.js';
+
+import { JPipeOutput, OutputManager, EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent, Command, CommandUser } from '../managers/index.js';
 
 
 //altered from editorReader
@@ -14,9 +14,6 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
 	// Stores the svg code to display.
 	protected static svg_data: string;
-	
-	// New channel created in vscode terminal for user debugging.
-	private output_channel: vscode.OutputChannel
 
 	// Used to prevent jar files from executing concurrently.
 	private static updating: boolean;
@@ -32,10 +29,9 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
     private static image_generator: ImageGenerator;
 
-    constructor(image_generator: ImageGenerator, output_channel: vscode.OutputChannel) {
+    constructor(image_generator: ImageGenerator, private readonly output_manager: OutputManager) {
 		// Without any initial data, must be empty string to prevent null error. 
 		PreviewProvider.svg_data = "";
-		this.output_channel = output_channel;
 		PreviewProvider.updating = false;
 		PreviewProvider.webviewDisposed = true;
         PreviewProvider.image_generator = image_generator;
@@ -117,7 +113,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 			await this.updateSVG();
 			
 			webviewPanel.webview.html = PreviewProvider.getHtmlForWebview();
-			this.output_channel.appendLine("Updated HTML to most recent code");
+			this.output_manager.log(JPipeOutput.USER, "Updated HTML to most recent code"); //user information
 			PreviewProvider.updating = false;
 		}
 
@@ -125,7 +121,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(async e => {
 			if (e.document.uri.toString() === document.uri.toString()) {
 				if (PreviewProvider.updating==false){
-					this.output_channel.appendLine("Document Changed! Will execute jar file again.")
+					this.output_manager.log(JPipeOutput.USER, "Document Changed! Will execute jar file again.");
 					await updateWebview();
 				}
 			}
@@ -152,11 +148,12 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 			PreviewProvider.webviewPanel.title = PreviewProvider.image_generator.getDiagramName();
 			PreviewProvider.svg_data = stdout;
 		}catch (error: any){
-			this.output_channel.appendLine(error.toString());
+			this.output_manager.log(JPipeOutput.USER, "Error found!");//logs to both
+			this.output_manager.log(JPipeOutput.CONSOLE, error.toString());
 		}
 
-		this.output_channel.appendLine("Executed Jar");
-    }
+		this.output_manager.log(JPipeOutput.USER, "Executed Jar");
+    }	
 
 	//helper function to update editor
 	private async updateEditor(editor: vscode.TextEditor | undefined){
@@ -168,8 +165,11 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 				this.resolveCustomTextEditor(editor.document, PreviewProvider.webviewPanel, token.token);
 			}
 			catch(error: any){
-				this.output_channel.appendLine("Image cannot be loaded due to: ");
-				this.output_channel.appendLine(error.toString());
+				this.output_manager.log(JPipeOutput.USER, "Image cannot be loaded due to: ");
+				this.output_manager.log(JPipeOutput.USER, error.toString());
+
+				this.output_manager.log(JPipeOutput.CONSOLE, "Image cannot be loaded due to: ");
+				this.output_manager.log(JPipeOutput.CONSOLE, error.toString());
 				
 				PreviewProvider.webviewPanel.webview.html =  `
 				<!DOCTYPE html>

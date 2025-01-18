@@ -2,7 +2,7 @@ import type { LanguageClientOptions, ServerOptions} from 'vscode-languageclient/
 import * as vscode from 'vscode';
 import * as path from 'node:path';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
-import { CommandManager, ConfigurationManager, ContextManager, EnvironmentCheckManager, EventManager, EventRunner } from './managers/index.js';
+import { CommandManager, ConfigurationManager, ContextManager, EnvironmentCheckManager, EventManager, EventRunner, OutputManager } from './managers/index.js';
 import { ImageGenerator, PreviewProvider } from './image-generation/index.js';
 
 let client: LanguageClient;
@@ -10,20 +10,19 @@ let client: LanguageClient;
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
     client = startLanguageClient(context);
-    //create universal output channel
-    const output_channel = vscode.window.createOutputChannel("jpipe_console");
 
     //managers for updating and registration
+    const output_manager = new OutputManager();
     const command_manager = new CommandManager(context);
     const event_manager = new EventManager();
     const context_manager = new ContextManager(vscode.window.activeTextEditor);
-    const configuration_manager = new ConfigurationManager(context, output_channel);
+    const configuration_manager = new ConfigurationManager(context, output_manager);
     const environment_manager = new EnvironmentCheckManager(configuration_manager);
     
 
     //create needs for image generation
-    const image_generator = new ImageGenerator(configuration_manager, output_channel);
-    const preview_provider = new PreviewProvider(image_generator, output_channel);
+    const image_generator = new ImageGenerator(configuration_manager, output_manager);
+    const preview_provider = new PreviewProvider(image_generator, output_manager);
 
     //register commands from classes
     command_manager.register(

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { EventSubscriber } from './event-manager.js';
 import { LogLevel, AbstractConfiguration, ConfigKey, DeveloperMode, CheckGraphviz, CheckJava, JarFile } from '../configuration/index.js';
+import { JPipeOutput, OutputManager } from './index.js';
 
 const fs = require("fs");
 
@@ -10,7 +11,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
     //list of all configurations including their key, update function, and cgiturrent associated value
     private configurations: Map<ConfigKey, AbstractConfiguration<any>>;
     
-    constructor(context: vscode.ExtensionContext, private readonly output_channel: vscode.OutputChannel, reset?: boolean){
+    constructor(context: vscode.ExtensionContext, private readonly output_manager: OutputManager, reset?: boolean){
 
         this.configurations = new Map<ConfigKey, AbstractConfiguration<any>>;
         
@@ -19,7 +20,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
             new DeveloperMode(),
             new CheckGraphviz(),
             new CheckJava(),
-            new JarFile(context, fs, output_channel)
+            new JarFile(context, fs, output_manager)
         ]
 
         configurations_list.forEach((config =>{
@@ -52,10 +53,10 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
         try{
             configuration.update();
         }catch(error: any){
-            if(this.getConfiguration(ConfigKey.DEVMODE)){
-                this.output_channel.appendLine("Configuration: " + error);
+            if(this.getConfiguration(ConfigKey.DEVMODE)){ 
+                this.output_manager.log(JPipeOutput.CONSOLE, "Configuration: " + error); //adds to console because in devmode
             }else{
-                this.output_channel.appendLine("Configuration: Error found, using default value!");
+                this.output_manager.log(JPipeOutput.USER, "Configuration: Error found, using default value!");
             }
         }
     }
