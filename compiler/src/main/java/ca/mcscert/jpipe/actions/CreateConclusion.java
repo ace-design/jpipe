@@ -1,7 +1,6 @@
 package ca.mcscert.jpipe.actions;
 
-import ca.mcscert.jpipe.model.Justification;
-import ca.mcscert.jpipe.model.JustificationModel;
+import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.Conclusion;
 

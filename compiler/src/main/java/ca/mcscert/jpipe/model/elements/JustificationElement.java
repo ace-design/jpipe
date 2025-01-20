@@ -7,7 +7,7 @@ import ca.mcscert.jpipe.model.Visitable;
  * Define what a justification element is. A Justification element is "anything" that can be used
  * to instantiate a "supports" relation inside a justification.
  */
-public abstract class JustificationElement implements Visitable {
+public abstract class JustificationElement implements Visitable, Cloneable {
 
     protected final String identifier;
     protected final String label;
@@ -111,6 +111,11 @@ public abstract class JustificationElement implements Visitable {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "::" + this.getIdentifier();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
 }
