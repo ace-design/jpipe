@@ -1,8 +1,7 @@
 package ca.mcscert.jpipe.compiler.steps;
 
 import ca.mcscert.jpipe.compiler.model.Transformation;
-import ca.mcscert.jpipe.model.Justification;
-import ca.mcscert.jpipe.model.JustificationModel;
+import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.Unit;
 
 /**

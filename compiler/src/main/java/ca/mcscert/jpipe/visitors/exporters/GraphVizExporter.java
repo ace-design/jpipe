@@ -4,8 +4,8 @@ import static guru.nidi.graphviz.model.Factory.mutGraph;
 import static guru.nidi.graphviz.model.Factory.mutNode;
 import static guru.nidi.graphviz.model.Factory.node;
 
-import ca.mcscert.jpipe.model.Justification;
-import ca.mcscert.jpipe.model.Pattern;
+import ca.mcscert.jpipe.model.elements.Justification;
+import ca.mcscert.jpipe.model.elements.Pattern;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.AbstractSupport;
 import ca.mcscert.jpipe.model.elements.Conclusion;

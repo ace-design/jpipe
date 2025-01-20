@@ -1,11 +1,6 @@
-package ca.mcscert.jpipe.model;
+package ca.mcscert.jpipe.model.elements;
 
-import ca.mcscert.jpipe.error.SemanticError;
-import ca.mcscert.jpipe.model.elements.Conclusion;
-import ca.mcscert.jpipe.model.elements.JustificationElement;
 import ca.mcscert.jpipe.visitors.ModelVisitor;
-import java.util.Collection;
-import java.util.StringJoiner;
 
 /**
  * Define what a Justification is in a jPipe model.

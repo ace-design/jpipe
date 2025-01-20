@@ -1,6 +1,7 @@
 package ca.mcscert.jpipe.model;
 
 import ca.mcscert.jpipe.error.DuplicateSymbol;
+import ca.mcscert.jpipe.error.FatalException;
 import ca.mcscert.jpipe.error.UnknownSymbol;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,19 +17,30 @@ import java.util.StringJoiner;
  *
  * @param <T> the type of elements stored in the
  */
-public final class SymbolTable<T> {
+public final class SymbolTable<T extends DeepCloneable> {
 
     private final Map<String, T> symbols;
-    private final SymbolTable<T> parent;
 
+    /**
+     * Build an empty table.
+     */
     public SymbolTable() {
         this.symbols = new HashMap<>();
-        this.parent = null;
     }
 
+    /**
+     * Build a table by cloning the contents of a parent one.
+     * @param parent the table to import
+     */
     public SymbolTable(SymbolTable<T> parent) {
         this.symbols = new HashMap<>();
-        this.parent = parent;
+        for (String key : parent.keys()) {
+            try {
+                this.symbols.put(key, (T) parent.symbols.get(key).clone());
+            } catch (CloneNotSupportedException cnse) {
+                throw new FatalException(cnse.getMessage());
+            }
+        }
     }
 
     /**
@@ -55,8 +67,6 @@ public final class SymbolTable<T> {
     public T get(String identifier) throws UnknownSymbol {
         if (this.symbols.containsKey(identifier)) {
             return this.symbols.get(identifier);
-        } else if (hasParent()) {
-            return this.parent.get(identifier);
         }
         throw new UnknownSymbol(identifier);
     }
@@ -67,24 +77,12 @@ public final class SymbolTable<T> {
      * @return a collection of elements.
      */
     public Collection<T> values() {
-        Collection<T> result = new HashSet<>();
-        for (String key : this.keys()) {
-            result.add(this.get(key));
-        }
-        return result;
+        return new HashSet<>(this.symbols.values());
     }
 
 
     private Set<String> keys() {
-        Set<String> locals = this.symbols.keySet();
-        Set<String> parents = (this.parent != null ? this.parent.keys() : Set.of());
-        Set<String> overridden =  new HashSet<>(locals);
-        overridden.retainAll(parents);
-        Set<String> inherited = new HashSet<>(parents);
-        inherited.removeAll(overridden);
-        Set<String> keys = new HashSet<>(locals);
-        keys.addAll(inherited);
-        return keys;
+        return new HashSet<>(this.symbols.keySet());
     }
 
 
@@ -95,11 +93,6 @@ public final class SymbolTable<T> {
             joiner.add(entry.getKey() + " -->> " + entry.getValue().toString());
         }
         return joiner.toString();
-    }
-
-
-    private boolean hasParent() {
-        return this.parent != null;
     }
 
 }
