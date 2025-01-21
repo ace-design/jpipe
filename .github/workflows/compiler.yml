@@ -1,15 +1,21 @@
-# This is a basic workflow to help you get started with Actions
+# Workflow to produce a version of the compiler
 
-name: jPipe Compiler (action-based)
+name: Compiler
 
 env:
   JAVA_ENV_VERSION: '21'      # LTS version
-  FOLDER: './abc-compiler'   # Source code location
+  FOLDER: './compiler'   # Source code location
 
 on:
-  push:    
+  push: 
     paths:
-      - './abc-compiler/**'
+      - 'compiler/**'
+    tags-ignore:
+      - '**'
+  pull_request:
+    paths:
+      - 'compiler/**'
+  
   workflow_call:      # Allow the workflow to be called by others
   workflow_dispatch:  # Can be triggered manually
 
@@ -126,6 +132,6 @@ jobs:
       - name: Upload JAR artefact
         uses: actions/upload-artifact@v4
         with:
-          name: Compiler
-          path: jpipe.jar
+          name: jpipe.jar
+          path: compiler/jpipe.jar
   

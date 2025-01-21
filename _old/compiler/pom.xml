@@ -15,8 +15,11 @@
         <antlr4.visitor>true</antlr4.visitor>
         <antlr4.listener>true</antlr4.listener>
         <!-- Should use latest LTS version -->
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compilationChain.source>21</maven.compilationChain.source>
+        <maven.compilationChain.target>21</maven.compilationChain.target>
+
+        <skip.tests.unit>false</skip.tests.unit>
+        <skip.tests.integration>false</skip.tests.integration>
     </properties>
 
     <dependencies>

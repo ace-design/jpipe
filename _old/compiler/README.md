@@ -16,11 +16,11 @@ After installation, you can find the `jpipe.jar` turn-key artefact at the root o
 ### Downloading a pre-compiled version
 
 Go to the [Releases page](https://github.com/ace-design/jpipe/releases), and download the latest precompiled 
-version of the jPipe compiler.
+version of the jPipe compilationChain.
 
 ### Using the command-line interface
 
-You'll find a complete description of the compiler's options by invoking `java -jar jpipe.jar --help`. 
+You'll find a complete description of the compilationChain's options by invoking `java -jar jpipe.jar --help`. 
 
 Here is a list of the main options for end-users:
 
