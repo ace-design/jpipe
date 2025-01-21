@@ -1,5 +1,6 @@
 import { AstNode, DefaultScopeProvider, LangiumCoreServices, LangiumDocuments, MapScope, ReferenceInfo, Scope, URI } from "langium";
-import { isModel, Load, Model } from "../generated/ast.js";
+import { Declaration, isDeclaration, isModel, Load, Model } from "../generated/ast.js";
+import { AbsolutePath, Path, RelativePath } from "./validation/code-actions/utilities/path-utilities.js";
 
 export class JpipeScopeProvider extends DefaultScopeProvider{
     private langiumDocuments: () => LangiumDocuments;
@@ -18,9 +19,17 @@ export class JpipeScopeProvider extends DefaultScopeProvider{
         if(current_URI){
             included_URIs = this.getImports(current_URI, new Set<URI>(), this.langiumDocuments());
         }
-        
 
-        return this.globalScopeCache.get(referenceType, () => new MapScope(this.indexManager.allElements(referenceType, toString(included_URIs))));
+        return this.getScopesFromURIs(referenceType, included_URIs);
+    }
+
+    //helper function to use the included uris to convert to a scope
+    private getScopesFromURIs(reference_type: string, included_URIs: Set<URI>): Scope{
+        let element_type = reference_type === "Link" ? undefined : reference_type;
+        
+        let descriptions = this.indexManager.allElements(element_type, toString(included_URIs));
+        
+        return this.globalScopeCache.get(reference_type, () => new MapScope(descriptions));
     }
 
     //gets all imports from the current document recursively
@@ -34,7 +43,7 @@ export class JpipeScopeProvider extends DefaultScopeProvider{
             all_imports.add(current_URI);        
             
             if(node){
-                load_URIs = getURIs(node);
+                load_URIs = getURIs(node, current_URI);
             }
         
             if(load_URIs){
@@ -88,13 +97,24 @@ function getCurrentURI(node: AstNode): URI | undefined{
 }
 
 //gets all URIs within a certain document from a node
-function getURIs(node: AstNode): Set<URI>{
+function getURIs(node: AstNode, current_URI: URI): Set<URI>{
     let links = new Set<URI>;
 
     let load_statements = findLoadStatements(node);
 
-    load_statements.forEach(load_statement =>{
-        links.add(URI.file(load_statement.name));
+    load_statements.forEach(load_statement => {
+        let uri: URI;
+        //add in path resolution here
+        if(Path.isAbsoluteString(load_statement.link.$refText)){
+            uri = URI.file(load_statement.link.$refText);
+        }else{
+            let relative_path = new RelativePath(load_statement.link.$refText);
+            let home_absolute = new AbsolutePath(current_URI);
+
+            uri = URI.file(relative_path.toAbsolutePath(home_absolute).toString());
+        }
+        
+        links.add(uri);
     });
 
     return links;
@@ -115,7 +135,7 @@ function findLoadStatements(node: AstNode): Set<Load>{
 }
 
 //gets the model node of a given node
-function getModelNode(node: AstNode): Model | undefined{
+export function getModelNode(node: AstNode): Model | undefined{
     let container = node.$container;
     while(container !== undefined && !isModel(container)){
         container = container.$container;
@@ -125,5 +145,18 @@ function getModelNode(node: AstNode): Model | undefined{
         return container;
     }else{
         return undefined;
+    }
+}
+
+export function getDeclaration(node: AstNode): Declaration{
+    let container: AstNode | undefined = node;
+    while(container !== undefined && !isDeclaration(container)){
+        container = container.$container;
+    }
+    
+    if(isDeclaration(container)){
+        return container;
+    }else{
+        throw new Error("Declaration not found");
     }
 }

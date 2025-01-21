@@ -1,18 +1,18 @@
-import { type Module, inject, } from 'langium';
+import { DefaultScopeProvider, type Module, inject, } from 'langium';
 import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/module.js';
-import { JpipeHoverProvider } from './services/jpipe-hover-provider.js';
-import { JpipeCompletionProvider } from './services/completion/jpipe-completion-provider.js';
-import { JpipeValidator, registerValidationChecks } from './services/validation/main-validation.js';
-import { JpipeScopeProvider } from './services/jpipe-scope-provider.js';
-import { JpipeCodeActionProvider } from './services/jpipe-code-actions.js';
+import { JpipeCodeActionProvider, JpipeCompletionProvider, JpipeHoverProvider, JpipeScopeProvider, JpipeValidationRegistrar, JpipeLinker } from './services/index.js';
+
 
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export type JpipeAddedServices = {
     validation: {
-        validator: JpipeValidator
+        validationRegistrar: JpipeValidationRegistrar
+    },
+    scope: {
+        broadScopeProvider: DefaultScopeProvider
     }
 }
 
@@ -29,16 +29,20 @@ export type JpipeServices = LangiumServices & JpipeAddedServices
  */
 export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAddedServices> = {
     validation: {
-        validator: () => new JpipeValidator()
+        validationRegistrar: (services) => new JpipeValidationRegistrar(services)
     },
     lsp:{
         CompletionProvider: (services) => new JpipeCompletionProvider(services),
         HoverProvider: (services) => new JpipeHoverProvider(services),
-        CodeActionProvider: () => new JpipeCodeActionProvider()
+        CodeActionProvider: (services) => new JpipeCodeActionProvider(services)
     },
      references:{
+        Linker: (services) => new JpipeLinker(services),
         ScopeProvider: (services) => new JpipeScopeProvider(services)
-     }
+    },
+    scope: {
+        broadScopeProvider: (services) => new DefaultScopeProvider(services)
+    }
 };
 
 /**
@@ -70,10 +74,8 @@ export function createJpipeServices(context: DefaultSharedModuleContext): {
         JpipeGeneratedModule,
         JpipeModule
     );
+
     shared.ServiceRegistry.register(Jpipe);
-   
-    registerValidationChecks(Jpipe);
-    
-    
+
     return { shared, Jpipe };
 }

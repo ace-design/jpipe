@@ -1,12 +1,9 @@
 import * as vscode from 'vscode';
 import util from "node:util";
-import { Command, CommandUser } from '../managers/command-manager.js';
-import { EventSubscriber, isTextEditor } from '../managers/event-manager.js';
-import { ConfigKey, ConfigurationManager } from '../managers/configuration-manager.js';
+import { ConfigKey } from '../configuration/index.js';
+import { OutputManager, ConfigurationManager, EventSubscriber, isTextEditor, Command, CommandUser, JPipeOutput } from '../managers/index.js';
 
 export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextEditor | undefined>{
-	// New channel created in vscode terminal for user debugging.
-	private output_channel: vscode.OutputChannel;
 
 	//configuration manager to fetch configurations from
 	private configuration: ConfigurationManager;
@@ -17,12 +14,13 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 
 	//possible image types and associated commands
 	private types: ImageType[]; 
+
+	private current_jar_file: string ;
     
-	constructor(configuration: ConfigurationManager, output_channel: vscode.OutputChannel) {
-		this.output_channel = output_channel;
-
+	constructor(configuration: ConfigurationManager, private readonly output_manager: OutputManager) {
 		this.configuration = configuration;
-
+		this.current_jar_file = "";
+		
 		this.types = [
 			{
 				exe_command: "jpipe.downloadPNG", 
@@ -67,10 +65,8 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 		const execPromise = util.promisify(exec);
 
 		const command = await this.makeCommand(command_settings);
-		const output: {stdout: any, stderr: any} = await execPromise(command);
-	
-		this.output_channel.appendLine(output.stderr.toString());
-		
+		const output: {error: any, stdout: any, stderr: any} = await execPromise(command);
+
 		return {stdout: output.stdout};
 	}
 
@@ -86,14 +82,21 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 		
 		let log_level = this.configuration.getConfiguration(ConfigKey.LOGLEVEL);
 		
+
 		let command = 'java -jar ' + jar_file + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
 		
-		this.output_channel.appendLine("Made using jar file: " + jar_file.toString());
+
+		this.output_manager.log(JPipeOutput.USER, this.generateUserMessage(jar_file));
+
+		this.output_manager.log(JPipeOutput.CONSOLE, "Image made using jar file: " + jar_file.toString()); //Shows user relevant info
+
+
 		if(command_settings.save_image){
 			let output_file = await this.makeOutputPath(diagram_name, command_settings);
 			command += ' -o ' + output_file.path;
 		}
 		
+
 		return command;
 	}
 
@@ -190,6 +193,27 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 		}
 
 		return directory;
+	}
+		
+	//helper function to generate the user message upon image generation
+	private generateUserMessage(jar_file: string): string{
+		let user_message: string = "";
+		
+		if(jar_file !== ""){
+			user_message += "\nImage Changed! Generating new image "
+			
+			if(jar_file !== this.current_jar_file){
+				user_message += "using jar file: " + jar_file;
+			}else{
+				user_message += "using previous jar file"
+			}
+		}else{
+			user_message += "Using jar file: " + jar_file;
+		}
+
+		this.current_jar_file = jar_file;
+		
+		return user_message;
 	}
 }
 

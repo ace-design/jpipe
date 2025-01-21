@@ -1,10 +1,11 @@
-import { Reference, ValidationAcceptor } from "langium";
-import { Support, Variable } from "../../generated/ast.js";
-import { possible_supports, Validator } from "./main-validation.js";
+import { diagnosticData, Reference, ValidationAcceptor } from "langium";
+import { Support, Variable } from "../../../generated/ast.js";
+import { possible_supports } from "../main-validation.js";
+import { Validator } from "./abstract-validator.js";
 
 //class to validate supporting statements found in the document
-export class SupportValidator implements Validator<Support>{
-    //validator function
+export class SupportValidator extends Validator<Support, "Support">{
+    //function to provide validation of a given node
     public validate(support: Support, accept: ValidationAcceptor): void {
         if(SupportValidator.referencesCorrect(support, accept)){
             SupportValidator.checkSupportRelations(support, accept);
@@ -25,7 +26,7 @@ export class SupportValidator implements Validator<Support>{
             let errorStatements = this.getError(error).call(this,support);
             
             errorStatements.forEach(statement =>{
-                accept("error", statement, {node: support});
+                accept("error", statement, {node: support, data: diagnosticData("undefined reference")});
             });
         }
 
@@ -87,7 +88,7 @@ export class SupportValidator implements Validator<Support>{
     private static checkSupportRelations(support: Support, accept: ValidationAcceptor): void{
         if(!this.supportRelationCorrect(support)){
             let error_message = this.getRelationErrorMessage(support);
-            accept("error", error_message, {node:support});
+            accept("error", error_message, {node:support, data: diagnosticData("supportNotMatching")});
         }
     }
     

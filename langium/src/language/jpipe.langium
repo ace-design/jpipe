@@ -1,19 +1,25 @@
 grammar Jpipe
 
 entry Model:
-    (loads+=(Load))* (class_kinds+=Class )*;
+    (loads+=(Load) | links += Link)* (declaration_kinds+=Declaration )*;
 
 Load: 
-    "load" name=STRING;
+    "load" link=[Link];
 
-interface Class{
+interface Declaration{
     kind: ('justification' | 'pattern' | 'composition')
     name: string
-    implemented?: @Class
+    implementation?: Implementation
 }
 
-Class returns Class:
-    kind=('justification' | 'pattern' | 'composition') (name=ID | name=ID "implements" implemented=[Class:ID]) (JustificationPattern | Composition);
+Link:
+    name=STRING;
+
+Declaration returns Declaration:
+    kind=('justification' | 'pattern' | 'composition') (name=ID | name=ID implementation=Implementation) (JustificationPattern | Composition);
+
+Implementation:
+    "implements" implemented=[Declaration:ID];
 
 JustificationPattern:
     '{' (variables+=Variable | instructions+=Instruction | supports += Support)* '}';
@@ -37,7 +43,7 @@ CompositionInstruction:
     CompositionVariable 'is' information=CompositionInformation;
 
 CompositionInformation:
-    left=[Class:ID] 'with' right=[Class:ID];
+    left=[Declaration:ID] 'with' right=[Declaration:ID];
 
 
 hidden terminal WS: /\s+/;

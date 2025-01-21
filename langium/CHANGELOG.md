@@ -1,6 +1,34 @@
 ## Changelog
 
 ### Unreleased
+- Leader: Cass Braun
+  - Features:
+    - ...
+
+### v0.2.4 (2025-01-20)
+- Leader: Sébastien Mosser
+  - Features:
+    - Fix dependencies vulnerabilities
+    - Update to latest version of Langium
+
+### v0.2.3 (2025-01-20)
+- Leader: Cass Braun
+  - Features:
+    - Added ability to activate and deactivate installation checks on startup for Java and GraphViz
+    - Added QuickFix to remove implemented element of justification, pattern, and composition when there is incorrect syntax
+    - Added validation to throw error when there is no conclusion found in a justification diagram
+    - Added QuickFix to add a conclusion to a justification diagram
+    - Added GoToDefintion for load statements
+ 
+### v0.2.2 (2024-08-13)
+- Leader: Cass Braun
+  - Features:
+    - Added QuickFix to change justification to pattern if it includes an instruction labelled @support
+    - Added QuickFix to change pattern to justification if it includes no instruction labelled @support
+    - Added QuickFix to remove support statement line if it's instruction types do not match
+    - Added QuickFix to add relative load statements for unresolved references
+    - Added support for relative load statements
+    - Added validation for declaration implementation rules
 
 ### v0.2.2 (2024-08-06)
 - Leader: Cass Braun

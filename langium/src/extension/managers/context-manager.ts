@@ -56,14 +56,14 @@ export class ContextManager implements EventSubscriber<vscode.TextEditor | undef
     }
 
     //checks if the cursor is in a diagram (between '{' and '}')
-    private cursorIn(class_type: string): boolean{
+    private cursorIn(declaration_kind: string): boolean{
         let cursor_at: boolean = false;
         
         try{
             if(this.document && this.selection){
                 let word_range = this.findDiagramNameRange(this.selection.active, this.document);
                 
-                cursor_at = this.cursorAt(class_type, word_range);
+                cursor_at = this.cursorAt(declaration_kind, word_range);
             }
         }catch(error: any){
 
@@ -73,10 +73,10 @@ export class ContextManager implements EventSubscriber<vscode.TextEditor | undef
     }
 
     //helper function which checks if the cursor is at a certain class type
-    private cursorAt(class_type: string, word_range: vscode.Range): boolean;
-    private cursorAt(class_type: string): boolean;
-    private cursorAt(class_type: string, word_range?: vscode.Range): boolean{
-        let class_correct = false;
+    private cursorAt(declaration_kind: string, word_range: vscode.Range): boolean;
+    private cursorAt(declaration_kind: string): boolean;
+    private cursorAt(declaration_kind: string, word_range?: vscode.Range): boolean{
+        let declaration_correct = false;
         let diagram_starts = false;
         let diagram_ends = false;
         
@@ -86,26 +86,26 @@ export class ContextManager implements EventSubscriber<vscode.TextEditor | undef
             }
                 
             if(word_range){
-                class_correct = this.isClassCorrect(word_range, this.document, class_type);
+                declaration_correct = this.isDeclarationCorrect(word_range, this.document, declaration_kind);
                 diagram_starts = this.diagramStarts(word_range, this.document);
                 diagram_ends = this.diagramEnds(word_range, this.document);
             }
         }
 
-        return class_correct && diagram_starts && diagram_ends;
+        return declaration_correct && diagram_starts && diagram_ends;
     }
 
     //helper function to determine if the class type of a selected word is correct
-    private isClassCorrect(word_range: vscode.Range, document: vscode.TextDocument, class_type: string): boolean{
+    private isDeclarationCorrect(word_range: vscode.Range, document: vscode.TextDocument, declaration_kind: string): boolean{
         //determine that the cursor is selected on the diagram title
-        let class_name = document.getText(word_range);
-        let class_name_correct = class_name !== class_type;
+        let declaration_name = document.getText(word_range);
+        let declaration_name_correct = declaration_name !== declaration_kind;
 
         //determine that the class type (ex. justification) is correct
-        let class_range = document.getWordRangeAtPosition(word_range.start.translate(0, -1));
-        let class_type_correct = document.getText(class_range) === class_type;
+        let declaration_range = document.getWordRangeAtPosition(word_range.start.translate(0, -1));
+        let declaration_type_correct = document.getText(declaration_range) === declaration_kind;
         
-        return (class_name_correct && class_type_correct);
+        return (declaration_name_correct && declaration_type_correct);
     }
 
     //helper function for the class type verification process

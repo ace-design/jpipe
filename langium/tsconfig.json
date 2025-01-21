@@ -21,7 +21,7 @@
     "include": [
         "src/**/*.ts",
         "test/**/*.ts"
-    ],
+, "src/language/services/validation/code-actions"    ],
     "exclude": [
         "out",
         "node_modules"

@@ -1,13 +1,13 @@
 import { diagnosticData, ValidationAcceptor } from "langium";
-import { Variable } from "../../generated/ast.js";
-import { Validator } from "./main-validation.js";
+import { Variable } from "../../../generated/ast.js";
+import { Validator } from "./abstract-validator.js";
 
 //class to validate variables in justification diagrams
-export class JustificationVariableValidator implements Validator<Variable>{
+export class JustificationVariableValidator extends Validator<Variable, "Variable">{
     //actual function to validate the variable
-    public validate(variable: Variable, accept: ValidationAcceptor): void {
-        let class_kind = variable.$container.kind;
-        if(class_kind === 'justification'){
+    validate(variable: Variable, accept: ValidationAcceptor): void {
+        let declaration_kind = variable.$container.kind;
+        if(declaration_kind === 'justification'){
              JustificationVariableValidator.validateJustificationVariables(variable, accept);
         }
 

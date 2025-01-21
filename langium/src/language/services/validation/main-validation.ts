@@ -1,36 +1,27 @@
-import { ValidationAcceptor, ValidationChecks } from 'langium';
 import type { JpipeServices } from '../../jpipe-module.js';
-import { SupportValidator } from './support-validator.js';
+import { PatternValidator, JustificationVariableValidator, SupportValidator, ImplementationValidator, JustificationValidator } from './validators/index.js';
+import { AstNodeType, Validator } from './validators/abstract-validator.js';
 import { JpipeAstType } from '../../generated/ast.js';
-import { JustificationVariableValidator } from './variable-validator.js';
-import { PatternValidator } from './pattern-validator.js';
 
-/**
- * Register custom validation checks.
- */
-export function registerValidationChecks(services: JpipeServices) {
-    const registry = services.validation.ValidationRegistry;
-    const validator = services.validation.validator;
+//Class to register validation services
+export class JpipeValidationRegistrar{
+    private readonly validators: Array<Validator<AstNodeType<keyof JpipeAstType>, keyof JpipeAstType>>;
+    
+    constructor(services: JpipeServices){
+        const registry = services.validation.ValidationRegistry;
 
-    registry.register(validator.checks, validator);
-}
+        this.validators = new Array<Validator<any, any>>(
+            new SupportValidator("Support"),
+            new JustificationVariableValidator("Variable"),
+            new PatternValidator("JustificationPattern"),
+            new ImplementationValidator("Implementation"),
+            new JustificationValidator("JustificationPattern")
+        );
 
-//Register additional validation here
-export class JpipeValidator{
-    public static support_validator = new SupportValidator();
-    public static justification_validator = new JustificationVariableValidator();
-    public static pattern_validator = new PatternValidator();
-    public readonly checks: ValidationChecks<JpipeAstType> = {
-        Variable: JpipeValidator.justification_validator.validate,
-        Support: JpipeValidator.support_validator.validate,
-        JustificationPattern: JpipeValidator.pattern_validator.validate
+        this.validators.forEach(validator =>{
+            registry.register(validator.checks)
+        })
     }
-}
-
-//when creating a validator, implement this interface
-export interface Validator<T>{
-    //function which actually validates the given information
-    validate(model: T, accept: ValidationAcceptor): void;
 }
 
 //data structure to represent which elements can support which, format is ['a', ['b', 'c']], where "a supports b" or "a supports c"

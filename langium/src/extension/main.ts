@@ -1,32 +1,30 @@
 import type { LanguageClientOptions, ServerOptions} from 'vscode-languageclient/node.js';
 import * as vscode from 'vscode';
-import {window} from 'vscode';
 import * as path from 'node:path';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
+import { CommandManager, ConfigurationManager, ContextManager, EnvironmentCheckManager, EventManager, OutputManager } from './managers/index.js';
+import { ImageGenerator, PreviewProvider } from './image-generation/index.js';
 
-import { ImageGenerator } from './image-generation/image-generator.js';
-import { ContextManager } from './managers/context-manager.js';
-import { PreviewProvider } from './image-generation/preview-provider.js';
-import { CommandManager } from './managers/command-manager.js';
-import { EventManager, EventRunner } from './managers/event-manager.js';
-import { ConfigurationManager } from './managers/configuration-manager.js';
 let client: LanguageClient;
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
     client = startLanguageClient(context);
-    //create universal output channel
-    const output_channel = vscode.window.createOutputChannel("jpipe_console");
-
+    
+    
     //managers for updating and registration
+    const output_manager = new OutputManager();
     const command_manager = new CommandManager(context);
     const event_manager = new EventManager();
-    const context_manager = new ContextManager(window.activeTextEditor);
-    const configuration_manager = new ConfigurationManager(context, output_channel);
+    const context_manager = new ContextManager(vscode.window.activeTextEditor);
+    const configuration_manager = new ConfigurationManager(context, output_manager);
+    const environment_manager = new EnvironmentCheckManager(configuration_manager);
+    
 
     //create needs for image generation
-    const image_generator = new ImageGenerator(configuration_manager, output_channel);
-    const preview_provider = new PreviewProvider(image_generator, output_channel);
+    const image_generator = new ImageGenerator(configuration_manager, output_manager);
+    const preview_provider = new PreviewProvider(image_generator, output_manager);
+
 
     //register commands from classes
     command_manager.register(
@@ -34,13 +32,27 @@ export function activate(context: vscode.ExtensionContext): void {
         preview_provider
     );
 
+
     //register subscribers for events that need to monitor changes
-    event_manager.register(new EventRunner(window.onDidChangeTextEditorSelection), context_manager, preview_provider);
-    event_manager.register(new EventRunner(window.onDidChangeActiveTextEditor), context_manager, image_generator, preview_provider);
-    event_manager.register(new EventRunner(vscode.workspace.onDidChangeConfiguration), configuration_manager);
+    event_manager.register(vscode.window.onDidChangeTextEditorSelection, 
+        context_manager, 
+        preview_provider
+    );
+    event_manager.register(vscode.window.onDidChangeActiveTextEditor, 
+        context_manager, 
+        image_generator, 
+        preview_provider
+    );
+    event_manager.register(vscode.workspace.onDidChangeConfiguration, 
+        configuration_manager
+    );
+
 
     //activate listening for events
-    event_manager.listen();
+    event_manager.listen();  
+
+    //check the environment for needed installations
+    environment_manager.run()
 }
 
 // This function is called when the extension is deactivated.
