@@ -10,7 +10,7 @@ on:
   workflow_dispatch:  # Can be triggered manually
 
 env:
-  NODEJS_VERSION: '21.2.0'
+  NODEJS_VERSION: '22.13.0'
   JPIPE_VERSION:  '0.1.0' # Release tag for the latest stable jpipe compiler      
   FOLDER:         './langium'   # Source code location
 
