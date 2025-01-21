@@ -3,11 +3,18 @@
 ### Unreleased
 - Leader: Cass Braun
   - Features:
-    - Added ability to activate and deactivate installation checks on startup for Java and GraphViz
- 
-### Unreleased
+    - ...
+
+### v0.2.4 (2025-01-20)
+- Leader: Sébastien Mosser
+  - Features:
+    - Fix dependencies vulnerabilities
+    - Update to latest version of Langium
+
+### v0.2.3 (2025-01-20)
 - Leader: Cass Braun
   - Features:
+    - Added ability to activate and deactivate installation checks on startup for Java and GraphViz
     - Added QuickFix to remove implemented element of justification, pattern, and composition when there is incorrect syntax
     - Added validation to throw error when there is no conclusion found in a justification diagram
     - Added QuickFix to add a conclusion to a justification diagram
