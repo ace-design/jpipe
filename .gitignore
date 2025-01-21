@@ -9,3 +9,4 @@ target
 *.jar
 .DS_Store
 node_modules/
+.java-version

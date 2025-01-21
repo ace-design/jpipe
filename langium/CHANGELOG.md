@@ -30,7 +30,7 @@
     - Added support for relative load statements
     - Added validation for declaration implementation rules
 
-### v0.2.1 (2024-08-06)
+### v0.2.2 (2024-08-06)
 - Leader: Cass Braun
   - Features:
     - Added patterns and compositions to grammar with basic language support

@@ -4,7 +4,7 @@ grammar JPipe;
  ** Parser rules **
  ******************/
 
-// Root rule for parsing (called by the compiler)
+// Root rule for parsing (called by the compilationChain)
 unit            : (justification | pattern | load | composition)+ EOF;
 
 // Load contents from another file
