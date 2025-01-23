@@ -17,7 +17,7 @@ import java.util.StringJoiner;
  *
  * @param <T> the type of elements stored in the
  */
-public final class SymbolTable<T extends DeepCloneable> {
+public final class SymbolTable<T> {
 
     private final Map<String, T> symbols;
 
@@ -26,21 +26,6 @@ public final class SymbolTable<T extends DeepCloneable> {
      */
     public SymbolTable() {
         this.symbols = new HashMap<>();
-    }
-
-    /**
-     * Build a table by cloning the contents of a parent one.
-     * @param parent the table to import
-     */
-    public SymbolTable(SymbolTable<T> parent) {
-        this.symbols = new HashMap<>();
-        for (String key : parent.keys()) {
-            try {
-                this.symbols.put(key, (T) parent.symbols.get(key).clone());
-            } catch (CloneNotSupportedException cnse) {
-                throw new FatalException(cnse.getMessage());
-            }
-        }
     }
 
     /**

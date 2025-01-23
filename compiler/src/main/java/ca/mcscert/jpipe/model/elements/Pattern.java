@@ -17,15 +17,6 @@ public final class Pattern extends JustificationModel {
         super(name);
     }
 
-    /**
-     * Creates a pattern based on its name and parent.
-     *
-     * @param name the name (identifier) of the pattern
-     * @param parent the pattern used as parent
-     */
-    public Pattern(String name, Pattern parent) {
-        super(name, parent);
-    }
 
     @Override
     public void accept(ModelVisitor<?> visitor) {
