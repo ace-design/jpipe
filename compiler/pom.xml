@@ -10,7 +10,7 @@
     <inceptionYear>2023</inceptionYear>
 
     <!-- Versioning convention: YYYY.term, 1 = Winter, 2 = Summer, 3 = Fall -->
-    <version>2024.2</version>
+    <version>2025.1</version>
 
     <organization>
         <name>McMaster Centre for Software Certification (McSCert)</name>

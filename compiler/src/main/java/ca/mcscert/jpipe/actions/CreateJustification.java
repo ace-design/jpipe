@@ -43,8 +43,7 @@ public final class CreateJustification implements Action {
         if (this.parent == null) {
             context.add(new Justification(this.identifier));
         } else {
-            Pattern p = (Pattern) context.get(this.parent);
-            context.add(new Justification(this.identifier, p));
+            throw new UnsupportedOperationException("Pattern implementation not suppoerted yet");
         }
     }
 
