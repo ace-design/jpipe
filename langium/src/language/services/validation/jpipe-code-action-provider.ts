@@ -22,6 +22,7 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
             new RemoveImplemented("nonPatternImplementing"),
             new AddVariableDefinitionLine("noConclusionInJustification", VariableType.CONCLUSION), //while both add conclusions do the same thing, i kept the error codes separate in case I wanted to change the implementation in the future
             new AddVariableDefinitionLine("noConclusionInPattern", VariableType.CONCLUSION),
+            new AddVariableDefinitionLine("noSupportInPattern", VariableType.SUPPORT),
             new ResolveReferenceRegistrar(this.services, "linking-error")
         ]
 
