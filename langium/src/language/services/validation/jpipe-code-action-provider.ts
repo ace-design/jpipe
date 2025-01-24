@@ -20,7 +20,8 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
             new RemoveLine("supportNotMatching"),
             new RemoveImplemented("compositionImplementing"),
             new RemoveImplemented("nonPatternImplementing"),
-            new AddConclusion("noConclusionInJustification"),
+            new AddConclusion("noConclusionInJustification"), //while both add conclusions do the same thing, i kept the error codes separate in case I wanted to change the implementation in the future
+            new AddConclusion("noConclusionInPattern"),
             new ResolveReferenceRegistrar(this.services, "linking-error")
         ]
 
