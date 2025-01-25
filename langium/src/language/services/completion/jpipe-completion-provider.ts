@@ -47,18 +47,13 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
      * @returns A partial completion item
      */
     protected override createReferenceCompletionItem(nodeDescription: AstNodeDescription): CompletionValueItem {
-        let default_completion = {
-            nodeDescription,
-            kind: this.nodeKindProvider.getCompletionItemKind(nodeDescription),
-            detail: nodeDescription.type,
-            sortText: '0'
-        };
+        let completion_item_kind = this.nodeKindProvider.getCompletionItemKind(nodeDescription);
 
         if(nodeDescription.node){
             if(isInstruction(nodeDescription.node)){
                 return {
                     nodeDescription,
-                    kind: this.nodeKindProvider.getCompletionItemKind(nodeDescription),
+                    kind: completion_item_kind,
                     detail: nodeDescription.type,
                     sortText: '0',
                     labelDetails: {
@@ -68,6 +63,11 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
             }
         }
 
-        return default_completion;
+        return {
+            nodeDescription,
+            kind: completion_item_kind,
+            detail: nodeDescription.type,
+            sortText: '0'
+        };
     }
 }
