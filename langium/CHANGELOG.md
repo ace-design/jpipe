@@ -4,6 +4,12 @@
 - Leader: Cass Braun
   - Features:
     - Added ability to activate and deactivate installation checks on startup for Java and GraphViz
+    - Added instruction description on code completion prompt
+    - Fixed error with completion when justification implements pattern
+    - Added QuickFix to add blank @support statement to pattern
+    - Added QuickFix to add blank conclusion into pattern
+    - Added validation for conclusion in pattern
+    - Added completion support for variables loaded from other files
  
 ### Unreleased
 - Leader: Cass Braun
