@@ -7,7 +7,7 @@ export interface AbstractConfiguration<T> {
     readonly default_value: T;
 
     //function to change the configuration when needed
-    update(): void;
+    update(): T;
 
     //function to return the configuration when necessary
     getConfiguration(): T;
@@ -15,6 +15,7 @@ export interface AbstractConfiguration<T> {
 
 export enum ConfigKey{
     LOGLEVEL = "jpipe.logLevel",
+    JAVAVERSION = "jpipe.setJavaVersion",
     JARFILE = "jpipe.jarFile",
     DEVMODE = "jpipe.developerMode",
     CHECKGRAPHVIZ = "jpipe.checkGraphviz",
