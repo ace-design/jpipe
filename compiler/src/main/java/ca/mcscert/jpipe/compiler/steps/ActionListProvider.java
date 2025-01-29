@@ -1,15 +1,15 @@
 package ca.mcscert.jpipe.compiler.steps;
 
 import ca.mcscert.jpipe.actions.Action;
-import ca.mcscert.jpipe.actions.CreateAbstractSupport;
-import ca.mcscert.jpipe.actions.CreateConclusion;
-import ca.mcscert.jpipe.actions.CreateEvidence;
-import ca.mcscert.jpipe.actions.CreateJustification;
-import ca.mcscert.jpipe.actions.CreatePattern;
-import ca.mcscert.jpipe.actions.CreateRelation;
-import ca.mcscert.jpipe.actions.CreateStrategy;
-import ca.mcscert.jpipe.actions.CreateSubConclusion;
-import ca.mcscert.jpipe.actions.LoadFile;
+import ca.mcscert.jpipe.actions.creation.CreateAbstractSupport;
+import ca.mcscert.jpipe.actions.creation.CreateConclusion;
+import ca.mcscert.jpipe.actions.creation.CreateEvidence;
+import ca.mcscert.jpipe.actions.creation.CreateJustification;
+import ca.mcscert.jpipe.actions.creation.CreatePattern;
+import ca.mcscert.jpipe.actions.creation.CreateRelation;
+import ca.mcscert.jpipe.actions.creation.CreateStrategy;
+import ca.mcscert.jpipe.actions.creation.CreateSubConclusion;
+import ca.mcscert.jpipe.actions.linking.LoadFile;
 import ca.mcscert.jpipe.compiler.model.Transformation;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;

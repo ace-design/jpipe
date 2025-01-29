@@ -1,12 +1,14 @@
-package ca.mcscert.jpipe.actions;
+package ca.mcscert.jpipe.actions.creation;
 
+import ca.mcscert.jpipe.actions.Action;
+import ca.mcscert.jpipe.actions.RegularAction;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.SubConclusion;
 
 /**
  * Action used to create a sub-conclusion inside a justification.
  */
-public final class CreateSubConclusion implements Action {
+public final class CreateSubConclusion extends RegularAction {
 
     private final String container;
     private final String identifier;

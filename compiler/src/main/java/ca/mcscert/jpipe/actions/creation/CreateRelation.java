@@ -1,5 +1,7 @@
-package ca.mcscert.jpipe.actions;
+package ca.mcscert.jpipe.actions.creation;
 
+import ca.mcscert.jpipe.actions.Action;
+import ca.mcscert.jpipe.actions.RegularAction;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
@@ -7,7 +9,7 @@ import ca.mcscert.jpipe.model.elements.JustificationElement;
 /**
  * Action to be used to create a relation between two elements inside a justification.
  */
-public final class CreateRelation implements Action {
+public final class CreateRelation extends RegularAction {
 
     private final String container;
     private final String from;

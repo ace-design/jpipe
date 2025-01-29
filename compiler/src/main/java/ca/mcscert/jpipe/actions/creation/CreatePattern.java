@@ -1,12 +1,14 @@
-package ca.mcscert.jpipe.actions;
+package ca.mcscert.jpipe.actions.creation;
 
+import ca.mcscert.jpipe.actions.Action;
+import ca.mcscert.jpipe.actions.RegularAction;
 import ca.mcscert.jpipe.model.elements.Pattern;
 import ca.mcscert.jpipe.model.Unit;
 
 /**
  * Create a Pattern inside a unit.
  */
-public final class CreatePattern implements Action {
+public final class CreatePattern extends RegularAction {
 
     private final String fileName;
     private final String identifier;
