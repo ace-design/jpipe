@@ -5,6 +5,11 @@
   - Features:
     - ...
 
+### v0.2.5 (2025-01-29)
+- Leader: Sébastien Mosser
+  - Features:
+    - Fix path issues when they contain space (bugfix issue #99)
+
 ### v0.2.4 (2025-01-20)
 - Leader: Sébastien Mosser
   - Features:
