@@ -5,6 +5,11 @@
   - Features:
     - ...
 
+### v0.2.6 (2025-01-29)
+- Leader: Sébastien Mosser
+  - Features:
+    - Support file path coming from windows
+
 ### v0.2.5 (2025-01-29)
 - Leader: Sébastien Mosser
   - Features:
