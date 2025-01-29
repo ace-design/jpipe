@@ -23,7 +23,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
         ]
 
         configurations_list.forEach((config =>{
-            this.configurations.set(config.key,config);
+            this.configurations.set(config.configuration.key,config);
         }))
     }
 
@@ -41,7 +41,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
     //updates on configuration change events
 	public async update(change: vscode.ConfigurationChangeEvent): Promise<void>{
         this.configurations.forEach((configuration)=>{
-            if(change.affectsConfiguration(configuration.key)){
+            if(change.affectsConfiguration(configuration.configuration.key)){
                 this.tryUpdate(configuration);
             }
         });

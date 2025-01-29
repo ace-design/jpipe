@@ -1,10 +1,6 @@
 //interface which defines an abstract configuration
 export interface AbstractConfiguration<T> {
-
-    //key corresponds to the schema of the configuration property in package.json
-    readonly key: ConfigKey;
-    //value at startup of configuration
-    readonly default_value: T;
+    readonly configuration: Configuration<T>;
 
     //function to change the configuration when needed
     update(): T;
@@ -20,4 +16,9 @@ export enum ConfigKey{
     DEVMODE = "jpipe.developerMode",
     CHECKGRAPHVIZ = "jpipe.checkGraphviz",
     CHECKJAVA = "jpipe.checkJava"
+}
+
+export type Configuration<T> = {
+    key: ConfigKey,
+    default_value: T
 }
