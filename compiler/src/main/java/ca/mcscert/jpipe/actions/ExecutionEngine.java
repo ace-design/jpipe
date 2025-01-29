@@ -3,10 +3,10 @@ package ca.mcscert.jpipe.actions;
 import ca.mcscert.jpipe.error.ErrorManager;
 import ca.mcscert.jpipe.error.FatalException;
 import ca.mcscert.jpipe.model.Unit;
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -76,6 +76,13 @@ public final class ExecutionEngine {
             return;
         }
         Action a = actions.removeFirst();
+        Function<Unit, Boolean> condition = a.condition();
+        if (! condition.apply(u)) { // the action cannot be executed yet
+            if (actions.isEmpty()) {
+                errors.add(new IllegalArgumentException("Action {} "))
+            }
+        }
+
         logger.trace("Executing action [{}]", a);
         try {
             a.execute(u);

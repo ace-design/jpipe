@@ -1,5 +1,8 @@
-package ca.mcscert.jpipe.actions;
+package ca.mcscert.jpipe.actions.linking;
 
+import ca.mcscert.jpipe.actions.Action;
+import ca.mcscert.jpipe.actions.ExecutionEngine;
+import ca.mcscert.jpipe.actions.RegularAction;
 import ca.mcscert.jpipe.compiler.CompilerFactory;
 import ca.mcscert.jpipe.compiler.model.Source;
 import ca.mcscert.jpipe.compiler.model.Transformation;
@@ -15,8 +18,10 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Load a file referenced in another file.
+ *
+ * TODO this action should be defined as a MacroAction
  */
-public class LoadFile implements Action {
+public class LoadFile extends RegularAction {
 
     private static final Logger logger = LogManager.getLogger();
 

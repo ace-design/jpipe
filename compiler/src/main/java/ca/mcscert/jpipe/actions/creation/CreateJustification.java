@@ -1,13 +1,14 @@
-package ca.mcscert.jpipe.actions;
+package ca.mcscert.jpipe.actions.creation;
 
+import ca.mcscert.jpipe.actions.Action;
+import ca.mcscert.jpipe.actions.RegularAction;
 import ca.mcscert.jpipe.model.elements.Justification;
-import ca.mcscert.jpipe.model.elements.Pattern;
 import ca.mcscert.jpipe.model.Unit;
 
 /**
  * Create a justification inside a unit.
  */
-public final class CreateJustification implements Action {
+public final class CreateJustification extends RegularAction {
 
     private final String fileName;
     private final String identifier;
