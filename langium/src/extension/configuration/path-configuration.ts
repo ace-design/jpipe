@@ -11,7 +11,7 @@ export class PathConfiguration implements AbstractConfiguration<string>{
         try{
             this.value = this.update();
         }catch(error){
-            this.output_channel.log(JPipeOutput.USER, "Using default file path for setting");
+            this.output_channel.log(JPipeOutput.USER, "Using default for setting: " +this.configuration.key);
             
             this.value = this.getDefaultValue();
         }
