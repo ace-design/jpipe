@@ -10,6 +10,7 @@
     - Added QuickFix to add blank conclusion into pattern
     - Added validation for conclusion in pattern
     - Added completion support for variables loaded from other files
+    - Added ability to set java version in settings
 
 ### v0.2.4 (2025-01-20)
 - Leader: Sébastien Mosser
