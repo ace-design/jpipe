@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
+
 import { AbstractConfiguration, ConfigKey, Configuration } from "./abstract-configuration.js"
-import { JPipeOutput, OutputManager } from '../managers/index.js';
-import { JpipeFileSystemManager } from '../managers/file-system-manager.js';
+import { JPipeOutput, OutputManager, JpipeFileSystemManager } from '../managers/index.js';
 
 //class to monitor jarFile setting
 export class JarFile implements AbstractConfiguration<string>{

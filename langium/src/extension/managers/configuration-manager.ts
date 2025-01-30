@@ -3,6 +3,7 @@ import { EventSubscriber } from './event-manager.js';
 import { LogLevel, AbstractConfiguration, ConfigKey, DeveloperMode, CheckGraphviz, CheckJava, JarFile } from '../configuration/index.js';
 import { JPipeOutput, OutputManager } from './index.js';
 import { JpipeFileSystemManager } from './file-system-manager.js';
+import { PathConfiguration } from '../configuration/path-configuration.js';
 
 //keeps track of values of configuration settings
 export class ConfigurationManager implements EventSubscriber<vscode.ConfigurationChangeEvent>{
@@ -19,7 +20,8 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
             new DeveloperMode(),
             new CheckGraphviz(),
             new CheckJava(),
-            new JarFile(context, fs, output_manager)
+            new JarFile(context, fs, output_manager),
+            new PathConfiguration(fs, output_manager,{key: ConfigKey.JAVAVERSION, default_value: "java"})
         ]
 
         configurations_list.forEach((config =>{
