@@ -48,7 +48,7 @@ export class JarFile implements AbstractConfiguration<string>{
 
     //helper function to get the default jar path
     private getDefaultJar(): string{
-        return vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').path;
+        return vscode.Uri.joinPath(this.context.extensionUri, 'jar', 'jpipe.jar').fsPath;
     }
 
     //helper function to verify jar file path

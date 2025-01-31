@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
 import util from "node:util";
+import path from 'node:path';
 import { ConfigKey } from '../configuration/index.js';
 import { OutputManager, ConfigurationManager, EventSubscriber, isTextEditor, Command, CommandUser, JPipeOutput } from '../managers/index.js';
+
 
 export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextEditor | undefined>{
 
@@ -76,7 +78,7 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 
 		let jar_file = this.configuration.getConfiguration(ConfigKey.JARFILE);
 		
-		let input_file = this.document.uri;
+		let input_file = this.document.uri.fsPath;
 		
 		let diagram_name = this.findDiagramName(this.document,this.editor);
 		
@@ -85,9 +87,10 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 		let log_level = this.configuration.getConfiguration(ConfigKey.LOGLEVEL);
 		
 
-		let command = java_version + ' -jar ' + jar_file + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
-		
 
+		let command = java_version + ' -jar ' + jar_file + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
+
+		
 		this.output_manager.log(JPipeOutput.USER, this.generateUserMessage(jar_file));
 
 		this.output_manager.log(JPipeOutput.CONSOLE, "Image made using jar file: " + jar_file.toString()); //Shows user relevant info
