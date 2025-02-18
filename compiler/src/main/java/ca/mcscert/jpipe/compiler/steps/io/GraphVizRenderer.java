@@ -35,6 +35,7 @@ public class GraphVizRenderer implements Sink<MutableGraph> {
         guru.nidi.graphviz.engine.Format out = switch (this.format) {
             case PNG -> guru.nidi.graphviz.engine.Format.PNG;
             case SVG -> guru.nidi.graphviz.engine.Format.SVG;
+            case DOT -> guru.nidi.graphviz.engine.Format.DOT;
             default -> throw new IllegalArgumentException("Cannot process format ["
                                                             + format
                                                             + "] with a Graphviz renderer");
