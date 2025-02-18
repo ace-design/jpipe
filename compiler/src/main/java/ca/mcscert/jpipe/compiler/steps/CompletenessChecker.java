@@ -3,11 +3,14 @@ package ca.mcscert.jpipe.compiler.steps;
 import ca.mcscert.jpipe.compiler.model.Checker;
 import ca.mcscert.jpipe.error.ErrorManager;
 import ca.mcscert.jpipe.error.SemanticError;
-import ca.mcscert.jpipe.model.Justification;
 import ca.mcscert.jpipe.model.Unit;
+import ca.mcscert.jpipe.model.elements.AbstractSupport;
 import ca.mcscert.jpipe.model.elements.Conclusion;
 import ca.mcscert.jpipe.model.elements.Evidence;
+import ca.mcscert.jpipe.model.elements.Justification;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
+import ca.mcscert.jpipe.model.elements.JustificationModel;
+import ca.mcscert.jpipe.model.elements.Pattern;
 import ca.mcscert.jpipe.model.elements.Strategy;
 import ca.mcscert.jpipe.model.elements.SubConclusion;
 import ca.mcscert.jpipe.visitors.ModelVisitor;
@@ -47,7 +50,7 @@ public final class CompletenessChecker extends Checker<Unit> {
 
         @Override
         public void visit(Unit u) {
-            for (Justification justification : u.getContents()) {
+            for (JustificationModel justification : u.getContents()) {
                 justification.accept(this);
             }
             if (!this.used.containsAll(this.visited)) {
@@ -64,6 +67,14 @@ public final class CompletenessChecker extends Checker<Unit> {
         public void visit(Justification j) {
             // we're visiting all declared symbols, not just the entry point (the conclusion)
             for (JustificationElement je : j.contents()) {
+                je.accept(this);
+            }
+        }
+
+        @Override
+        public void visit(Pattern p) {
+            // we're visiting all declared symbols, not just the entry point (the conclusion)
+            for (JustificationElement je : p.contents()) {
                 je.accept(this);
             }
         }
@@ -102,6 +113,11 @@ public final class CompletenessChecker extends Checker<Unit> {
             } else {
                 this.used.add(sc.getStrategy());
             }
+        }
+
+        @Override
+        public void visit(AbstractSupport as) {
+
         }
 
     }

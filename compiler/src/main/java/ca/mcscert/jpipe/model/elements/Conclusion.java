@@ -1,6 +1,7 @@
 package ca.mcscert.jpipe.model.elements;
 
 import ca.mcscert.jpipe.visitors.ModelVisitor;
+import java.util.Set;
 
 /**
  * Model what a Conclusion is in the Model.
@@ -19,7 +20,6 @@ public final class Conclusion extends JustificationElement {
         super(identifier, label);
     }
 
-
     public Strategy getStrategy() {
         return strategy;
     }
@@ -30,9 +30,19 @@ public final class Conclusion extends JustificationElement {
     }
 
     @Override
+    public Set<JustificationElement> getSupports() {
+        return (this.strategy == null ? Set.of() : Set.of(this.strategy));
+    }
+
+    @Override
     protected void acceptAsSupport(Strategy s) {
-        assertNotAlreadySupported(this.strategy, s);
+        assertCanBeReplaced(this.strategy, s);
         this.strategy = s;
+    }
+
+    @Override
+    public Conclusion shallow() {
+        return new Conclusion(this.identifier, this.label);
     }
 
     @Override
