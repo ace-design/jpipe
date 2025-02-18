@@ -6,5 +6,5 @@ package ca.mcscert.jpipe.cli;
  * @author mosser
  */
 public enum Format {
-    PNG, SVG, JPIPE, GRAPHVIZ
+    PNG, SVG, DOT, JPIPE, JSON, RUNNER
 }
