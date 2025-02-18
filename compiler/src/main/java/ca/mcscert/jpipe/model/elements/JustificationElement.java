@@ -129,8 +129,12 @@ public abstract class JustificationElement
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         JustificationElement that = (JustificationElement) o;
         return Objects.equals(identifier, that.identifier);
     }

@@ -19,7 +19,11 @@ public class Publish extends RegularAction {
     @Override
     public Function<Unit, Boolean> condition() {
         return (u -> {
-            try { u.get(identifier); } catch (UnknownSymbol s) { return false; }
+            try {
+                u.get(identifier);
+            } catch (UnknownSymbol s) {
+                return false;
+            }
             return true;
         });
     }
