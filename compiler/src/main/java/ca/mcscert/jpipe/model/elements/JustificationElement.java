@@ -2,12 +2,16 @@ package ca.mcscert.jpipe.model.elements;
 
 import ca.mcscert.jpipe.error.SemanticError;
 import ca.mcscert.jpipe.model.Visitable;
+import ca.mcscert.jpipe.model.cloning.ShallowCloneable;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Define what a justification element is. A Justification element is "anything" that can be used
  * to instantiate a "supports" relation inside a justification.
  */
-public abstract class JustificationElement implements Visitable, Cloneable {
+public abstract class JustificationElement
+        implements Visitable, ShallowCloneable<JustificationElement> {
 
     protected final String identifier;
     protected final String label;
@@ -31,9 +35,16 @@ public abstract class JustificationElement implements Visitable, Cloneable {
         return label;
     }
 
-    protected void assertNotAlreadySupported(JustificationElement existing,
-                                             JustificationElement candidate) {
-        if (existing == null) {
+    /**
+     * Throws a SemanticError if there is an existing element, and if candidate and existing
+     * do not share the same identifier.
+     *
+     * @param existing the element one is trying to replace.
+     * @param candidate the element to be used to replace existing.
+     */
+    protected void assertCanBeReplaced(JustificationElement existing,
+                                       JustificationElement candidate) {
+        if (existing == null || existing.getIdentifier().equals(candidate.getIdentifier())) {
             return;
         }
         String msg = String.format("%s cannot be supported by %s as it is already supported by %s",
@@ -41,6 +52,14 @@ public abstract class JustificationElement implements Visitable, Cloneable {
         throw new SemanticError(msg);
 
     }
+
+    /**
+     * Identify the justification elements supporting this one.
+     *
+     * @return a Set of domain elements acting as support for this one.
+     */
+    public abstract Set<JustificationElement> getSupports();
+
 
     /* *************************************************************
      * * Double-dispatch mechanism for adding supporting relations *
@@ -109,13 +128,8 @@ public abstract class JustificationElement implements Visitable, Cloneable {
 
 
     @Override
-    public String toString() {
+    public final String toString() {
         return this.getClass().getSimpleName() + "::" + this.getIdentifier();
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 
 }

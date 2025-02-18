@@ -36,7 +36,7 @@ public abstract class DefaultModelVisitor<T> extends ModelVisitor<T> {
 
     @Override
     public void visit(Strategy s) {
-        for (Support support : s.getSupports()) {
+        for (JustificationElement support : s.getSupports()) {
             support.accept(this);
         }
     }

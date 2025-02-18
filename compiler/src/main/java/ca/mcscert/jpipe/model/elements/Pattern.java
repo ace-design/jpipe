@@ -17,7 +17,6 @@ public final class Pattern extends JustificationModel {
         super(name);
     }
 
-
     @Override
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
@@ -29,5 +28,12 @@ public final class Pattern extends JustificationModel {
         sb.append(super.toString());
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public Pattern replicate() {
+        Pattern clone = new Pattern(this.name);
+        deepLink(clone);
+        return clone;
     }
 }
