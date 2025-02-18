@@ -67,6 +67,9 @@ public class JpipeExporter extends ModelVisitor<StringBuilder> {
                 .append("  ")
                 .append(String.format(tpl, keyword, e.getIdentifier(), e.getLabel()))
                 .append(System.lineSeparator());
+    }
+
+    private void exportSupports(JustificationElement e) {
         for (JustificationElement je : e.getSupports()) {
             String lnk = "%s supports %s";
             this.accumulator.append("  ")
@@ -81,8 +84,13 @@ public class JpipeExporter extends ModelVisitor<StringBuilder> {
         this.accumulator
                 .append(String.format(tpl, keyword, model.getName()))
                 .append(System.lineSeparator());
+        // Exporting nodes
         for (JustificationElement je : model.contents()) {
             je.accept(this);
+        }
+        // Exporting relations
+        for (JustificationElement je : model.contents()) {
+            exportSupports(je);
         }
         this.accumulator.append("}").append(System.lineSeparator());
     }
