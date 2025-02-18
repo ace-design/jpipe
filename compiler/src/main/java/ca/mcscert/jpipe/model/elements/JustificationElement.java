@@ -3,6 +3,7 @@ package ca.mcscert.jpipe.model.elements;
 import ca.mcscert.jpipe.error.SemanticError;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.ShallowCloneable;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -125,6 +126,23 @@ public abstract class JustificationElement
                 + this + " cannot be supported by " + as);
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        JustificationElement that = (JustificationElement) o;
+        return Objects.equals(identifier, that.identifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(identifier);
+    }
 
     @Override
     public final String toString() {

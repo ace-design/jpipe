@@ -2,6 +2,7 @@ package ca.mcscert.jpipe.actions.linking;
 
 import ca.mcscert.jpipe.actions.Action;
 import ca.mcscert.jpipe.actions.ExecutionEngine;
+import ca.mcscert.jpipe.actions.MacroAction;
 import ca.mcscert.jpipe.actions.RegularAction;
 import ca.mcscert.jpipe.compiler.CompilerFactory;
 import ca.mcscert.jpipe.compiler.model.Source;
@@ -18,9 +19,8 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Load a file referenced in another file.
- * TODO this action should be defined as a MacroAction
  */
-public class LoadFile extends RegularAction {
+public class LoadFile extends MacroAction {
 
     private static final Logger logger = LogManager.getLogger();
 
@@ -31,19 +31,16 @@ public class LoadFile extends RegularAction {
     }
 
     @Override
-    public void execute(Unit context) throws Exception {
+    public List<Action> expand(Unit context) throws Exception {
         Path p = new File(fileName).toPath().normalize();
         canLoad(p, context);
         context.addLoadedFile(p);
         Transformation<InputStream, List<Action>> partial = CompilerFactory.actionProvider();
         Source<InputStream> reader = new FileReader();
         try (InputStream in = reader.provideFrom(p.toString())) {
-            List<Action> actions = partial.fire(in, p.toString());
-            ExecutionEngine engine = new ExecutionEngine();
-            engine.enrich(context, actions);
+            return partial.fire(in, p.toString());
         }
     }
-
 
     private void canLoad(Path p, Unit context) {
 
@@ -55,4 +52,11 @@ public class LoadFile extends RegularAction {
         }
     }
 
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("LoadFile{");
+        sb.append("fileName='").append(fileName).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

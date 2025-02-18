@@ -36,7 +36,7 @@ public class JustificationModelTest {
         justification.add(e);
         e.supports(s);
 
-        justification.lock();
+        justification.publish();
     }
 
     @BeforeEach
@@ -55,7 +55,7 @@ public class JustificationModelTest {
         pattern.add(ae);
         ae.supports(s);
 
-        pattern.lock();
+        pattern.publish();
     }
 
     @Test
