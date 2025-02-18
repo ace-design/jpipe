@@ -10,6 +10,7 @@ import ca.mcscert.jpipe.compiler.steps.ActionListProvider;
 import ca.mcscert.jpipe.compiler.steps.Apply;
 import ca.mcscert.jpipe.compiler.steps.CharStreamProvider;
 import ca.mcscert.jpipe.compiler.steps.CompletenessChecker;
+import ca.mcscert.jpipe.compiler.steps.ConsistencyChecker;
 import ca.mcscert.jpipe.compiler.steps.LazyHaltAndCatchFire;
 import ca.mcscert.jpipe.compiler.steps.Lexer;
 import ca.mcscert.jpipe.compiler.steps.ModelVisit;
@@ -56,6 +57,7 @@ public final class CompilerFactory {
                      .andThen(new ActionListProvider())
                      .andThen(new ActionListInterpretation())
                      .andThen(new CompletenessChecker())
+                     .andThen(new ConsistencyChecker())
                      .andThen(new ScopeFiltering(config.getDiagramName()))
                      .andThen(new ModelVisit<>(new GraphVizExporter()))
                      .andThen(new GraphVizRenderer(config.getFormat()));
