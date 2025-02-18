@@ -1,8 +1,9 @@
 package ca.mcscert.jpipe.model;
 
 import ca.mcscert.jpipe.model.elements.JustificationElement;
+import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.visitors.ModelVisitor;
-import java.io.File;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -11,10 +12,10 @@ import java.util.Set;
 /**
  * Define what a compilation Unit is in JPipe.
  */
-public final class Unit implements Visitable {
+public final class Unit implements Visitable, Serializable, Cloneable {
 
     private final String name;
-    private final SymbolTable<Justification> contents;
+    private final SymbolTable<JustificationModel> contents;
     private final Set<String> loaded;
 
     /**
@@ -35,6 +36,12 @@ public final class Unit implements Visitable {
     }
 
 
+    /**
+     * Check if a given path is already loaded in the current compilation unit.
+     *
+     * @param p the path to check.
+     * @return true is already loaded, false elsewhere.
+     */
     public boolean isInScope(Path p) {
         return this.loaded.contains(p.normalize().toString());
     }
@@ -53,8 +60,17 @@ public final class Unit implements Visitable {
      *
      * @param j the justification to record.
      */
-    public void add(Justification j) {
+    public void add(JustificationModel j) {
         this.contents.record(j.getName(), j);
+    }
+
+    /**
+     * Delete a justification inside the unit symbol table.
+     *
+     * @param j the justification to delete.
+     */
+    public void remove(JustificationModel j) {
+        this.contents.delete(j.getName());
     }
 
     /**
@@ -64,15 +80,15 @@ public final class Unit implements Visitable {
      * @param e the element to add.
      */
     public void addInto(String container, JustificationElement e) {
-        Justification justification = contents.get(container);
+        JustificationModel justification = contents.get(container);
         justification.add(e);
     }
 
-    public Justification get(String identifier) {
+    public JustificationModel get(String identifier) {
         return this.contents.get(identifier);
     }
 
-    public Collection<Justification> getContents() {
+    public Collection<JustificationModel> getContents() {
         return this.contents.values();
     }
 
@@ -82,6 +98,10 @@ public final class Unit implements Visitable {
         visitor.visit(this);
     }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
     @Override
     public String toString() {

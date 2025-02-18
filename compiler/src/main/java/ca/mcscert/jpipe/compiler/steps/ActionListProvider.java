@@ -1,13 +1,17 @@
 package ca.mcscert.jpipe.compiler.steps;
 
 import ca.mcscert.jpipe.actions.Action;
-import ca.mcscert.jpipe.actions.CreateConclusion;
-import ca.mcscert.jpipe.actions.CreateEvidence;
-import ca.mcscert.jpipe.actions.CreateJustification;
-import ca.mcscert.jpipe.actions.CreateRelation;
-import ca.mcscert.jpipe.actions.CreateStrategy;
-import ca.mcscert.jpipe.actions.CreateSubConclusion;
-import ca.mcscert.jpipe.actions.LoadFile;
+import ca.mcscert.jpipe.actions.creation.CreateAbstractSupport;
+import ca.mcscert.jpipe.actions.creation.CreateConclusion;
+import ca.mcscert.jpipe.actions.creation.CreateEvidence;
+import ca.mcscert.jpipe.actions.creation.CreateJustification;
+import ca.mcscert.jpipe.actions.creation.CreatePattern;
+import ca.mcscert.jpipe.actions.creation.CreateRelation;
+import ca.mcscert.jpipe.actions.creation.CreateStrategy;
+import ca.mcscert.jpipe.actions.creation.CreateSubConclusion;
+import ca.mcscert.jpipe.actions.creation.LockJustificationModel;
+import ca.mcscert.jpipe.actions.linking.ImplementsPattern;
+import ca.mcscert.jpipe.actions.linking.LoadFile;
 import ca.mcscert.jpipe.compiler.model.Transformation;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;
@@ -15,13 +19,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Create a list of actions to build a model out of a parse tree.
  */
 public final class ActionListProvider extends Transformation<ParseTree, List<Action>> {
+
+    private static final Logger logger = LogManager.getLogger();
 
     /**
      * Transform a ParseTree into a list of actions to be executed to build the model.
@@ -35,6 +44,7 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
     protected List<Action> run(ParseTree input, String source) throws Exception {
         ActionBuilder ab = new ActionBuilder(source);
         ParseTreeWalker.DEFAULT.walk(ab, input);
+        logger.debug(ab.collect());
         return ab.collect();
     }
 
@@ -63,7 +73,7 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
 
         @Override
         public void enterLoad(JPipeParser.LoadContext ctx) {
-            String relativePath = linearize(this.buildContext.unitFileName,
+            String relativePath = normalizePath(this.buildContext.unitFileName,
                                             strip(ctx.path.getText()));
             result.add(new LoadFile(relativePath));
         }
@@ -71,7 +81,35 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         @Override
         public void enterJustification(JPipeParser.JustificationContext ctx) {
             this.buildContext = buildContext.updateCurrentJustification(ctx.id.getText());
-            result.add(new CreateJustification(buildContext.unitFileName, ctx.id.getText()));
+            if (ctx.parent == null) {
+                result.add(new CreateJustification(buildContext.unitFileName, ctx.id.getText()));
+            } else {
+                result.add(new CreateJustification(buildContext.unitFileName,
+                                                    ctx.id.getText(), ctx.parent.getText()));
+            }
+        }
+
+        @Override
+        public void exitJustification(JPipeParser.JustificationContext ctx) {
+            closeJustificationModel(ctx.parent, ctx.id);
+            this.buildContext = buildContext.updateCurrentJustification(null);
+        }
+
+        @Override
+        public void enterPattern(JPipeParser.PatternContext ctx) {
+            this.buildContext = buildContext.updateCurrentJustification(ctx.id.getText());
+            if (ctx.parent == null) {
+                result.add(new CreatePattern(buildContext.unitFileName, ctx.id.getText()));
+            } else {
+                result.add(new CreatePattern(buildContext.unitFileName,
+                                                ctx.id.getText(), ctx.parent.getText()));
+            }
+        }
+
+        @Override
+        public void exitPattern(JPipeParser.PatternContext ctx) {
+            closeJustificationModel(ctx.parent, ctx.id);
+            this.buildContext = buildContext.updateCurrentJustification(null);
         }
 
         @Override
@@ -79,6 +117,13 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             String identifier = ctx.element().id.getText();
             result.add(new CreateEvidence(buildContext.justificationId,
                         identifier, strip(ctx.element().name.getText())));
+        }
+
+        @Override
+        public void enterAbstract(JPipeParser.AbstractContext ctx) {
+            String identifier = ctx.element().id.getText();
+            result.add(new CreateAbstractSupport(buildContext.justificationId,
+                    identifier, strip(ctx.element().name.getText())));
         }
 
         @Override
@@ -112,10 +157,19 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             return s.substring(1, s.length() - 1);
         }
 
-        private String linearize(String rootFile, String fileName) {
+        private String normalizePath(String rootFile, String fileName) {
             Path root = Paths.get(rootFile).getParent();
             Path target = Paths.get(fileName);
             return root.resolve(target).toString();
+        }
+
+        private void closeJustificationModel(Token parent, Token id) {
+            List<String> dependencies = List.of();
+            if (parent != null) {
+                result.add(new ImplementsPattern(id.getText(), parent.getText()));
+                dependencies = List.of(parent.getText());
+            }
+            result.add(new LockJustificationModel(id.getText(), dependencies));
         }
 
     }
