@@ -29,6 +29,12 @@ pattern prover {
 
 }
 
+pattern partial implements prover {
+
+  evidence Su2 is "TINA is available"  // Override prover.Su2
+
+}
+
 
 
 

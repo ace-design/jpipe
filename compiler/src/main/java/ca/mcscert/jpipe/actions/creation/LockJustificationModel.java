@@ -32,6 +32,7 @@ public class LockJustificationModel extends RegularAction {
         context.get(modelId).lock();
     }
 
+    @SuppressWarnings("checkstyle:LeftCurly")
     @Override
     public Function<Unit, Boolean> condition() {
         return (u -> {

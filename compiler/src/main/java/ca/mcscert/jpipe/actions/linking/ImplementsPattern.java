@@ -25,6 +25,7 @@ public class ImplementsPattern extends RegularAction {
         this.parentId = parentId;
     }
 
+    @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:OneStatementPerLine"})
     @Override
     public Function<Unit, Boolean> condition() {
         return (u -> {
@@ -42,7 +43,6 @@ public class ImplementsPattern extends RegularAction {
         JustificationModel implementing = op.apply(model, pattern);
         context.remove(model);
         context.add(implementing);
-        System.err.println(implementing);
     }
 
     @Override

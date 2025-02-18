@@ -18,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Load a file referenced in another file.
- *
  * TODO this action should be defined as a MacroAction
  */
 public class LoadFile extends RegularAction {

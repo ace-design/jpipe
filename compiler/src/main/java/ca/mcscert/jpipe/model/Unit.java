@@ -38,7 +38,8 @@ public final class Unit implements Visitable, Serializable, Cloneable {
 
     /**
      * Check if a given path is already loaded in the current compilation unit.
-     * @param p the path to check
+     *
+     * @param p the path to check.
      * @return true is already loaded, false elsewhere.
      */
     public boolean isInScope(Path p) {

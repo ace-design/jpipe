@@ -1,8 +1,8 @@
 package ca.mcscert.jpipe.compiler.steps;
 
 import ca.mcscert.jpipe.compiler.model.Transformation;
-import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.Unit;
+import ca.mcscert.jpipe.model.elements.JustificationModel;
 
 /**
  * Filter a unit to extract one given justification element inside this unit.

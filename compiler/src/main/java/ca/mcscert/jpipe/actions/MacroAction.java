@@ -3,6 +3,10 @@ package ca.mcscert.jpipe.actions;
 import ca.mcscert.jpipe.model.Unit;
 import java.util.List;
 
+/**
+ * A macro action is an action that is not executable per se. but, instead refined into a list
+ * of action to be executed.
+ */
 public abstract class MacroAction implements Action {
 
     @Override
