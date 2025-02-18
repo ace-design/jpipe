@@ -17,6 +17,10 @@ public final class Justification extends JustificationModel {
         super(name);
     }
 
+    private Justification(String name, boolean ready) {
+        super(name, ready);
+    }
+
     @Override
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
@@ -32,7 +36,7 @@ public final class Justification extends JustificationModel {
 
     @Override
     public JustificationModel replicate() {
-        Justification clone = new Justification(this.name);
+        Justification clone = new Justification(this.name, this.ready);
         deepLink(clone);
         return clone;
     }
