@@ -3,6 +3,7 @@ package ca.mcscert.jpipe.model;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.visitors.ModelVisitor;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -11,7 +12,7 @@ import java.util.Set;
 /**
  * Define what a compilation Unit is in JPipe.
  */
-public final class Unit implements Visitable {
+public final class Unit implements Visitable, Serializable, Cloneable {
 
     private final String name;
     private final SymbolTable<JustificationModel> contents;
@@ -63,6 +64,15 @@ public final class Unit implements Visitable {
     }
 
     /**
+     * Delete a justification inside the unit symbol table.
+     *
+     * @param j the justification to delete.
+     */
+    public void remove(JustificationModel j) {
+        this.contents.delete(j.getName());
+    }
+
+    /**
      * Add a justification element inside a justification.
      *
      * @param container the justification to contain the element.
@@ -87,6 +97,10 @@ public final class Unit implements Visitable {
         visitor.visit(this);
     }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
     @Override
     public String toString() {

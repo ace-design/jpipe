@@ -4,13 +4,14 @@ import static guru.nidi.graphviz.model.Factory.mutGraph;
 import static guru.nidi.graphviz.model.Factory.mutNode;
 import static guru.nidi.graphviz.model.Factory.node;
 
-import ca.mcscert.jpipe.model.elements.Justification;
-import ca.mcscert.jpipe.model.elements.Pattern;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.AbstractSupport;
 import ca.mcscert.jpipe.model.elements.Conclusion;
 import ca.mcscert.jpipe.model.elements.Evidence;
+import ca.mcscert.jpipe.model.elements.Justification;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
+import ca.mcscert.jpipe.model.elements.JustificationModel;
+import ca.mcscert.jpipe.model.elements.Pattern;
 import ca.mcscert.jpipe.model.elements.Strategy;
 import ca.mcscert.jpipe.model.elements.SubConclusion;
 import ca.mcscert.jpipe.model.elements.Support;
@@ -109,7 +110,7 @@ public class GraphVizExporter extends ModelVisitor<MutableGraph> {
                 .add(Color.PALEGREEN.fill())
                 .add(Style.lineWidth(1.01));
         n.addTo(this.accumulator);
-        for (Support su : s.getSupports()) {
+        for (JustificationElement su : s.getSupports()) {
             this.accumulator.add(node(su.getIdentifier()).link(n));
         }
     }

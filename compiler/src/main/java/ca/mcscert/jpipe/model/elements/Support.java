@@ -1,5 +1,7 @@
 package ca.mcscert.jpipe.model.elements;
 
+import java.io.Serializable;
+
 /**
  * Define a common abstraction for element that can support others inside a jPipe Model.
  */

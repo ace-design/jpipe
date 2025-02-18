@@ -2,8 +2,10 @@ package ca.mcscert.jpipe.actions.creation;
 
 import ca.mcscert.jpipe.actions.Action;
 import ca.mcscert.jpipe.actions.RegularAction;
+import ca.mcscert.jpipe.error.UnknownSymbol;
 import ca.mcscert.jpipe.model.elements.Justification;
 import ca.mcscert.jpipe.model.Unit;
+import java.util.function.Function;
 
 /**
  * Create a justification inside a unit.
@@ -41,11 +43,7 @@ public final class CreateJustification extends RegularAction {
 
     @Override
     public void execute(Unit context) throws Exception {
-        if (this.parent == null) {
-            context.add(new Justification(this.identifier));
-        } else {
-            throw new UnsupportedOperationException("Pattern implementation not suppoerted yet");
-        }
+        context.add(new Justification(this.identifier));
     }
 
     @Override

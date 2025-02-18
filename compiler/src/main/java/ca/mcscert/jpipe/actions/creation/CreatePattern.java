@@ -44,4 +44,13 @@ public final class CreatePattern extends RegularAction {
     }
 
 
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("CreatePattern{");
+        sb.append("fileName='").append(fileName).append('\'');
+        sb.append(", identifier='").append(identifier).append('\'');
+        sb.append(", parent='").append(parent).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

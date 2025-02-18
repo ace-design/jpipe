@@ -1,15 +1,16 @@
 package ca.mcscert.jpipe.model.elements;
 
 import ca.mcscert.jpipe.visitors.ModelVisitor;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Model what a Strategy is inside a Justification Model.
  */
 public final class Strategy extends JustificationElement {
 
-    private final List<Support> supports;
+    private final Set<Support> supports;
 
     /**
      * A strategy has a unique identifier and a label.
@@ -19,11 +20,17 @@ public final class Strategy extends JustificationElement {
      */
     public Strategy(String identifier, String label) {
         super(identifier, label);
-        this.supports = new ArrayList<>();
+        this.supports = new HashSet<>();
     }
 
-    public List<Support> getSupports() {
-        return supports;
+    @Override
+    public Set<JustificationElement> getSupports() {
+        return new HashSet<>(supports);
+    }
+
+    @Override
+    public Strategy shallow() {
+        return new Strategy(this.identifier, this.label);
     }
 
     @Override
@@ -33,16 +40,19 @@ public final class Strategy extends JustificationElement {
 
     @Override
     protected void acceptAsSupport(Evidence e) {
+        removeAsSupportIfExisting(e.getIdentifier());
         this.supports.add(e);
     }
 
     @Override
     protected void acceptAsSupport(SubConclusion sc) {
+        removeAsSupportIfExisting(sc.getIdentifier());
         this.supports.add(sc);
     }
 
     @Override
     protected void acceptAsSupport(AbstractSupport as) {
+        removeAsSupportIfExisting(as.getIdentifier());
         this.supports.add(as);
     }
 
@@ -50,4 +60,9 @@ public final class Strategy extends JustificationElement {
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
     }
+
+    private void removeAsSupportIfExisting(String identifier) {
+        this.supports.removeIf(support -> support.getIdentifier().equals(identifier));
+    }
+
 }

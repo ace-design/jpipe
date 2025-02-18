@@ -1,4 +1,18 @@
 
+justification proving implements prover {
+
+    sub-conclusion Su1 is "Merged model is available"     // Override prover.Su1
+
+    strategy St0 is "Merge Atomic model"
+    St0 supports Su1
+
+    evidence Su0 is "Atomic Petri nets are available"
+    Su0 supports St0
+
+    evidence Su2 is "TINA is available"                   // Override prover.Su2
+
+}
+
 pattern prover {
 
     @support Su1 is "Model is ready"
@@ -16,15 +30,10 @@ pattern prover {
 }
 
 
-justification proving implements prover {
 
-    sub-conclusion Su1 is "Merged model is available"
-    strategy St0 is "Merge Atomic model"
-    St0 supports Su1
-    evidence Su0 is "Atomic Petri nets are available"
-    Su0 supports St0
 
-    evidence Su2 is "TINA is available"
 
-}
+
+
+
 
