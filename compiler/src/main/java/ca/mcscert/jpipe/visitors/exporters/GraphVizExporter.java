@@ -10,11 +10,9 @@ import ca.mcscert.jpipe.model.elements.Conclusion;
 import ca.mcscert.jpipe.model.elements.Evidence;
 import ca.mcscert.jpipe.model.elements.Justification;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
-import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.elements.Pattern;
 import ca.mcscert.jpipe.model.elements.Strategy;
 import ca.mcscert.jpipe.model.elements.SubConclusion;
-import ca.mcscert.jpipe.model.elements.Support;
 import ca.mcscert.jpipe.visitors.ModelVisitor;
 import guru.nidi.graphviz.attribute.Color;
 import guru.nidi.graphviz.attribute.Label;
@@ -94,10 +92,9 @@ public class GraphVizExporter extends ModelVisitor<MutableGraph> {
     public void visit(AbstractSupport as) {
         MutableNode n = mutNode(as.getIdentifier())
                 .add(Label.html("<i>" + as.getLabel() + "</i>"))
-                .add(Shape.NONE)
-                .add(Color.LIGHTPINK.fill());
-                //.add(Style.FILLED)
-                //.add(Style.lineWidth(1.01));
+                .add(Shape.RECT)
+                .add(Style.DOTTED)
+                .add(Style.lineWidth(1.01));
         n.addTo(this.accumulator);
     }
 

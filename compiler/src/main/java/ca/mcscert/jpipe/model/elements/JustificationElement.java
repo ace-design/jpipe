@@ -3,7 +3,6 @@ package ca.mcscert.jpipe.model.elements;
 import ca.mcscert.jpipe.error.SemanticError;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.ShallowCloneable;
-import java.util.List;
 import java.util.Set;
 
 /**

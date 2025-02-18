@@ -1,11 +1,8 @@
 package ca.mcscert.jpipe.actions.creation;
 
-import ca.mcscert.jpipe.actions.Action;
 import ca.mcscert.jpipe.actions.RegularAction;
-import ca.mcscert.jpipe.error.UnknownSymbol;
-import ca.mcscert.jpipe.model.elements.Justification;
 import ca.mcscert.jpipe.model.Unit;
-import java.util.function.Function;
+import ca.mcscert.jpipe.model.elements.Justification;
 
 /**
  * Create a justification inside a unit.

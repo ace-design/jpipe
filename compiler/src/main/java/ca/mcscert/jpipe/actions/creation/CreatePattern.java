@@ -1,9 +1,8 @@
 package ca.mcscert.jpipe.actions.creation;
 
-import ca.mcscert.jpipe.actions.Action;
 import ca.mcscert.jpipe.actions.RegularAction;
-import ca.mcscert.jpipe.model.elements.Pattern;
 import ca.mcscert.jpipe.model.Unit;
+import ca.mcscert.jpipe.model.elements.Pattern;
 
 /**
  * Create a Pattern inside a unit.

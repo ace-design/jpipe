@@ -92,6 +92,7 @@ public final class SymbolTable<T> {
 
     /**
      * Compute the set of keys defined in this symbol table.
+     *
      * @return The symbols, as a set of strings.
      */
     public Set<String> keys() {

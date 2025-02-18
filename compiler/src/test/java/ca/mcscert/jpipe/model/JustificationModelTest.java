@@ -66,7 +66,6 @@ public class JustificationModelTest {
 
     @Test
     public void hierarchyIsPreserved() {
-        System.out.println(justification);
         assertEquals(3, justification.contents().size());
         assertEquals(Set.of("s"), justification.get("c").getSupports().stream()
                 .map(JustificationElement::getIdentifier)

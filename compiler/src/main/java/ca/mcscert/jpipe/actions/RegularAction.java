@@ -3,6 +3,9 @@ package ca.mcscert.jpipe.actions;
 import ca.mcscert.jpipe.model.Unit;
 import java.util.List;
 
+/**
+ * A regular action is an atomic action that can be executed over a justification unit.
+ */
 public abstract class RegularAction implements Action {
 
     @Override
