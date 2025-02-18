@@ -4,3 +4,4 @@ export * from "./check-java.js";
 export * from "./developer-mode.js";
 export * from "./log-level.js";
 export * from "./jar-file.js";
+export * from "./path-configuration.js"

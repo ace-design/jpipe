@@ -1,10 +1,13 @@
 import * as vscode from 'vscode';
-import { AbstractConfiguration, ConfigKey } from "./abstract-configuration.js"
+import { AbstractConfiguration, ConfigKey, Configuration } from "./abstract-configuration.js"
 
 //class to monitor logLevel setting
 export class LogLevel implements AbstractConfiguration<string>{
-    public readonly key = ConfigKey.LOGLEVEL;
-    public readonly default_value = "error";
+    public readonly configuration: Configuration<string> = {
+        key: ConfigKey.LOGLEVEL,
+        default_value: "error"
+    };
+
     private value: string;
 
     public constructor(){
@@ -14,7 +17,7 @@ export class LogLevel implements AbstractConfiguration<string>{
     //updates logLevel setting
     public update(): string{
         let log_level: string;
-        let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.LOGLEVEL)?.globalValue;
+        let configuration = vscode.workspace.getConfiguration().inspect(this.configuration.key)?.globalValue;
             
         if(typeof configuration === "string"){
             log_level = configuration;

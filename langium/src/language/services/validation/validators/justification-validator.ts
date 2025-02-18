@@ -7,10 +7,12 @@ export class JustificationValidator extends Validator<JustificationPattern, "Jus
     //validation function for justification
     public override validate(model: JustificationPattern, accept: ValidationAcceptor): void {
         if(model.kind === "justification"){
-            let conclusion_exists = JustificationValidator.conclusionExists(model.variables);
+            if(!model.implementation){
+                let conclusion_exists = JustificationValidator.conclusionExists(model.variables);
 
-            if(!conclusion_exists){
-                accept("error", "All justification diagrams must have a conclusion", {node: model, property: "name", data: diagnosticData("noConclusionInJustification")})
+                if(!conclusion_exists){
+                    accept("error", "All justification diagrams must have a conclusion", {node: model, property: "name", data: diagnosticData("noConclusionInJustification")})
+                }
             }
         }
     }

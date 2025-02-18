@@ -16,12 +16,10 @@ export class ResolveReferenceRegistrar extends CodeActionRegistrar{
 
     //returns the actions associated to resolving the reference associated with the diagnostic
     protected override getActions(document: LangiumDocument, params: CodeActionParams, diagnostic: Diagnostic): Array<CodeAction> {
-        console.log("linking error found");
         let code_actions = new Array<CodeAction>();
         
         let data = this.toLinkingError(diagnostic.data);
         let paths = this.getPaths(data);
-        console.log("Path founds")
 
         paths.forEach(path => {
             code_actions.push(new ResolveReference(document, diagnostic, path))
@@ -51,7 +49,6 @@ export class ResolveReferenceRegistrar extends CodeActionRegistrar{
         let paths = new Set<URI>();
         
         this.index_manager.allElements().forEach(e => {
-            console.log("elements found")
             if(e.name === data.refText){
                 if(e.node){
                     let home_doc = AstUtils.getDocument(e.node);
