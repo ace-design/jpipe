@@ -1,7 +1,7 @@
 import { LangiumDocument, MaybePromise, MultiMap} from "langium";
 import { CodeActionProvider, LangiumServices } from "langium/lsp";
 import { CodeActionParams, CancellationToken, Command, CodeAction, Diagnostic } from "vscode-languageserver";
-import { RemoveLine, RemoveImplemented, ChangeDeclarationRegistrar, ResolveReferenceRegistrar, AddConclusion, CodeActionRegistrar } from "./code-actions/index.js";
+import { RemoveLine, RemoveImplemented, ChangeDeclarationRegistrar, ResolveReferenceRegistrar, AddVariableDefinitionLine, CodeActionRegistrar, VariableType } from "./code-actions/index.js";
 
 //class which provides all code actions (quick fixes)
 export class JpipeCodeActionProvider implements CodeActionProvider{
@@ -20,7 +20,9 @@ export class JpipeCodeActionProvider implements CodeActionProvider{
             new RemoveLine("supportNotMatching"),
             new RemoveImplemented("compositionImplementing"),
             new RemoveImplemented("nonPatternImplementing"),
-            new AddConclusion("noConclusionInJustification"),
+            new AddVariableDefinitionLine("noConclusionInJustification", VariableType.CONCLUSION), //while both add conclusions do the same thing, i kept the error codes separate in case I wanted to change the implementation in the future
+            new AddVariableDefinitionLine("noConclusionInPattern", VariableType.CONCLUSION),
+            new AddVariableDefinitionLine("noSupportInPattern", VariableType.SUPPORT),
             new ResolveReferenceRegistrar(this.services, "linking-error")
         ]
 

@@ -74,6 +74,8 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 
 	//creates the command based on command settings
 	private async makeCommand(command_settings: CommandSettings): Promise<string>{
+		let java_version = this.configuration.getConfiguration(ConfigKey.JAVAVERSION);
+
 		let jar_file = this.configuration.getConfiguration(ConfigKey.JARFILE);
 		
 		let input_file = this.document.uri.fsPath;
@@ -85,7 +87,9 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 		let log_level = this.configuration.getConfiguration(ConfigKey.LOGLEVEL);
 		
 
-		let command = 'java -jar "' + path.normalize(jar_file) + '" -i "' + path.normalize(input_file) + '" -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
+
+		let command = java_version + ' -jar ' + jar_file + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
+
 		
 		this.output_manager.log(JPipeOutput.USER, this.generateUserMessage(jar_file));
 

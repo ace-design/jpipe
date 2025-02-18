@@ -1,6 +1,6 @@
 import { AstNodeDescription, ReferenceInfo, Stream, stream } from "langium";
-import { CompletionContext, DefaultCompletionProvider } from "langium/lsp";
-import { isDeclaration, isCompositionInformation, isSupport } from "../../generated/ast.js";
+import { CompletionContext, CompletionValueItem, DefaultCompletionProvider } from "langium/lsp";
+import { isDeclaration, isCompositionInformation, isSupport, isInstruction } from "../../generated/ast.js";
 import { SupportCompletionProvider } from "./support-completion.js";
 import { DeclarationCompletionProvider } from "./class-completion.js";
 
@@ -38,16 +38,36 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
         return stream(references);
     }
 
-    // //helper function for finding non-variable keywords
-    // private findKeywords(potential_references: Set<AstNodeDescription>): Set<AstNodeDescription>{
-    //     let keywords = new Set<AstNodeDescription>();
 
-    //     potential_references.forEach(potential =>{
-    //         if(!isVariable(potential.node)){
-    //             keywords.add(potential);
-    //         }
-    //     });
+    /**
+     * Override this method to change how reference completion items are created.
+     * To change the `kind` of a completion item, override the `NodeKindProvider` service instead.
+     *
+     * @param nodeDescription The description of a reference candidate
+     * @returns A partial completion item
+     */
+    protected override createReferenceCompletionItem(nodeDescription: AstNodeDescription): CompletionValueItem {
+        let completion_item_kind = this.nodeKindProvider.getCompletionItemKind(nodeDescription);
 
-    //     return keywords;
-    // }
+        if(nodeDescription.node){
+            if(isInstruction(nodeDescription.node)){
+                return {
+                    nodeDescription,
+                    kind: completion_item_kind,
+                    detail: nodeDescription.type,
+                    sortText: '0',
+                    labelDetails: {
+                        detail: ": " + nodeDescription.node.information
+                    }
+                };    
+            }
+        }
+
+        return {
+            nodeDescription,
+            kind: completion_item_kind,
+            detail: nodeDescription.type,
+            sortText: '0'
+        };
+    }
 }
