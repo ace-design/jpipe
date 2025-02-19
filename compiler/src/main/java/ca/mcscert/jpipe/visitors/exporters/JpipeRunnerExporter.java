@@ -38,7 +38,7 @@ public class JpipeRunnerExporter extends ModelVisitor<StringBuilder> {
 
     @Override
     public void visit(Unit u) {
-        throw new RuntimeException("Cannot export to graphviz an entire compilation unit!");
+        throw new RuntimeException("Cannot export an entire compilation unit!");
     }
 
     @Override

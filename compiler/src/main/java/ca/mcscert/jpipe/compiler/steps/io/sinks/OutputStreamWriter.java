@@ -1,4 +1,4 @@
-package ca.mcscert.jpipe.compiler.steps.io;
+package ca.mcscert.jpipe.compiler.steps.io.sinks;
 
 import ca.mcscert.jpipe.cli.Configuration;
 import ca.mcscert.jpipe.compiler.model.Sink;
@@ -7,13 +7,14 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 /**
- * Flush the content of a string builder into a file (or stdout).
+ * Flush to an output stream any object that support a .toString() call.
+ *
+ * @param <T> the type of object we're publishing.
  */
-public class FileWriter implements Sink<StringBuilder> {
+public final class OutputStreamWriter<T> implements Sink<T> {
 
     @Override
-    public void pourInto(StringBuilder output, String fileName) throws IOException {
-
+    public final void pourInto(T output, String fileName) throws IOException {
         if (fileName.equals(Configuration.STDOUT_PATH)) {
             System.out.println(output.toString());
             System.out.flush();
@@ -26,5 +27,4 @@ public class FileWriter implements Sink<StringBuilder> {
             }
         }
     }
-
 }
