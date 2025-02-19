@@ -21,6 +21,7 @@ import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.visitors.exporters.GraphVizExporter;
 import ca.mcscert.jpipe.visitors.exporters.JpipeExporter;
+import ca.mcscert.jpipe.visitors.exporters.JpipeRunnerExporter;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,9 +61,10 @@ public final class CompilerFactory {
             case PNG, DOT, SVG -> chain.andThen(new ModelVisit<>(new GraphVizExporter()))
                                         .andThen(new GraphVizRenderer(config.getFormat()));
             case JPIPE -> chain.andThen(new ModelVisit<>(new JpipeExporter()))
-                    .andThen(new FileWriter());
+                               .andThen(new FileWriter());
             case JSON -> throw new UnsupportedOperationException("Json not supported");
-            case RUNNER -> throw new UnsupportedOperationException("Runner not supported");
+            case RUNNER -> chain.andThen(new ModelVisit<>(new JpipeRunnerExporter()))
+                                .andThen(new FileWriter());
         };
 
     }
