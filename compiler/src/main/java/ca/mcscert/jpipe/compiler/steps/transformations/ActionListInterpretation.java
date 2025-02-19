@@ -1,4 +1,4 @@
-package ca.mcscert.jpipe.compiler.steps;
+package ca.mcscert.jpipe.compiler.steps.transformations;
 
 import ca.mcscert.jpipe.actions.Action;
 import ca.mcscert.jpipe.actions.ExecutionEngine;

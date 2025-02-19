@@ -1,4 +1,4 @@
-package ca.mcscert.jpipe.compiler.steps.io;
+package ca.mcscert.jpipe.compiler.steps.io.sinks;
 
 import ca.mcscert.jpipe.cli.Configuration;
 import ca.mcscert.jpipe.cli.Format;
@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Compiler sink, rendering a GraphViz MutableGraph as an image (file or stdout).
  */
-public class GraphVizRenderer implements Sink<MutableGraph> {
+public final class GraphVizRenderer implements Sink<MutableGraph> {
 
     private final Format format;
     private static final Logger logger = LogManager.getLogger();
