@@ -69,14 +69,7 @@ public final class Configuration {
      */
     private void checkConsistency()  {
         logger.trace("  Checking configuration consistency");
-        // CR #1: if print mode then diagram name is provided
-        if (this.mode == Mode.PRINT) {
-            if (this.diagramName == null) {
-                ErrorManager.getInstance().fatal(
-                        new IllegalArgumentException("Print mode requires a diagram name"));
-            }
-        }
-
+        // Nothing to do right now
     }
 
     /**
