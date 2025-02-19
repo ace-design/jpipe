@@ -1,39 +1,100 @@
-# jPipe Action-Based Compiler
+# jPipe Compiler
 
-- Author: Sébastien Mosser
-- Version: 2024.2
+<div align="center">
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ace-design_jpipe&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ace-design_jpipe)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ace-design_jpipe&metric=bugs)](https://sonarcloud.io/summary/new_code?id=ace-design_jpipe)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ace-design_jpipe&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=ace-design_jpipe)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ace-design_jpipe&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ace-design_jpipe)
+
+</div>
+
+## Installing the compiler as a user
+
+If you don't plan to contribute to the source code, the easiest way is to follow the [installation instructions](https://github.com/ace-design/jpipe/wiki/Setup) to install a stable release on your operating system. 
+
+### Installing the compiler as a jPipe developer
+
+The first step is to clone this repository on your local computer. The compiler source code is in the `compiler` directory.
+
+```
+~ $ git clone git@github.com:ace-design/jpipe.git
+~ $ cd jpipe/compiler
+compiler $
+```
+
+### Compiling the source code (aka packaging)
+
+We're using Maven to handle dependencies and build lifecycle. 
+
+```
+compiler $ mvn clean package
+```
+
+One can skip some tests execution at build time by using the following options:
+
+- `-Dskip.tests.unit` to skip unit tests execution
+- `-Dskip.tests.integration` to skip integration tests execution
+
+When packaging, the checkstyle conventions for coding are not enforced.
+
+### Executing the compiler from CLI
+
+Assuming your code is packaged, you can call the compiler using maven:
+
+```
+ compiler $ mvn -q exec:java -Dexec.mainClass="ca.mcscert.jpipe.Main" -Dexec.args="-h"
+```
+
+The `-Dexec.args` argument contains the command line argument you want to pass to the compiler (here, `-h`).
+
+### Building the compiler artefact
+
+The released compiler is built as a turn-key JAR file, `jpipe.jar`. To build such an artefact, you can use maven:
+
+```
+ compiler $ mvn install
+```
+
+When installing, maven triggers checkstyle verifications to ensure the code respects the coding conventions we agreed on for the project (a [slight variation](./src/main/resources/checkstyle/checkstyle-suppressions.xml) of the one released by Google). Maven will refuse installing the compiler until your code meet the coding convention practices. 
+
+To avoid bad surprises when installing the compiler and check these practices on the fly, you might want to configure your IDE to check these rules while you are coding. 
+
+We provide a standalone configuration file for IntelliJ (`./src/main/resources/checkstyle/google_checks_intelliJ.xml`)
 
 ### How to run the compiler?
 
-```
-$ java -jar abc-jpipe.jar --help
-```
-
-One should [read the documentation](https://github.com/ace-design/jpipe/wiki), or consider following one of our tutorials.
-
-To run the compiler in developer mode
+Once the compiler is installed, you can use it directly by invoking the JAR file from the command line and get rid of maven:
 
 ```
- $ mvn -q exec:java -Dexec.mainClass="ca.mcscert.jpipe.Main" -Dexec.args="-h"
+compiler $ java -jar jpipe.jar -h
 ```
 
-### How to contribute?
+### Running sonarqube code quality analysis
+
+to execute this manually, you need a `SONAR_TOKEN` from sonarcloud.io. If you don't have one, 
+you can just rely on the automated CI/CD pipeline that run the analysis on each pull requests.
+
+To run the analysis manually:
+
+```
+compiler $ mvn verify \
+                org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                -Dsonar.projectKey=ace-design_jpipe 
+```
+
+## How to contribute to the compiler?
+
+Feel free to contact [Sébastien Mosser](mossers@mcmaster.ca) to discuss bout potential
+collaboration on jPipe.
 
 Before contributing, you might want to read some [_Architectural Decisions_](adr.md) recorded as Y-statements, providing some explanations on the global architecture.
 
-#### Compiling the compiler
+External contributions are accepted as pull requests.
 
-It is highly recommended to use the _released_ versions (e.g., through the VS Code marketplace or HomeBrew) rather than compiling from source. Use at your own risk.
 
-```
-$ mvn clean install
-```
+<div align="center">
 
-#### Configuring checkstyle
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=ace-design_jpipe)
 
-The project adheres to Google's recommendations, automatically enforced by CheckStyle. These 
-are automatically enforced by Maven when building the project. 
-Violating them is ok at _package_ time (e.g., while developing), but is considered an error at _install_ time (e.g., when releasing).
-
-To configure your IDE to reflect these practices, use the provided local configuration file (`./src/main/resources/checkstyle/google_checks_intelliJ.xml`)
-
+</div>

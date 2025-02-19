@@ -1,8 +1,7 @@
-package ca.mcscert.jpipe.compiler.steps;
+package ca.mcscert.jpipe.compiler.steps.checkers;
 
 import ca.mcscert.jpipe.compiler.model.Checker;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Step used for debugging purpose to run an arbitrary function on a model, without changing it.
