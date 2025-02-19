@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * Define what a compilation Unit is in JPipe.
  */
-public final class Unit implements Visitable, Serializable, Cloneable {
+public final class Unit implements Visitable {
 
     private final String name;
     private final SymbolTable<JustificationModel> contents;
@@ -96,11 +96,6 @@ public final class Unit implements Visitable, Serializable, Cloneable {
     @Override
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
-    }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 
     @Override

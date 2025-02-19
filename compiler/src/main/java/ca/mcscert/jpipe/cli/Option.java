@@ -20,7 +20,7 @@ public enum Option {
             "diagram name (default if only one)"),
 
     OUT_FORMAT("f", "format",
-            "output format in [png, svg]\n(Default: png)"),
+            "output format in [png, svg, dot, json, jd, runner]\n(Default: png)"),
 
     COMPILE_MODE("mode",
             "compiler's mode in [print, list] (default: print)"),

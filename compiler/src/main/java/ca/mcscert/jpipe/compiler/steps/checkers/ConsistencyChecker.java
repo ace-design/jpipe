@@ -1,4 +1,4 @@
-package ca.mcscert.jpipe.compiler.steps;
+package ca.mcscert.jpipe.compiler.steps.checkers;
 
 import ca.mcscert.jpipe.compiler.model.Checker;
 import ca.mcscert.jpipe.error.ErrorManager;
