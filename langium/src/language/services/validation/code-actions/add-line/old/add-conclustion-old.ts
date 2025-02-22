@@ -1,6 +1,6 @@
 import { LangiumDocument } from "langium";
 import { CodeAction, CodeActionKind, Diagnostic, WorkspaceEdit, TextEdit, CodeActionParams } from "vscode-languageserver";
-import { RegistrableCodeAction } from "./code-action-registration.js";
+import { RegistrableCodeAction } from "../../code-action-registration.js";
 
 //Class that adds a conclusion into the first line of the diagram selected
 export class AddConclusion extends RegistrableCodeAction{

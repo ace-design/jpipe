@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 import { EventSubscriber } from './event-manager.js';
 import { LogLevel, AbstractConfiguration, ConfigKey, DeveloperMode, CheckGraphviz, CheckJava, JarFile } from '../configuration/index.js';
 import { JPipeOutput, OutputManager } from './index.js';
-
-const fs = require("fs");
+import { JpipeFileSystemManager } from './file-system-manager.js';
+import { PathConfiguration } from '../configuration/path-configuration.js';
 
 //keeps track of values of configuration settings
 export class ConfigurationManager implements EventSubscriber<vscode.ConfigurationChangeEvent>{
@@ -11,7 +11,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
     //list of all configurations including their key, update function, and cgiturrent associated value
     private configurations: Map<ConfigKey, AbstractConfiguration<any>>;
     
-    constructor(context: vscode.ExtensionContext, private readonly output_manager: OutputManager, reset?: boolean){
+    constructor(context: vscode.ExtensionContext, private readonly output_manager: OutputManager, fs: JpipeFileSystemManager){
 
         this.configurations = new Map<ConfigKey, AbstractConfiguration<any>>;
         
@@ -20,11 +20,12 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
             new DeveloperMode(),
             new CheckGraphviz(),
             new CheckJava(),
-            new JarFile(context, fs, output_manager)
+            new JarFile(context, fs, output_manager),
+            new PathConfiguration(fs, output_manager,{key: ConfigKey.JAVAVERSION, default_value: "java"})
         ]
 
         configurations_list.forEach((config =>{
-            this.configurations.set(config.key,config);
+            this.configurations.set(config.configuration.key,config);
         }))
     }
 
@@ -42,7 +43,7 @@ export class ConfigurationManager implements EventSubscriber<vscode.Configuratio
     //updates on configuration change events
 	public async update(change: vscode.ConfigurationChangeEvent): Promise<void>{
         this.configurations.forEach((configuration)=>{
-            if(change.affectsConfiguration(configuration.key)){
+            if(change.affectsConfiguration(configuration.configuration.key)){
                 this.tryUpdate(configuration);
             }
         });

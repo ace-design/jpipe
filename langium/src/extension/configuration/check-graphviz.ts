@@ -1,10 +1,13 @@
 import * as vscode from 'vscode';
-import { AbstractConfiguration, ConfigKey } from "./abstract-configuration.js"
+import { AbstractConfiguration, ConfigKey, Configuration } from "./abstract-configuration.js"
 
 //class to keep track of checkGraphviz setting
 export class CheckGraphviz implements AbstractConfiguration<boolean>{
-    public readonly key = ConfigKey.CHECKGRAPHVIZ;
-    public readonly default_value = false;
+    public readonly configuration: Configuration<boolean> = {
+        key: ConfigKey.CHECKGRAPHVIZ,
+        default_value: false
+    };
+    
     private value: boolean;
 
     public constructor(){
@@ -14,7 +17,7 @@ export class CheckGraphviz implements AbstractConfiguration<boolean>{
     //updates value of configuration
     public update(): boolean{
         let check_graphviz: boolean;
-        let configuration = vscode.workspace.getConfiguration().inspect(ConfigKey.CHECKGRAPHVIZ)?.globalValue;
+        let configuration = vscode.workspace.getConfiguration().inspect(this.configuration.key)?.globalValue;
 
         if(typeof configuration === "boolean"){
             check_graphviz = true;

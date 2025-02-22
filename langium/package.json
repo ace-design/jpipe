@@ -65,6 +65,12 @@
                     "default": "",
                     "markdownDescription": "Set the path to the jar file compiler"
                 },
+                "jpipe.setJavaVersion": {
+                    "type": "string",
+                    "scope": "window",
+                    "default": "java",
+                    "markdownDescription": "Set the path to the version of java being used"
+                },
                 "jpipe.checkGraphviz": {
                     "type": "boolean",
                     "scope": "window",

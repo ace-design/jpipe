@@ -1,7 +1,7 @@
 import { DefaultScopeProvider, type Module, inject, } from 'langium';
 import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { JpipeGeneratedModule, JpipeGeneratedSharedModule } from './generated/module.js';
-import { JpipeCodeActionProvider, JpipeCompletionProvider, JpipeHoverProvider, JpipeScopeProvider, JpipeValidationRegistrar, JpipeLinker } from './services/index.js';
+import { JpipeScopeComputation, JpipeCodeActionProvider, JpipeCompletionProvider, JpipeHoverProvider, JpipeScopeProvider, JpipeValidationRegistrar, JpipeLinker } from './services/index.js';
 
 
 /**
@@ -38,6 +38,7 @@ export const JpipeModule: Module<JpipeServices, PartialLangiumServices & JpipeAd
     },
      references:{
         Linker: (services) => new JpipeLinker(services),
+        ScopeComputation: (services) => new JpipeScopeComputation(services),
         ScopeProvider: (services) => new JpipeScopeProvider(services)
     },
     scope: {
