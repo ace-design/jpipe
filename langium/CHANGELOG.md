@@ -1,6 +1,6 @@
 ## Changelog
 
-### Unreleased
+### v0.2.7 (2025-02-24)
 - Leader: Cass Braun
   - Features:
     - Added ability to activate and deactivate installation checks on startup for Java and GraphViz

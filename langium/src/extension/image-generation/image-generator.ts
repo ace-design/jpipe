@@ -88,7 +88,7 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
 		
 
 
-		let command = java_version + ' -jar ' + jar_file + ' -i ' + input_file.path + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
+		let command = java_version + ' -jar ' + jar_file + ' -i ' + input_file + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
 
 		
 		this.output_manager.log(JPipeOutput.USER, this.generateUserMessage(jar_file));
