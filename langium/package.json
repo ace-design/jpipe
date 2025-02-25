@@ -17,7 +17,7 @@
         "lint": "eslint src --ext ts",
         "langium:generate": "langium generate",
         "langium:watch": "langium generate --watch",
-        "compile": "npm run check-types && node esbuild.js",
+        "compile": "npm run check-types && node esbuild.mjs",
         "check-types": "tsc --noEmit",
         "watch": "npm-run-all -p watch:*",
         "watch:esbuild": "node esbuild.mjs --watch",
