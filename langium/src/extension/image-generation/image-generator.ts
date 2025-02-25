@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import util from "node:util";
-import path from 'node:path';
 import { ConfigKey } from '../configuration/index.js';
 import { OutputManager, ConfigurationManager, EventSubscriber, isTextEditor, Command, CommandUser, JPipeOutput } from '../managers/index.js';
 
