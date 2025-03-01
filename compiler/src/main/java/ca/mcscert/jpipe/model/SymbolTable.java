@@ -28,18 +28,6 @@ public final class SymbolTable<T> {
     }
 
     /**
-     * Constructor (shallow) copy.
-     *
-     * @param parent the parent symbol table, to integrate in the one we're building.
-     */
-    public SymbolTable(SymbolTable<T> parent) {
-        this();
-        for (String key : parent.keys()) {
-            this.record(key, parent.get(key)); // Shallow clone, not cloning referenced value
-        }
-    }
-
-    /**
      * Record a new symbol in the symbol table.
      *
      * @param identifier the symbol's identifier.
@@ -98,6 +86,17 @@ public final class SymbolTable<T> {
     public Set<String> keys() {
         return new HashSet<>(this.symbols.keySet());
     }
+
+    /**
+     * Check if a given symbol exists inside the table.
+     *
+     * @param identifier the symbol to look for.
+     * @return true if it exists, false elsewhere.
+     */
+    public boolean exists(String identifier) {
+        return this.symbols.containsKey(identifier);
+    }
+
 
     @Override
     public String toString() {

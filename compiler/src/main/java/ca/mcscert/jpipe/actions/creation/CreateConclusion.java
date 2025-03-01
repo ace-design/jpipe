@@ -33,7 +33,6 @@ public final class CreateConclusion extends RegularAction {
         Conclusion conclusion = new Conclusion(identifier, label);
         context.addInto(justificationId, conclusion);
         JustificationModel j = context.get(justificationId);
-        j.setConclusion(conclusion);
     }
 
     @Override

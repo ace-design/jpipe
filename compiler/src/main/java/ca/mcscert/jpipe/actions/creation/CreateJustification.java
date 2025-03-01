@@ -9,7 +9,6 @@ import ca.mcscert.jpipe.model.elements.Justification;
  */
 public final class CreateJustification extends RegularAction {
 
-    private final String fileName;
     private final String identifier;
     private final String parent;
 
@@ -19,8 +18,7 @@ public final class CreateJustification extends RegularAction {
      * @param fileName the file name containing the justification.
      * @param identifier the identified to be used to access it.
      */
-    public CreateJustification(String fileName, String identifier) {
-        this.fileName = fileName;
+    public CreateJustification(String identifier) {
         this.identifier = identifier;
         this.parent = null;
     }
@@ -31,8 +29,7 @@ public final class CreateJustification extends RegularAction {
      * @param fileName the file name containing the justification.
      * @param identifier the identified to be used to access it.
      */
-    public CreateJustification(String fileName, String identifier, String parentId) {
-        this.fileName = fileName;
+    public CreateJustification(String identifier, String parentId) {
         this.identifier = identifier;
         this.parent = parentId;
     }
@@ -45,7 +42,10 @@ public final class CreateJustification extends RegularAction {
 
     @Override
     public String toString() {
-        return "CreateJustification{" + "identifier='" + identifier + '\''
-                + ", parent='" + parent + '\'' + '}';
+        final StringBuffer sb = new StringBuffer("CreateJustification{");
+        sb.append(", identifier='").append(identifier).append('\'');
+        sb.append(", parent='").append(parent).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

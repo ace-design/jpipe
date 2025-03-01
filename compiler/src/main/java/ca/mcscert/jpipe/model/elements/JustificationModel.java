@@ -1,6 +1,5 @@
 package ca.mcscert.jpipe.model.elements;
 
-import ca.mcscert.jpipe.error.SemanticError;
 import ca.mcscert.jpipe.model.SymbolTable;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.Replicable;
@@ -14,13 +13,12 @@ public abstract class JustificationModel
 
     protected final String name;
     protected final SymbolTable<JustificationElement> symbols;
-    protected Conclusion conclusion;
-    protected boolean ready;
+    protected boolean frozen;
 
-    protected JustificationModel(String name, boolean ready) {
+    protected JustificationModel(String name, boolean isFrozen) {
         this.name = name;
         this.symbols = new SymbolTable<>();
-        this.ready = ready;
+        this.frozen = isFrozen;
     }
 
     protected JustificationModel(String name) {
@@ -31,29 +29,22 @@ public abstract class JustificationModel
         return name;
     }
 
-    public Conclusion getConclusion() {
-        return conclusion;
+    public void freeze() {
+        this.frozen = true;
+    }
+    public void unfreeze() { this.frozen = false; }
+
+    public boolean isFrozen() {
+        return this.frozen;
     }
 
-    public void publish() {
-        this.ready = true;
+    public JustificationElement get(String identifier) {
+        String id = (identifier.startsWith(this.name) ? identifier.split(":")[1] : identifier );
+        return this.symbols.get(id);
     }
 
-    public boolean isReady() {
-        return this.ready;
-    }
-
-    /**
-     * Set the one and only conclusion for this justification.
-     *
-     * @param conclusion the conclusion reached by this justification.
-     */
-    public void setConclusion(Conclusion conclusion) {
-        if (this.conclusion == null) {
-            this.conclusion = conclusion;
-        } else {
-            this.replace(this.conclusion, conclusion);
-        }
+    public Collection<JustificationElement> contents() {
+        return this.symbols.values();
     }
 
     /**
@@ -62,16 +53,29 @@ public abstract class JustificationModel
      * @param e the element to add
      */
     public void add(JustificationElement e) {
+        if (this.isFrozen()) {
+            throw new IllegalStateException("Cannot add an element to a frozen justification");
+        }
         this.symbols.record(e.getIdentifier(), e);
+        e.setContainer(this);
     }
 
-    public JustificationElement get(String identifier) {
-        return this.symbols.get(identifier);
+    /**
+     * Remove an element from a given justification.
+     *
+     * @param e the element to remove.
+     */
+    public void remove(JustificationElement e) {
+        if (this.isFrozen()) {
+            throw new IllegalStateException("Cannot remove an element from a frozen justification");
+        }
+        if (! this.symbols.exists(e.getIdentifier())) {
+            throw new IllegalStateException("Cannot remove a non-existing element from a justification");
+        }
+        e.setContainer(null);
+        this.symbols.delete(e.getIdentifier());
     }
 
-    public Collection<JustificationElement> contents() {
-        return this.symbols.values();
-    }
 
     /**
      * Replace an element by another one inside a justification.
@@ -88,22 +92,9 @@ public abstract class JustificationModel
                 }
             }
         }
-        // Corner case: we're replacing the conclusion
-        if (this.conclusion != null && this.conclusion.equals(original)) {
-            this.conclusion = (Conclusion) newOne;
-        }
         // Delete the original, and add the new one.
-        this.symbols.delete(original.getIdentifier());
-        this.symbols.record(newOne.getIdentifier(), newOne);
-    }
-
-    @Override
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("name='").append(name).append('\'');
-        sb.append(", symbols=").append(symbols);
-        sb.append(", conclusion=").append(conclusion);
-        return sb.toString();
+        this.remove(original);
+        this.add(newOne);
     }
 
     /**
@@ -112,16 +103,15 @@ public abstract class JustificationModel
      * this, and re-wire all relations between the newly cloned elements as they were in the
      * original object.
      *
-     * @param clone the justification model to modify (side-effect) with the deep-cloning process.
+     * @param clone the justification model to modify (side effect) with the deep-cloning process.
      */
     protected final void deepLink(JustificationModel clone) {
-        final boolean status = clone.ready; // remembering clone's status
-        clone.ready = false; // opening the clone to allow internal modification
+        clone.unfreeze(); // opening the clone for modification
 
         // Building shallow clone of each element in the justification model
         for (String id : this.symbols.keys()) {
             JustificationElement elem = this.get(id).shallow();
-            clone.symbols.record(id, elem); // replacing by the cloned (but still not wired) one.
+            clone.add(elem); // replacing by the cloned (but still not wired) one.
         }
 
         // Translating the relation existing in 'this' into 'clone'.
@@ -132,14 +122,17 @@ public abstract class JustificationModel
                 supportingClone.supports(cloned);
             }
         }
+    }
 
-        // Translating conclusion
-        if (this.conclusion != null) {
-            JustificationElement clonedConclusion = clone.get(this.conclusion.getIdentifier());
-            clone.setConclusion((Conclusion) clonedConclusion); // Cast-compliant by design
-        }
 
-        clone.ready = status; // setting status back to the original one.
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("JustificationModel{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", symbols=").append(symbols);
+        sb.append(", ready=").append(frozen);
+        sb.append('}');
+        return sb.toString();
     }
 
 }

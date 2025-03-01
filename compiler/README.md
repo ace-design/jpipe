@@ -31,6 +31,13 @@ We're using Maven to handle dependencies and build lifecycle.
 compiler $ mvn clean package
 ```
 
+Packaging only run integration tests. Non-regression tests are defined as integration tests, and 
+can be triggered by running:
+
+```
+compiler $ mvn clean verify
+```
+
 One can skip some tests execution at build time by using the following options:
 
 - `-Dskip.tests.unit` to skip unit tests execution
@@ -56,9 +63,17 @@ The released compiler is built as a turn-key JAR file, `jpipe.jar`. To build suc
  compiler $ mvn install
 ```
 
-When installing, maven triggers checkstyle verifications to ensure the code respects the coding conventions we agreed on for the project (a [slight variation](./src/main/resources/checkstyle/checkstyle-suppressions.xml) of the one released by Google). Maven will refuse installing the compiler until your code meet the coding convention practices. 
+When installing:
 
-To avoid bad surprises when installing the compiler and check these practices on the fly, you might want to configure your IDE to check these rules while you are coding. 
+  1. Code is compiled, unit tests are ran, and a jar file is produced;
+  2. Integration tests are ran to verify non-regression; 
+  1. maven triggers checkstyle verifications to ensure the code respects the coding 
+conventions we agreed on for the project (a [slight variation](./src/main/resources/checkstyle/checkstyle-suppressions.xml) of the one released by Google). 
+2. 
+3. Maven will refuse installing the compiler until your code pass all these steps 
+
+To avoid bad surprises when installing the compiler and check coding practices on the fly, you 
+might want to configure your IDE to check these rules while you are coding. 
 
 We provide a standalone configuration file for IntelliJ (`./src/main/resources/checkstyle/google_checks_intelliJ.xml`)
 

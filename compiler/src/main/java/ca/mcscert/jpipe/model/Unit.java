@@ -88,6 +88,10 @@ public final class Unit implements Visitable {
         return this.contents.get(identifier);
     }
 
+    public boolean exists(String identifier) {
+        return this.contents.keys().contains(identifier);
+    }
+
     public Collection<JustificationModel> getContents() {
         return this.contents.values();
     }

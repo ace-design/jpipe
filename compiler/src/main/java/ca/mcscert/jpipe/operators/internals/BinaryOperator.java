@@ -1,4 +1,4 @@
-package ca.mcscert.jpipe.operators;
+package ca.mcscert.jpipe.operators.internals;
 
 /**
  * Model what a binary operator is in jPipe.
