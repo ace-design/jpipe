@@ -2,7 +2,6 @@ package ca.mcscert.jpipe.operators.internals;
 
 import ca.mcscert.jpipe.model.elements.JustificationElement;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
-import ca.mcscert.jpipe.operators.BinaryOperator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;

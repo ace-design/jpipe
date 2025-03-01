@@ -36,7 +36,7 @@ public final class Pattern extends JustificationModel {
 
     @Override
     public Pattern replicate() {
-        Pattern clone = new Pattern(this.name, this.ready);
+        Pattern clone = new Pattern(this.name, this.frozen);
         deepLink(clone);
         return clone;
     }

@@ -1,10 +1,10 @@
 package ca.mcscert.jpipe.model.elements;
 
-import ca.mcscert.jpipe.error.SemanticError;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.ShallowCloneable;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Define what a justification element is. A Justification element is "anything" that can be used
@@ -15,6 +15,7 @@ public abstract class JustificationElement
 
     protected final String identifier;
     protected final String label;
+    protected JustificationModel container;
 
     /**
      * A justification element comes minimally with a label and an identifier.
@@ -31,26 +32,17 @@ public abstract class JustificationElement
         return identifier;
     }
 
-    public String getLabel() {
+    public final String getLabel() {
         return label;
     }
 
-    /**
-     * Throws a SemanticError if there is an existing element, and if candidate and existing
-     * do not share the same identifier.
-     *
-     * @param existing the element one is trying to replace.
-     * @param candidate the element to be used to replace existing.
-     */
-    protected void assertCanBeReplaced(JustificationElement existing,
-                                       JustificationElement candidate) {
-        if (existing == null || existing.getIdentifier().equals(candidate.getIdentifier())) {
-            return;
-        }
-        String msg = String.format("%s cannot be supported by %s as it is already supported by %s",
-                this.getClass().getName(), candidate, existing);
-        throw new SemanticError(msg);
+    public final String fullyQualifiedName() {
+        String prefix = (this.container ==  null ? "<?>" : this.container.getName() );
+        return prefix + ":" + this.identifier;
+    }
 
+    final void setContainer(JustificationModel container) {
+        this.container = container;
     }
 
     /**
@@ -60,10 +52,15 @@ public abstract class JustificationElement
      */
     public abstract Set<JustificationElement> getSupports();
 
-
-    /* *************************************************************
-     * * Double-dispatch mechanism for adding supporting relations *
-     * ************************************************************* */
+    /**
+     * Returns the ids of the elements supporting this one.
+     *
+     * @return a set of identifiers.
+     */
+    public Set<String> getSupportingIds() {
+        return this.getSupports().stream()
+                    .map(JustificationElement::getIdentifier).collect(Collectors.toSet());
+    }
 
     /**
      * Double-dispatch mechanism to model which element can support what as part of a justification.
@@ -73,6 +70,11 @@ public abstract class JustificationElement
      * @param that the elements one wants to support (as in "this supports that" in DSL syntax)
      */
     public abstract void supports(JustificationElement that);
+
+
+    /* *************************************************************
+     * * Double-dispatch mechanism for adding supporting relations *
+     * ************************************************************* */
 
 
     /**
@@ -128,7 +130,7 @@ public abstract class JustificationElement
 
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -140,7 +142,7 @@ public abstract class JustificationElement
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hashCode(identifier);
     }
 
