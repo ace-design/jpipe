@@ -9,6 +9,11 @@ import java.util.UUID;
  */
 public class SymbolRegistry {
 
+    /**
+     * Provide access to the global (singleton) registry.
+     *
+     * @return the singletoned instance.
+     */
     public static SymbolRegistry getInstance() {
         if (instance == null) {
             instance = new SymbolRegistry();
@@ -26,28 +31,21 @@ public class SymbolRegistry {
     }
 
 
+    /**
+     * Record a symbol inside the registry.
+     *
+     * @param scope the scope containing the symbol (null if global)
+     * @param name the name of the symbol
+     * @param file the file containing the symbol
+     * @param line line where the symbol was declared
+     * @param column column where the symbol was declared
+     */
     public void record(String scope, String name, String file, int line, int column) {
         scope = (scope == null ? NO_SCOPE : scope);
         String symbolName = scope + ":" + name;
         this.lookup.put(symbolName, new Symbol(symbolName, file, line, column));
     }
 
-    public String rename(String oldSymbol) {
-        if (! lookup.containsKey(oldSymbol)) {
-            throw new IllegalArgumentException("Cannot rename non-existing symbol ["
-                                                    + oldSymbol + "]");
-        }
-        String newSymbol = UUID.randomUUID().toString();
-        this.lookup.put(newSymbol, this.lookup.get(oldSymbol));
-        return newSymbol;
-    }
-
-    public Symbol lookup(String symbol) {
-        if (this.lookup.containsKey(symbol)) {
-            return lookup.get(symbol); // terminal declaration
-        }
-        throw new IllegalArgumentException("Unknown symbol [" + symbol + "]");
-    }
 
     /**
      * Define what a symbol is.

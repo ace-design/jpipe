@@ -32,14 +32,17 @@ public abstract class JustificationModel
     public void freeze() {
         this.frozen = true;
     }
-    public void unfreeze() { this.frozen = false; }
+
+    public void unfreeze() {
+        this.frozen = false;
+    }
 
     public boolean isFrozen() {
         return this.frozen;
     }
 
     public JustificationElement get(String identifier) {
-        String id = (identifier.startsWith(this.name) ? identifier.split(":")[1] : identifier );
+        String id = (identifier.startsWith(this.name) ? identifier.split(":")[1] : identifier);
         return this.symbols.get(id);
     }
 
@@ -70,7 +73,8 @@ public abstract class JustificationModel
             throw new IllegalStateException("Cannot remove an element from a frozen justification");
         }
         if (! this.symbols.exists(e.getIdentifier())) {
-            throw new IllegalStateException("Cannot remove a non-existing element from a justification");
+            String msg = "Cannot remove a non-existing element from a justification";
+            throw new IllegalStateException(msg);
         }
         e.setContainer(null);
         this.symbols.delete(e.getIdentifier());

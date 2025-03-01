@@ -37,7 +37,7 @@ public abstract class JustificationElement
     }
 
     public final String fullyQualifiedName() {
-        String prefix = (this.container ==  null ? "<?>" : this.container.getName() );
+        String prefix = (this.container ==  null ? "<?>" : this.container.getName());
         return prefix + ":" + this.identifier;
     }
 
