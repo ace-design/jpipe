@@ -17,6 +17,7 @@ public class RecordSymbol extends RegularAction {
 
     /**
      * Record a symbol.
+     *
      * @param scope the scope of the symbol (null if global)
      * @param symbol the symbol name
      * @param filename the file containing the declaration

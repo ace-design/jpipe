@@ -15,7 +15,6 @@ public final class CreateJustification extends RegularAction {
     /**
      * Provides information necessary to create a justification.
      *
-     * @param fileName the file name containing the justification.
      * @param identifier the identified to be used to access it.
      */
     public CreateJustification(String identifier) {
@@ -26,7 +25,6 @@ public final class CreateJustification extends RegularAction {
     /**
      * Provides information necessary to create a justification.
      *
-     * @param fileName the file name containing the justification.
      * @param identifier the identified to be used to access it.
      */
     public CreateJustification(String identifier, String parentId) {
