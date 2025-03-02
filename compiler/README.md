@@ -75,7 +75,7 @@ conventions we agreed on for the project (a [slight variation](./src/main/resour
 To avoid bad surprises when installing the compiler and check coding practices on the fly, you 
 might want to configure your IDE to check these rules while you are coding. 
 
-We provide a standalone configuration file for IntelliJ (`./src/main/resources/checkstyle/google_checks_intelliJ.xml`)
+We provide a standalone configuration file for IntelliJ (`./src/main/resources/checkstyle/jpipe_checks.xml`)
 
 ### How to run the compiler?
 
@@ -96,6 +96,12 @@ To run the analysis manually:
 compiler $ mvn verify \
                 org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
                 -Dsonar.projectKey=ace-design_jpipe 
+```
+
+### Listing outdated dependencies
+
+```
+compiler $ mvn versions:display-dependency-updates
 ```
 
 ## How to contribute to the compiler?
