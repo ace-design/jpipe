@@ -24,7 +24,7 @@ public final class ErrorManager {
     /**
      * private constructor to prevent accidental instantiation from outside.
      */
-    private ErrorManager() { }
+    private ErrorManager() {}
 
     /**
      * Access to the singleton-ed instance.
