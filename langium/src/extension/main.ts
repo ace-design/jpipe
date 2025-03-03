@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
     //create needs for image generation
     const image_generator = new ImageGenerator(configuration_manager, output_manager);
-    const preview_provider = new PreviewProvider(image_generator, output_manager);
+    const preview_provider = new PreviewProvider(image_generator, output_manager, context);//remove context later and add to event listener
 
 
     //register commands from classes

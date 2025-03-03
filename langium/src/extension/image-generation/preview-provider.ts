@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Format, ImageGenerator } from './image-generator.js';
 import { JPipeOutput, OutputManager, EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent, Command, CommandUser } from '../managers/index.js';
+import { HTMLProvider } from './html-provider.js';
 
 
 //altered from editorReader
@@ -28,7 +29,9 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
     private static image_generator: ImageGenerator;
 
-    constructor(image_generator: ImageGenerator, private readonly output_manager: OutputManager) {
+	//private static HTMLProvider: HTMLProvider;
+
+    constructor(image_generator: ImageGenerator, private readonly output_manager: OutputManager, private readonly context: vscode.ExtensionContext) {
 		// Without any initial data, must be empty string to prevent null error. 
 		PreviewProvider.svg_data = "";
 		PreviewProvider.updating = false;
@@ -36,6 +39,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
         PreviewProvider.image_generator = image_generator;
 
 		vscode.window.registerCustomEditorProvider(PreviewProvider.ext_command, this);
+		PreviewProvider.textPanel;
 	}
 
 	public getCommands(): Command[] | Command{
@@ -101,6 +105,18 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 				},
 				{}
 			);
+			
+			PreviewProvider.webviewPanel.webview.onDidReceiveMessage(
+				message => {
+				  switch (message.command) {
+					case 'handle_click':
+					  vscode.window.showErrorMessage(message.text);
+					  return;
+				  }
+				},
+				undefined,
+				this.context.subscriptions
+			  );
 			PreviewProvider.webviewDisposed = false;
 		}
 
@@ -198,96 +214,12 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
 	// HTML Code for the webview.
 	private static getHtmlForWebview(): string {
-		if(PreviewProvider.textPanel === undefined && vscode.window.activeTextEditor){
-			PreviewProvider.textPanel = vscode.window.showTextDocument(vscode.window.activeTextEditor.document, vscode.ViewColumn.One, true);
-		}
-
-		const svgContent = PreviewProvider.svg_data || ''; // Ensure svg_data is not null or undefined
-		return /* html */`
-			<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>SVG Viewer</title>
-				<style>
-					body {
-						margin: 0;
-						padding: 0;
-						display: flex;
-						justify-content: center;
-						align-items: center;
-						height: 100vh;
-						background-color: #f0f0f0;
-					}
-					#svg-container {
-						display: flex;
-						justify-content: center;
-						align-items: center;
-						width: 100%;
-						height: 100%;
-					}
-					svg {
-						max-width: 100%;
-						max-height: 100%;
-						width: auto;
-						height: auto;
-					}
-				</style>
-			</head>
-			<body>
-				<div id="svg-container">
-					${svgContent}
-				</div>
-			</body>
-			</html>
-		`;
+		return HTMLProvider.getHtmlForWebview(PreviewProvider.svg_data);
 	}
 
 
 	private static getLoadingHTMLWebview(): string {
-		return `
-		<!DOCTYPE html>
-		<html lang="en">
-		<head>
-		  <meta charset="UTF-8">
-		  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		  <title>Loading Page</title>
-		  <style>
-			body {
-			  margin: 0;
-			  padding: 0;
-			  position: relative; /* Add this line */
-			  display: flex;
-			  justify-content: center;
-			  align-items: center;
-			  height: 100vh;
-			  background-color: #f0f0f0;
-			}
-			.loader {
-			  position: absolute; /* Add this line */
-			  top: 50%; /* Add this line */
-			  left: 50%; /* Add this line */
-			  transform: translate(-50%, -50%); /* Add this line */
-			  border: 8px solid #f3f3f3;
-			  border-top: 8px solid #3498db;
-			  border-radius: 50%;
-			  width: 50px;
-			  height: 50px;
-			  animation: spin 1s linear infinite;
-			}
-			@keyframes spin {
-			  0% { transform: rotate(0deg); }
-			  100% { transform: rotate(360deg); }
-			}
-		  </style>
-		</head>
-		<body>
-		  <div class="loader"></div>
-		  <div>${PreviewProvider.svg_data}</div>
-		</body>
-		</html>		
-		`
+		return HTMLProvider.getLoadingHTMLWebview();
 	}
 
 }
