@@ -63,15 +63,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 	private async createWebview(): Promise<void>{
 		// If previous global webview id disposed, create a new one.
 		if (PreviewProvider.webviewDisposed){
-			PreviewProvider.webviewPanel = vscode.window.createWebviewPanel(
-				'SVG', // Identifies the type of the webview. Used internally
-				'Diagram Preview', // Title of the panel displayed to the user
-				{
-					viewColumn: vscode.ViewColumn.Beside,
-					preserveFocus: true
-				},
-				{}
-			);
+			PreviewProvider.webviewPanel = PreviewProvider.createWebviewPanel();
+
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
 			PreviewProvider.webviewDisposed = false;
 
@@ -80,6 +73,19 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 			}
 			
 			PreviewProvider.webviewPanel.webview.html = PreviewProvider.getHtmlForWebview();
+			
+			PreviewProvider.webviewPanel.webview.onDidReceiveMessage(
+				(message) => {
+					switch(message.command){
+						case "handle_click":
+							vscode.window.showErrorMessage("error")
+							vscode.window.showErrorMessage("error" + message.text)
+					}
+				},
+				undefined,
+				this.context.subscriptions
+			  );
+
 		} else {
 			PreviewProvider.webviewPanel.dispose();
 			PreviewProvider.webviewDisposed = true;
@@ -96,27 +102,9 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
 		// If previous global webview id disposed, create a new one.
 		if (PreviewProvider.webviewDisposed){
-			PreviewProvider.webviewPanel = vscode.window.createWebviewPanel(
-				'SVG', // Identifies the type of the webview. Used internally
-				'Diagram Preview', // Title of the panel displayed to the user
-				{
-					viewColumn: vscode.ViewColumn.Beside,
-					preserveFocus: true
-				},
-				{}
-			);
-			
-			PreviewProvider.webviewPanel.webview.onDidReceiveMessage(
-				message => {
-				  switch (message.command) {
-					case 'handle_click':
-					  vscode.window.showErrorMessage(message.text);
-					  return;
-				  }
-				},
-				undefined,
-				this.context.subscriptions
-			  );
+			PreviewProvider.webviewPanel = PreviewProvider.createWebviewPanel();
+
+
 			PreviewProvider.webviewDisposed = false;
 		}
 
@@ -197,6 +185,18 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 				`;
 			}
 		}
+	}
+
+	private static createWebviewPanel(): vscode.WebviewPanel{
+		return vscode.window.createWebviewPanel(
+			'SVG', // Identifies the type of the webview. Used internally
+			'Diagram Preview', // Title of the panel displayed to the user
+			{
+				viewColumn: vscode.ViewColumn.Beside,
+				preserveFocus: true
+			},
+			{enableScripts:true}
+		)
 	}
 
 	//helper function to update text selection

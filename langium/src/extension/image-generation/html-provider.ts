@@ -46,15 +46,14 @@ export class HTMLProvider{
                 </style>
             </head>
             <body>
-            <script>
-            `+HTMLProvider.getScript()+`
-            </script>
                 <div id="svg-container">
                     ${svgContent}
                 </div>
+                <script>
+                `+HTMLProvider.getScript()+`
+                </script>
             </body>
-            </html>
-        `;
+        </html>`;
     }
 
     //creates the loading HTMLWebview
@@ -110,7 +109,9 @@ export class HTMLProvider{
             // Registering event listeners for all nodes in the graph
             var nodes = Array.from(document.querySelectorAll('g .node'));
             nodes.forEach( function(n) { 
-                n.addEventListener("click", function (e) { handle_click(n.id); }) 
+                n.addEventListener("click", function (e) {                 
+                console.log("element clicked" + n.id); 
+                handle_click(n.id); }) 
             })
 
         `+ HTMLProvider.getFunction()
@@ -129,6 +130,7 @@ export class HTMLProvider{
                     id: node_identifier,
                     text: text
                 }
+
 
                 vscode.postMessage(message)
             }`;
