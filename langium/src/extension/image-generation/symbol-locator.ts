@@ -27,7 +27,7 @@ export class SymbolLocator{
         let instruction_name = instruction_array[1];
         let instruction_text = instruction_array[3];
 
-        this.output_manager.log(JPipeOutput.DEBUG, "instruction_array: " + message.text + "instruction name: " + instruction_name + "\tinstruction text: " + instruction_text);
+        this.output_manager.log(JPipeOutput.DEBUG, "instruction name: " + instruction_name + "\tinstruction text: " + instruction_text);
         
         let range = this.getSearchRange();
 
@@ -104,9 +104,9 @@ export class SymbolLocator{
     }
 
     private getSearchRange(): Range {
+        this.output_manager.log(JPipeOutput.DEBUG, "Getting search range");
         const start = Position.create(0, 0);
         const lastLine = this.document.lineCount - 1;
-        this.output_manager.log(JPipeOutput.DEBUG, "Getting search range");
 
         const last_line_length = this.document.getText( this.vscodeRange(Range.create(Position.create(lastLine, 0), Position.create(lastLine + 1, 0)))).length;
         this.output_manager.log(JPipeOutput.DEBUG, "line length gotten"); 

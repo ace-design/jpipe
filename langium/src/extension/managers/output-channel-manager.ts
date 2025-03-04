@@ -12,14 +12,22 @@ export enum JPipeOutput{
 export class OutputManager{
     private channels: Map<JPipeOutput, vscode.OutputChannel>;
 
+    private inactive_channels: Array<JPipeOutput>;
+    
     constructor(){
         this.channels = new Map<JPipeOutput, vscode.OutputChannel>();
-        
+
+        this.inactive_channels = [
+            //JPipeOutput.DEBUG
+        ]
+
         Object.values(JPipeOutput).forEach(key =>{
-            this.addChannel(key);
+            if(this.active(key)){
+                this.addChannel(key)
+            }
         })
-     
     }
+
     //helper function to add a channel to the output manager
     private addChannel(channel: JPipeOutput): void{
         this.channels.set(channel, vscode.window.createOutputChannel(channel));
@@ -27,11 +35,18 @@ export class OutputManager{
 
     //function to add logs to output channels, can be altered for superior formatting in future
     public log(channel: JPipeOutput, info: string): void{
-        let output = this.channels.get(channel);
+        if(this.active(channel)){
+            let output = this.channels.get(channel);
 
-        if(output){
-            output.appendLine(info);
+            if(output){
+                output.appendLine(info);
+            }
         }
+    }
+
+    //helper function to determine an output channel's activity status
+    private active(channel: JPipeOutput): boolean{
+        return !this.inactive_channels.includes(channel);
     }
 }
 
