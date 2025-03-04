@@ -1,10 +1,13 @@
 import * as vscode from 'vscode';
-import { AbstractConfiguration, ConfigKey } from "./abstract-configuration.js"
+import { AbstractConfiguration, ConfigKey, Configuration } from "./abstract-configuration.js"
 
 //class to monitor checkJava setting
 export class CheckJava implements AbstractConfiguration<boolean>{
-    public readonly key = ConfigKey.CHECKJAVA;
-    public readonly default_value = false;
+    public readonly configuration: Configuration<boolean> = {
+        key: ConfigKey.CHECKJAVA,
+        default_value: false
+    };
+    
     private value: boolean;
 
     public constructor(){

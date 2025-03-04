@@ -4,7 +4,7 @@
     "description": "Language Support for the jPipe language",
     "author": "McMaster Centre for Software Certification (McSCert)",
     "publisher": "mcscert",
-    "version": "0.2.6",
+    "version": "0.2.7",
     "license": "MIT",
     "icon": "images/logo.png",
     "repository": {
@@ -64,6 +64,12 @@
                     "scope": "window",
                     "default": "",
                     "markdownDescription": "Set the path to the jar file compiler"
+                },
+                "jpipe.setJavaVersion": {
+                    "type": "string",
+                    "scope": "window",
+                    "default": "java",
+                    "markdownDescription": "Set the path to the version of java being used"
                 },
                 "jpipe.checkGraphviz": {
                     "type": "boolean",
