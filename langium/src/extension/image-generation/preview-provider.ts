@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
-import { Format, ImageGenerator } from './image-generator.js';
+import { Format, ImageGenerator, SymbolLocator, HTMLProvider } from './index.js';
 import { JPipeOutput, OutputManager, EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent, Command, CommandUser } from '../managers/index.js';
-import { HTMLProvider } from './html-provider.js';
-
+import { LanguageClient } from 'vscode-languageclient/node.js';
 
 //altered from editorReader
 export class PreviewProvider implements vscode.CustomTextEditorProvider, CommandUser, EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.TextEditorSelectionChangeEvent> {
@@ -29,9 +28,11 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
     private static image_generator: ImageGenerator;
 
+	private static symbol_locator: SymbolLocator;
+
 	//private static HTMLProvider: HTMLProvider;
 
-    constructor(image_generator: ImageGenerator, private readonly output_manager: OutputManager, private readonly context: vscode.ExtensionContext) {
+    constructor(image_generator: ImageGenerator, client: LanguageClient, private readonly output_manager: OutputManager, private readonly context: vscode.ExtensionContext) {
 		// Without any initial data, must be empty string to prevent null error. 
 		PreviewProvider.svg_data = "";
 		PreviewProvider.updating = false;
@@ -40,6 +41,12 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
 		vscode.window.registerCustomEditorProvider(PreviewProvider.ext_command, this);
 		PreviewProvider.textPanel;
+		
+		PreviewProvider.symbol_locator = new SymbolLocator(client, output_manager);
+
+		if(vscode.window.activeTextEditor){
+			PreviewProvider.symbol_locator.updateDocument(vscode.window.activeTextEditor.document);
+		}
 	}
 
 	public getCommands(): Command[] | Command{
@@ -76,11 +83,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 			
 			PreviewProvider.webviewPanel.webview.onDidReceiveMessage(
 				(message) => {
-					switch(message.command){
-						case "handle_click":
-							vscode.window.showErrorMessage("error")
-							vscode.window.showErrorMessage("error" + message.text)
-					}
+					this.output_manager.log(JPipeOutput.DEBUG, "handling message")
+					this.handleMessage(message);
 				},
 				undefined,
 				this.context.subscriptions
@@ -89,6 +93,15 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 		} else {
 			PreviewProvider.webviewPanel.dispose();
 			PreviewProvider.webviewDisposed = true;
+		}
+	}
+
+	//private helper function to handle the message
+	private handleMessage(message: any){
+		switch(message.command){
+			case("handle_click"):
+				this.output_manager.log(JPipeOutput.DEBUG, "handling click")
+				PreviewProvider.symbol_locator.processMessage(message);
 		}
 	}
 
@@ -165,8 +178,10 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 	private async updateEditor(editor: vscode.TextEditor | undefined){
 		if (editor !== undefined && editor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
 			try{
+				PreviewProvider.symbol_locator.updateDocument(editor.document);
 				PreviewProvider.textPanel = vscode.window.showTextDocument(editor.document, vscode.ViewColumn.One, true);
 				PreviewProvider.webviewPanel.webview.html = PreviewProvider.getLoadingHTMLWebview();
+				
 				let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
 				this.resolveCustomTextEditor(editor.document, PreviewProvider.webviewPanel, token.token);
 			}
