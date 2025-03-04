@@ -131,7 +131,7 @@
                         "filenamePattern": "*.jd"
                     }
                 ],
-                "priority": "default",
+                "priority": "option",
                 "preview": "false"
             }
         ],
