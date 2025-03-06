@@ -1,5 +1,10 @@
 ## Changelog
 
+### v0.2.8 (2025-03-05)
+- Leader: Sébastien Mosser
+  - Features:
+    - Fixing path issues for Windows
+
 ### v0.2.7 (2025-02-24)
 - Leader: Cass Braun
   - Features:
