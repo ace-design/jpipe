@@ -4,7 +4,7 @@
     "description": "Language Support for the jPipe language",
     "author": "McMaster Centre for Software Certification (McSCert)",
     "publisher": "mcscert",
-    "version": "0.2.7",
+    "version": "0.2.8",
     "license": "MIT",
     "icon": "images/logo.png",
     "repository": {
@@ -26,7 +26,7 @@
         "package": "npm run check-types && node esbuild.mjs --production"
     },
     "dependencies": {
-        "langium": "~3.3.0",
+        "langium": "~3.4.0",
         "vscode-languageclient": "~9.0.1",
         "vscode-languageserver": "~9.0.1"
     },
@@ -38,7 +38,7 @@
         "concurrently": "~8.2.1",
         "esbuild": "^0.19.12",
         "eslint": "~8.47.0",
-        "langium-cli": "~3.3.0",
+        "langium-cli": "~3.4.0",
         "typescript": "~5.1.6",
         "vitest": "~1.0.0"
     },
