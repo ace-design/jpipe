@@ -271,6 +271,7 @@ DEPENDENCIES
   github-pages
   jekyll (~> 3.9.0)
   jekyll-feed (~> 0.6)
+  jekyll-include-cache
   kramdown-parser-gfm
   minimal-mistakes-jekyll
   tzinfo (~> 1.2)
