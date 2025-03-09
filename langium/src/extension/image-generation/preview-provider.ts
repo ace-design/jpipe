@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { Format, ImageGenerator, SymbolLocator, HTMLProvider } from './index.js';
 import { JPipeOutput, OutputManager, EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent, Command, CommandUser } from '../managers/index.js';
-import { LanguageClient } from 'vscode-languageclient/node.js';
 
 //altered from editorReader
 export class PreviewProvider implements vscode.CustomTextEditorProvider, CommandUser, EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.TextEditorSelectionChangeEvent> {
@@ -32,7 +31,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
 	//private static HTMLProvider: HTMLProvider;
 
-    constructor(image_generator: ImageGenerator, client: LanguageClient, private readonly output_manager: OutputManager, private readonly context: vscode.ExtensionContext) {
+    constructor(image_generator: ImageGenerator, private readonly output_manager: OutputManager, private readonly context: vscode.ExtensionContext) {
 		// Without any initial data, must be empty string to prevent null error. 
 		PreviewProvider.svg_data = "";
 		PreviewProvider.updating = false;
@@ -42,7 +41,7 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 		vscode.window.registerCustomEditorProvider(PreviewProvider.ext_command, this);
 		PreviewProvider.textPanel;
 		
-		PreviewProvider.symbol_locator = new SymbolLocator(client, output_manager);
+		PreviewProvider.symbol_locator = new SymbolLocator(output_manager);
 
 		if(vscode.window.activeTextEditor){
 			PreviewProvider.symbol_locator.updateDocument(vscode.window.activeTextEditor.document);
@@ -83,7 +82,6 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 			
 			PreviewProvider.webviewPanel.webview.onDidReceiveMessage(
 				(message) => {
-					this.output_manager.log(JPipeOutput.DEBUG, "handling message")
 					this.handleMessage(message);
 				},
 				undefined,
@@ -100,7 +98,6 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 	private handleMessage(message: any){
 		switch(message.command){
 			case("handle_click"):
-				this.output_manager.log(JPipeOutput.DEBUG, "handling click")
 				PreviewProvider.symbol_locator.processMessage(message);
 		}
 	}
@@ -210,7 +207,10 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 				viewColumn: vscode.ViewColumn.Beside,
 				preserveFocus: true
 			},
-			{enableScripts:true}
+			{
+				enableScripts:true
+
+			}
 		)
 	}
 

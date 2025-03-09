@@ -18,7 +18,7 @@ export class OutputManager{
         this.channels = new Map<JPipeOutput, vscode.OutputChannel>();
 
         this.inactive_channels = [
-            //JPipeOutput.DEBUG
+            JPipeOutput.DEBUG
         ]
 
         Object.values(JPipeOutput).forEach(key =>{
