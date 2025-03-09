@@ -1,14 +1,15 @@
-package ca.mcscert.jpipe.actions;
+package ca.mcscert.jpipe.actions.creation;
 
-import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.actions.RegularAction;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.Conclusion;
+import ca.mcscert.jpipe.model.elements.JustificationModel;
 
 
 /**
  * Implement the action used to create a conclusion in a given justification.
  */
-public final class CreateConclusion implements Action {
+public final class CreateConclusion extends RegularAction {
 
     private final String justificationId;
     private final String identifier;
@@ -31,7 +32,7 @@ public final class CreateConclusion implements Action {
     public void execute(Unit context) throws Exception {
         Conclusion conclusion = new Conclusion(identifier, label);
         context.addInto(justificationId, conclusion);
-        Justification j = context.get(justificationId);
+        JustificationModel j = context.get(justificationId);
         j.setConclusion(conclusion);
     }
 

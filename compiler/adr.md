@@ -6,6 +6,8 @@ We-re using the [_Y-statement_](https://adr.github.io/#sustainable-architectural
 
 ## Coding Guidelines
 
+### Documentation
+
 - In the context of _*developing the jPipe compiler*_,
 - facing _*a significant drop in code quality and readability*_
 - we decided for _*enforcing strict coding guidelines when releasing code*_
@@ -26,6 +28,16 @@ We-re using the [_Y-statement_](https://adr.github.io/#sustainable-architectural
 - We're using customized rules, adapted from Google's checkstyle. We have relaxed two rules: (i)
   code indentation is not restricted to 2 spaces, and (ii) javadoc location is not as strict as
   in the original ruleset, to allow some ASCII art in the code,
+
+### Justification model cloning
+
+- In the context of _implementing composition operators_,
+- facing _the need for cloning justification elements_
+- we decided for _reimplementing two interfaces (Replicable and ShallowCloneable)_
+  - and neglected _using the Cloneable interface provided by Java_
+- to achieve _proper implementation of the mechanism_,
+  - accepting _re-inventing the wheel (ish)_,
+  - because _Java's design does not make a difference between shallow clones and deep clones_.
 
 ## Compiler Organization
 

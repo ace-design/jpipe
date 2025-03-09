@@ -1,9 +1,10 @@
 package ca.mcscert.jpipe.model.elements;
 
 import ca.mcscert.jpipe.visitors.ModelVisitor;
+import java.util.Set;
 
 /**
- * Model what an Evidence is in a Justufication.
+ * Model what an Evidence is in a Justification.
  */
 public final class Evidence extends Support {
 
@@ -18,6 +19,11 @@ public final class Evidence extends Support {
     }
 
     @Override
+    public Evidence shallow()  {
+        return new Evidence(this.identifier, this.label);
+    }
+
+    @Override
     public void supports(JustificationElement that) {
         that.acceptAsSupport(this);
     }
@@ -25,5 +31,11 @@ public final class Evidence extends Support {
     @Override
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
+    }
+
+
+    @Override
+    public Set<JustificationElement> getSupports() {
+        return Set.of();
     }
 }

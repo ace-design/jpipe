@@ -1,5 +1,5 @@
 
-justification prove_models {
+justification proving {
 
     evidence Su1 is "Atomic Petri Nets are available"
     strategy St1 is "Merge atomic models"

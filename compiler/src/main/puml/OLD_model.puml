@@ -1,20 +1,29 @@
 @startuml model
 !include ./commons.style
 
-title "jPipe Domain Model"
+title "Justification Domain Model (jPipe)"
 
 class Unit {
-    + fileName: String
+    + name: String
+    + loaded: File[]
 }
 
-Unit *--> "1..*" Justification
+Unit *--> "1..*" JustificationModel
 
-class Justification implements Visitable {
+abstract class JustificationModel implements Visitable {
     + name: String
 }
 
-Justification --> "1\nconclusion" Conclusion
-Justification *-> "symbols\n*" JustificationElement
+class Justification extends JustificationModel {
+}
+
+class Pattern extends JustificationModel
+
+JustificationModel --> "0..1\nparent" Pattern
+
+
+JustificationModel --> "1\nconclusion" Conclusion
+JustificationModel *-> "symbols\n*" JustificationElement
 
 abstract class JustificationElement implements Visitable {
     + id: Symbol
