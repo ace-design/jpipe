@@ -11,6 +11,12 @@ $ java -jar abc-jpipe.jar --help
 
 One should [read the documentation](https://github.com/ace-design/jpipe/wiki), or consider following one of our tutorials.
 
+To run the compiler in developer mode
+
+```
+ $ mvn -q exec:java -Dexec.mainClass="ca.mcscert.jpipe.Main" -Dexec.args="-h"
+```
+
 ### How to contribute?
 
 Before contributing, you might want to read some [_Architectural Decisions_](adr.md) recorded as Y-statements, providing some explanations on the global architecture.

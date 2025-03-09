@@ -1,6 +1,7 @@
 package ca.mcscert.jpipe.model.elements;
 
 import ca.mcscert.jpipe.visitors.ModelVisitor;
+import java.util.Set;
 
 /**
  * Define what a sub-conclusion is inside a jPipe model.
@@ -24,13 +25,18 @@ public final class SubConclusion extends Support {
     }
 
     @Override
+    public SubConclusion shallow() {
+        return new SubConclusion(this.identifier, this.label);
+    }
+
+    @Override
     public void supports(JustificationElement that) {
         that.acceptAsSupport(this);
     }
 
     @Override
     protected void acceptAsSupport(Strategy s) {
-        assertNotAlreadySupported(this.strategy, s);
+        assertCanBeReplaced(this.strategy, s);
         this.strategy = s;
     }
 
@@ -39,4 +45,8 @@ public final class SubConclusion extends Support {
         visitor.visit(this);
     }
 
+    @Override
+    public Set<JustificationElement> getSupports() {
+        return Set.of(this.strategy);
+    }
 }

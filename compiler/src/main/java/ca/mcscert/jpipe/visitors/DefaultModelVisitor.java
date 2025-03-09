@@ -1,12 +1,15 @@
 package ca.mcscert.jpipe.visitors;
 
-import ca.mcscert.jpipe.model.Justification;
 import ca.mcscert.jpipe.model.Unit;
+import ca.mcscert.jpipe.model.elements.AbstractSupport;
 import ca.mcscert.jpipe.model.elements.Conclusion;
 import ca.mcscert.jpipe.model.elements.Evidence;
+import ca.mcscert.jpipe.model.elements.Justification;
+import ca.mcscert.jpipe.model.elements.JustificationElement;
+import ca.mcscert.jpipe.model.elements.JustificationModel;
+import ca.mcscert.jpipe.model.elements.Pattern;
 import ca.mcscert.jpipe.model.elements.Strategy;
 import ca.mcscert.jpipe.model.elements.SubConclusion;
-import ca.mcscert.jpipe.model.elements.Support;
 
 /**
  * Implements a default visitor for a jPipe model. Mainly provided as example.
@@ -32,7 +35,7 @@ public abstract class DefaultModelVisitor<T> extends ModelVisitor<T> {
 
     @Override
     public void visit(Strategy s) {
-        for (Support support : s.getSupports()) {
+        for (JustificationElement support : s.getSupports()) {
             support.accept(this);
         }
     }
@@ -44,14 +47,28 @@ public abstract class DefaultModelVisitor<T> extends ModelVisitor<T> {
 
     @Override
     public void visit(Justification j) {
-        j.getConclusion().accept(this);
+        for (JustificationElement je : j.contents()) {
+            je.accept(this);
+        }
+    }
+
+    @Override
+    public void visit(Pattern p) {
+        for (JustificationElement je : p.contents()) {
+            je.accept(this);
+        }
     }
 
     @Override
     public void visit(Unit u) {
-        for (Justification justification : u.getContents()) {
+        for (JustificationModel justification : u.getContents()) {
             justification.accept(this);
         }
     }
 
+
+    @Override
+    public void visit(AbstractSupport as) {
+
+    }
 }

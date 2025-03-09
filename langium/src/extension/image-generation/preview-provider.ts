@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
-import { Format, ImageGenerator } from './image-generator.js';
+import { Format, ImageGenerator, SymbolLocator, HTMLProvider } from './index.js';
 import { JPipeOutput, OutputManager, EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent, Command, CommandUser } from '../managers/index.js';
-
 
 //altered from editorReader
 export class PreviewProvider implements vscode.CustomTextEditorProvider, CommandUser, EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.TextEditorSelectionChangeEvent> {
@@ -28,7 +27,11 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
     private static image_generator: ImageGenerator;
 
-    constructor(image_generator: ImageGenerator, private readonly output_manager: OutputManager) {
+	private static symbol_locator: SymbolLocator;
+
+	//private static HTMLProvider: HTMLProvider;
+
+    constructor(image_generator: ImageGenerator, private readonly output_manager: OutputManager, private readonly context: vscode.ExtensionContext) {
 		// Without any initial data, must be empty string to prevent null error. 
 		PreviewProvider.svg_data = "";
 		PreviewProvider.updating = false;
@@ -36,6 +39,13 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
         PreviewProvider.image_generator = image_generator;
 
 		vscode.window.registerCustomEditorProvider(PreviewProvider.ext_command, this);
+		PreviewProvider.textPanel;
+		
+		PreviewProvider.symbol_locator = new SymbolLocator(output_manager);
+
+		if(vscode.window.activeTextEditor){
+			PreviewProvider.symbol_locator.updateDocument(vscode.window.activeTextEditor.document);
+		}
 	}
 
 	public getCommands(): Command[] | Command{
@@ -59,15 +69,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 	private async createWebview(): Promise<void>{
 		// If previous global webview id disposed, create a new one.
 		if (PreviewProvider.webviewDisposed){
-			PreviewProvider.webviewPanel = vscode.window.createWebviewPanel(
-				'SVG', // Identifies the type of the webview. Used internally
-				'Diagram Preview', // Title of the panel displayed to the user
-				{
-					viewColumn: vscode.ViewColumn.Beside,
-					preserveFocus: true
-				},
-				{}
-			);
+			PreviewProvider.webviewPanel = PreviewProvider.createWebviewPanel();
+
 			let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
 			PreviewProvider.webviewDisposed = false;
 
@@ -76,9 +79,26 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 			}
 			
 			PreviewProvider.webviewPanel.webview.html = PreviewProvider.getHtmlForWebview();
+			
+			PreviewProvider.webviewPanel.webview.onDidReceiveMessage(
+				(message) => {
+					this.handleMessage(message);
+				},
+				undefined,
+				this.context.subscriptions
+			  );
+
 		} else {
 			PreviewProvider.webviewPanel.dispose();
 			PreviewProvider.webviewDisposed = true;
+		}
+	}
+
+	//private helper function to handle the message
+	private handleMessage(message: any){
+		switch(message.command){
+			case("handle_click"):
+				PreviewProvider.symbol_locator.processMessage(message);
 		}
 	}
 
@@ -92,15 +112,9 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
 		// If previous global webview id disposed, create a new one.
 		if (PreviewProvider.webviewDisposed){
-			PreviewProvider.webviewPanel = vscode.window.createWebviewPanel(
-				'SVG', // Identifies the type of the webview. Used internally
-				'Diagram Preview', // Title of the panel displayed to the user
-				{
-					viewColumn: vscode.ViewColumn.Beside,
-					preserveFocus: true
-				},
-				{}
-			);
+			PreviewProvider.webviewPanel = PreviewProvider.createWebviewPanel();
+
+
 			PreviewProvider.webviewDisposed = false;
 		}
 
@@ -161,8 +175,10 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 	private async updateEditor(editor: vscode.TextEditor | undefined){
 		if (editor !== undefined && editor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
 			try{
+				PreviewProvider.symbol_locator.updateDocument(editor.document);
 				PreviewProvider.textPanel = vscode.window.showTextDocument(editor.document, vscode.ViewColumn.One, true);
 				PreviewProvider.webviewPanel.webview.html = PreviewProvider.getLoadingHTMLWebview();
+				
 				let token : vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
 				this.resolveCustomTextEditor(editor.document, PreviewProvider.webviewPanel, token.token);
 			}
@@ -183,6 +199,21 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 		}
 	}
 
+	private static createWebviewPanel(): vscode.WebviewPanel{
+		return vscode.window.createWebviewPanel(
+			'SVG', // Identifies the type of the webview. Used internally
+			'Diagram Preview', // Title of the panel displayed to the user
+			{
+				viewColumn: vscode.ViewColumn.Beside,
+				preserveFocus: true
+			},
+			{
+				enableScripts:true
+
+			}
+		)
+	}
+
 	//helper function to update text selection
 	private async updateTextSelection(event: vscode.TextEditorSelectionChangeEvent){
 		if (event !== undefined && event.textEditor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
@@ -198,96 +229,12 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
 	// HTML Code for the webview.
 	private static getHtmlForWebview(): string {
-		if(PreviewProvider.textPanel === undefined && vscode.window.activeTextEditor){
-			PreviewProvider.textPanel = vscode.window.showTextDocument(vscode.window.activeTextEditor.document, vscode.ViewColumn.One, true);
-		}
-
-		const svgContent = PreviewProvider.svg_data || ''; // Ensure svg_data is not null or undefined
-		return /* html */`
-			<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>SVG Viewer</title>
-				<style>
-					body {
-						margin: 0;
-						padding: 0;
-						display: flex;
-						justify-content: center;
-						align-items: center;
-						height: 100vh;
-						background-color: #f0f0f0;
-					}
-					#svg-container {
-						display: flex;
-						justify-content: center;
-						align-items: center;
-						width: 100%;
-						height: 100%;
-					}
-					svg {
-						max-width: 100%;
-						max-height: 100%;
-						width: auto;
-						height: auto;
-					}
-				</style>
-			</head>
-			<body>
-				<div id="svg-container">
-					${svgContent}
-				</div>
-			</body>
-			</html>
-		`;
+		return HTMLProvider.getHtmlForWebview(PreviewProvider.svg_data);
 	}
 
 
 	private static getLoadingHTMLWebview(): string {
-		return `
-		<!DOCTYPE html>
-		<html lang="en">
-		<head>
-		  <meta charset="UTF-8">
-		  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		  <title>Loading Page</title>
-		  <style>
-			body {
-			  margin: 0;
-			  padding: 0;
-			  position: relative; /* Add this line */
-			  display: flex;
-			  justify-content: center;
-			  align-items: center;
-			  height: 100vh;
-			  background-color: #f0f0f0;
-			}
-			.loader {
-			  position: absolute; /* Add this line */
-			  top: 50%; /* Add this line */
-			  left: 50%; /* Add this line */
-			  transform: translate(-50%, -50%); /* Add this line */
-			  border: 8px solid #f3f3f3;
-			  border-top: 8px solid #3498db;
-			  border-radius: 50%;
-			  width: 50px;
-			  height: 50px;
-			  animation: spin 1s linear infinite;
-			}
-			@keyframes spin {
-			  0% { transform: rotate(0deg); }
-			  100% { transform: rotate(360deg); }
-			}
-		  </style>
-		</head>
-		<body>
-		  <div class="loader"></div>
-		  <div>${PreviewProvider.svg_data}</div>
-		</body>
-		</html>		
-		`
+		return HTMLProvider.getLoadingHTMLWebview();
 	}
 
 }

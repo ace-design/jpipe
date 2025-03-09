@@ -1,13 +1,14 @@
-package ca.mcscert.jpipe.actions;
+package ca.mcscert.jpipe.actions.creation;
 
-import ca.mcscert.jpipe.model.Justification;
+import ca.mcscert.jpipe.actions.RegularAction;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
+import ca.mcscert.jpipe.model.elements.JustificationModel;
 
 /**
  * Action to be used to create a relation between two elements inside a justification.
  */
-public final class CreateRelation implements Action {
+public final class CreateRelation extends RegularAction {
 
     private final String container;
     private final String from;
@@ -29,7 +30,7 @@ public final class CreateRelation implements Action {
 
     @Override
     public void execute(Unit context) throws Exception {
-        Justification justification = context.get(container);
+        JustificationModel justification = context.get(container);
         JustificationElement f = justification.get(from);
         JustificationElement t = justification.get(to);
         f.supports(t);
