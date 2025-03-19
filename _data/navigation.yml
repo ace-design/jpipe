@@ -1,0 +1,15 @@
+main:
+  - title: "Tutorials"
+    url: /tutorials/
+  - title: "News"
+    url: /news/
+  - title: "Team"
+    url: /team/
+  - title: "Sponsors"
+    url: /sponsors/
+  - title: "Publications"
+    url: /publications/
+  - title: "Github"
+    url: https://github.com/ace-design/jpipe
+    target: _blank
+
