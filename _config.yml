@@ -5,7 +5,7 @@ minimal_mistakes_skin: "default"
 # Global configuration
 title: "jPipe"
 subtitle: "Justification made easier!"
-title_separator: "|"
+title_separator: "::"
 
 name: "Sébastien Mosser"
 email: "contact@jpipe.org"
@@ -13,8 +13,11 @@ email: "contact@jpipe.org"
 description: >- 
   jPipe is a tool designed by McSCert to support developers when writing justifications.
 
-baseurl: "/jpipe" 
-url: "http://ace-design.github.io" 
+#baseurl: "/jpipe" 
+#url: "http://ace-design.github.io" 
+
+baseurl: "/" 
+url: "http://www.jpipe.org" 
 
 locale: "en"
 repository: "ace-design/jpipe"
@@ -36,7 +39,12 @@ plugins:
   - jekyll-feed
   - jekyll-include-cache
 
-include: ["_pages"]
+include: 
+  - _pages
+  - _docs
+
+exclude:
+  - README
 
 date_format: "%Y-%m-%d"
 
@@ -55,6 +63,8 @@ defaults:
     values:
       layout: single
       author_profile: false
+      sidebar: 
+        nav: tutorials
 
 enable_copy_code_button: true
 
@@ -64,5 +74,8 @@ lunr:
 
 collections:
   tutorials:
+    output: true
+    permalink: /:collection/:path/
+  docs:
     output: true
     permalink: /:collection/:path/

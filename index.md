@@ -22,20 +22,20 @@ center_tiles:
     alt: ""
     title: "Install jPipe!"
     excerpt: "Install the jPipe language on your computer and start writing operational justifications."
-    url: "#test-link"
+    url: "/tutorials/install"
     btn_label: "Read More"
     btn_class: "btn--primary"
   - image_path: /assets/images/covers/pipeline_01.jpg
     alt: "Image of pipelines"
     title: "Write your first model!"
     excerpt: "Follow our jPipe 101 tutorial to write your first justification."
-    url: "#test-link"
+    url: "/tutorials/jpipe101"
     btn_label: "Read More"
     btn_class: "btn--primary"
   - image_path: /assets/images/covers/team.jpg
     title: "Meet the team!"
     excerpt: "Meet the amazing people working hard to make jPipe available."
-    url: "#test-link"
+    url: "/team"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
 ---

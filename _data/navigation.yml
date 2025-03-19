@@ -1,6 +1,8 @@
 main:
   - title: "Tutorials"
     url: /tutorials/
+  - title: "Docs"
+    url: /docs/
   - title: "News"
     url: /news/
   - title: "Team"
@@ -13,3 +15,22 @@ main:
     url: https://github.com/ace-design/jpipe
     target: _blank
 
+tutorials:
+  - title: Getting Started
+    children:
+      - title: "Install"
+        url: /tutorials/install
+      - title: "jPipe 101"
+        url: /tutorials/jpipe101
+
+  - title: Operations
+    children:
+      - title: "jPipe Runner"
+        url: /tutorials/runner
+
+  - title: Composition
+    children:
+      - title: "Using Patterns"
+        url: /tutorials/patterns
+      - title: "Calling Operators"
+        url: /tutorials/operators
