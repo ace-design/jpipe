@@ -16,8 +16,8 @@ description: >-
 #baseurl: "/jpipe" 
 #url: "http://ace-design.github.io" 
 
-baseurl: "/" 
-url: "http://www.jpipe.org" 
+baseurl: "" 
+url: "https://www.jpipe.org" 
 
 locale: "en"
 repository: "ace-design/jpipe"
