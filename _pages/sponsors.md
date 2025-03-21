@@ -26,6 +26,12 @@ The design and development of jPipe is possible thanks to the following projects
 - Sponsor: MIRA
 - Research Funding: $1,000,000
 
+### FATES-MLOps (2024 - 2028)
+
+  - PI: Dr. Jean-Michel Bruel
+  - Sponsor: Agence Nationale de la Recheche (ANR)
+  - Research Funding: €600,000
+
 ### DevOps for Software Defined Network (2022 - 2025)
 
 - Co-PI: Dr. Francis Bordeleau, Dr. Juergen Dingel, Dr. Sébastien Mosser

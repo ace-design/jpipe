@@ -20,11 +20,12 @@ header:
 
 ### Conference Papers
 
+- 🇫🇷 [_Prise en compte des propriétés FATES en MLOps: perspectives et ambitions_](http://hdl.handle.net/11375/31417). Mireille Blay-Fornarino, Jean-Michel Bruel, Sébastien Mosser, Frédéric Precioso. Explain'AI (CNRS) 2025.
 - [_Yes, Configuring is Good, But Have You Ever Tried Justifying?_](http://hdl.handle.net/11375/28858). Sébastien Mosser, Corinne Pulgar, Mireille Blay-Fornarino, Deesha Patel, Aaron Loh, Jean-Michel Bruel. CONFLANG 2023 (abstract). 
 
 ### Tutorials
 
-- [Creating and Operationalizing Justification Models Using jPipe](). Sébastien Mosser, Nirmal Chaudhari, Cass Braun, Kai Sun. ACM/IEEE International Conference on Model Driven Engineering Languages and Systems Companion, 2024.
+- [Creating and Operationalizing Justification Models Using jPipe](http://hdl.handle.net/11375/31418). Sébastien Mosser, Nirmal Chaudhari, Cass Braun, Kai Sun. ACM/IEEE International Conference on Model Driven Engineering Languages and Systems Companion, 2024.
 
 ### Thesis 
 
@@ -39,6 +40,8 @@ header:
 ### In the media
 
 - 🇫🇷 [_«Ça change la vie» : comment ces adeptes de l’intelligence artificielle l’utilisent au quotidien_](https://www.24heures.ca/2025/02/21/ca-change-la-vie--comment-ces-adeptes-de-lintelligence-artificielle-lutilisent-au-quotidien). 24heures.ca, 21/02/2025
+
+- 🇫🇷 [Le bogue de l'an 2000 (webserie)](https://video.telequebec.tv/details/52571-le-bogue-de-lan-2000-webserie). Episode 6 - _Anticiper le futur_. Télé-Québec, 2024
 
 - _Modelling justification diagrams using jPipe_. MDENet Research Demonstration, 06/06/2024.
 

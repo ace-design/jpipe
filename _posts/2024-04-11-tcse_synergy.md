@@ -1,7 +1,7 @@
 ---
 layout: single
 classes: wide 
-title:  "McMaster Centre for Software Certification receives global award for cultivating effective partnerships "
+title:  "McSCert receives global award for cultivating partnerships "
 date:   2024-04-11 09:00:00 -0500
 categories: awards
 ---
@@ -23,6 +23,7 @@ With an overarching goal to improve the practice of software engineering applied
 
 “_McSCert’s research and development work has had significant commercial, economic and societal impact_,” says John Preston, Associate Dean of Research, Innovation and Partnerships in McMaster’s Faculty of Engineering. “_Through innovative methodologies and tools, McSCert’s research team is reshaping the landscape of software certification, facilitating the development and validation of crucial software application._” 
 
-The design, development and transfer of jPipe to indsutrial partner is part of McSCert's mission.
+<big>The design, development and transfer of jPipe to indsutrial partner is part of McSCert's mission.</big>
+{: .notice}
 
-Original press release: 
+Original press release: [https://www.eng.mcmaster.ca/cas/news/mcmaster-centre-for-software-certification-receives-global-award-for-cultivating-effective-partnerships/](https://www.eng.mcmaster.ca/cas/news/mcmaster-centre-for-software-certification-receives-global-award-for-cultivating-effective-partnerships/)
