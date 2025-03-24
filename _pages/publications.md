@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: splash
 title: Publications
 permalink: /publications/
 toc: true
@@ -43,6 +43,4 @@ header:
 
 - 🇫🇷 [Le bogue de l'an 2000 (webserie)](https://video.telequebec.tv/details/52571-le-bogue-de-lan-2000-webserie). Episode 6 - _Anticiper le futur_. Télé-Québec, 2024
 
-- _Modelling justification diagrams using jPipe_. MDENet Research Demonstration, 06/06/2024.
-
-{% include video id="NNl_-U2xUrM" provider="youtube" %}
+- 🎥 [_Modelling justification diagrams using jPipe_](https://www.youtube.com/watch?v=NNl_-U2xUrM). MDENet Research Demonstration, 06/06/2024.

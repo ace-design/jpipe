@@ -9,7 +9,6 @@ header:
   show_overlay_excerpt: true
   caption: "Photo credit: [**Pixabay**](https://pixabay.com/)"
 
-
 core_team:
   - image_path: /assets/images/people/seb.jpg
     title: "Sébastien Mosser"
@@ -29,15 +28,15 @@ core_team:
     url: "https://www.linkedin.com/in/cass-braun/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
-  - image_path: /assets/images/covers/team.jpg
+  - image_path: /assets/images/people/nirmal.png
     title: "Nirmal Chaudhari"
-    excerpt: "Meet the amazing people working hard to make jPipe available."
+    excerpt: "<p class=\"text-justify\">I’m a fourth‑year Software Engineering student at McMaster University with a passion for building innovative software solutions. I enjoy working on unique projects that involve solving complex problems and learning new technologies. I am driven to use software as a tool to make a meaningful difference in the lives of others.</p>"
     url: "https://www.linkedin.com/in/nirmal2003/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
-  - image_path: /assets/images/covers/team.jpg
+  - image_path: /assets/images/people/kalvin.jpg
     title: "Kalvin Khuu"
-    excerpt: "Meet the amazing people working hard to make jPipe available."
+    excerpt: "<p class=\"text-justify\">Kalvin is currently a M. Eng student in Computing and Software at McMaster University. He is working on developing a guidance system to help software developers assess the level of fairness in their application. His research interests mainly focus on human-centered AI design, software engineering and natural language processing. With hands-on experience at organizations like Desjardins Group and the Quebec Ministry of Public Security, he has contributed to software modernization, UI/UX design and machine learning applications.</p>"
     url: "https://www.linkedin.com/in/kalvin-khuu/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
@@ -51,7 +50,7 @@ alumni:
     btn_class: "btn--primary btn--small"
   - image_path: /assets/images/people/aaron.jpg
     title: "Aaron Loh"
-    excerpt: "I’m a third-year Software Engineering student who gained valuable experience working on jPipe, improving the grammar and the test suite. I’m passionate about building impactful and high-quality software, with plans to contribute to the industry in the future."
+    excerpt: "<p class=\"text-justify\">I’m a third-year Software Engineering student who gained valuable experience working on jPipe, improving the grammar and the test suite. I’m passionate about building impactful and high-quality software, with plans to contribute to the industry in the future.</p>"
     url: "https://www.linkedin.com/in/aaron-loh26/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"

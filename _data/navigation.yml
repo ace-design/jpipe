@@ -15,6 +15,34 @@ main:
     url: https://github.com/ace-design/jpipe
     target: _blank
 
+news:
+  - title: Categories
+    children:
+      - title: "Annoucements"
+        url: /categories/#annoucements
+      - title: "Awards"
+        url: /categories/#awards
+      - title: "Funding"
+        url: /categories/#funding
+      - title: "Students"
+        url: /categories/#students
+
+  - title: Archives
+    children:
+      - title: "2025"
+        url: /news/#2025
+      - title: "2024"
+        url: /news/#2024
+      - title: "2023"
+        url: /news/#2023
+      - title: "2022"
+        url: /news/#2022
+      - title: "2021"
+        url: /news/#2021
+      - title: "2020"
+        url: /news/#2020
+
+
 tutorials:
   - title: Getting Started
     children:

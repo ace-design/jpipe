@@ -1,7 +1,9 @@
 ---
 layout: splash
 tagline: "Justification made easier!<br/><small>Latest release: 0.2.8</small>"
+permalink: /
 header:
+  og_image: /assets/images/logo.png
   overlay_color: "#000"
   overlay_filter: "0.5"
   overlay_image: /assets/images/splash.jpg
@@ -15,7 +17,7 @@ header:
 
 intro:
   - image_path: /assets/images/fulllogo.png
-    excerpt: '<br />The **jPipe environment** supports the definition of justification to support **software maintenance activities**, bringing __lightweight safety modelling__ features to software developers. The name comes from **justified pipelines**, as the key idea is to design an environment supporting the justification of CI/CD pipelines by design.<br/><br/>jPipe is designed at [McSCert](https://www.mcscert.ca) in Hamilton, Ontario ([McMaster University](https://www.mcmaster.ca)).'
+    excerpt: "<br />The **jPipe environment** supports the definition of justification to support **software maintenance activities**, bringing __lightweight safety modelling__ features to software developers. The name comes from **justified pipelines**, as the key idea is to design an environment supporting the justification of CI/CD pipelines by design.<br/><br/>jPipe is designed at [McSCert](https://www.mcscert.ca) in Hamilton, Ontario ([McMaster University](https://www.mcmaster.ca))."
 
 center_tiles:
   - image_path: /assets/images/covers/setup.jpg

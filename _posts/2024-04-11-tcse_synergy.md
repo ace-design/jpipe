@@ -1,6 +1,5 @@
 ---
 layout: single
-classes: wide 
 title:  "McSCert receives global award for cultivating partnerships "
 date:   2024-04-11 09:00:00 -0500
 categories: awards

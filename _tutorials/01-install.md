@@ -1,8 +1,8 @@
 ---
 layout: single
-title: Installing jPipe
+title: Installing jPipe IDE
 permalink: /tutorials/install/
-excerpt: foo bar
+excerpt: "Learn how to install the jPipe IDE on your computer."
 header:
   teaser: /assets/images/covers/setup.jpg
   overlay_color: "#000"
@@ -12,3 +12,5 @@ header:
   caption: "Photo credit: [**Pixabay**](https://pixabay.com/)"
 toc: true
 ---
+
+_Soon..._

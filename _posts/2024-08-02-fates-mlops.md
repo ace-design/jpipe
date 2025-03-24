@@ -2,7 +2,8 @@
 layout: single
 title:  "Funding Announcement: FATES-MLOps (ANR)"
 date:   2024-08-02 09:00:00 -0500
-categories: project
+categories: funding
+
 ---
 
 

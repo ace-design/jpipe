@@ -54,8 +54,12 @@ defaults:
       path: ""
       type: posts
     values:
+      classes: wide 
+      layout: single
       show_date: true
       read_time: true
+      sidebar: 
+        nav: news
   # _tutorials
   - scope:
       path: ""
