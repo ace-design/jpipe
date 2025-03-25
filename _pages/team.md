@@ -40,6 +40,12 @@ core_team:
     url: "https://www.linkedin.com/in/kalvin-khuu/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
+  - image_path: /assets/images/covers/team.jpg
+    title: "Darshan Shah"
+    excerpt: "<p class=\"text-justify\">I am a first year engineering student here at Mac and will be pursuing Software Engineering next year. I have experiences in creating an app and smaller projects here and there. My interests include all sports (basketball mainly), video games, and anime.</p>"
+    url: "https://www.linkedin.com/in/darshan-shah2/"
+    btn_label: "Read More"
+    btn_class: "btn--primary btn--small"
 
 alumni:
   - image_path: /assets/images/covers/team.jpg
@@ -54,9 +60,9 @@ alumni:
     url: "https://www.linkedin.com/in/aaron-loh26/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
-  - image_path: /assets/images/covers/team.jpg
+  - image_path: /assets/images/people/deesha.jpg
     title: "Deesha Patel"
-    excerpt: "Meet the amazing people working hard to make jPipe available."
+    excerpt: "<p class=\"text-justify\">I am a DevOps Engineer at Pixomondo, passionate about developing and optimizing CI/CD pipelines to streamline software delivery. With expertise in Terraform, GitHub CI/CD, AWS ECS, EC2, Fargate, RDS, and Auto Scaling, I focus on automation, scalability, and efficiency in cloud infrastructure. As part of my MEng project at McMaster University, I worked on Jpipe, where I analyzed and justified GitHub workflows to enhance automation and deployment processes. This project helped refine my skills in CI/CD optimization, workflow automation, and DevOps best practices.</p>"
     url: "https://www.linkedin.com/in/deeshupatel/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"

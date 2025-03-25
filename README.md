@@ -26,7 +26,7 @@ bundle exec jekyll clean
 To run locally
 
 ```
-bundle exec jekyl serve --incremental
+bundle exec jekyll serve --incremental
 ```
 
 ### Deploy on Github
