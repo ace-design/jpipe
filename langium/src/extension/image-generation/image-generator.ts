@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import util from "node:util";
 import { ConfigKey } from '../configuration/index.js';
 import { OutputManager, ConfigurationManager, EventSubscriber, isTextEditor, Command, CommandUser, JPipeOutput } from '../managers/index.js';
+import path from 'node:path';
 
 export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextEditor | undefined>{
     //configuration manager to fetch configurations from
@@ -78,7 +79,7 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         let log_level = this.configuration.getConfiguration(ConfigKey.LOGLEVEL);
         
 
-        let command = java_version + ' -jar ' + jar_file + ' -i ' + input_file + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
+        let command = java_version + ' -jar ' + path.normalize(jar_file) + ' -i ' + path.normalize(input_file) + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
         
         this.output_manager.log(JPipeOutput.USER, this.generateUserMessage(jar_file));
         this.output_manager.log(JPipeOutput.CONSOLE, "Image made using jar file: " + jar_file.toString()); //Shows user relevant info
