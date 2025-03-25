@@ -89,10 +89,10 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
     private handleMessage(message: any){
         switch(message.command){
             case("handle_click"):
-                this.output_manager.log(JPipeOutput.DEBUG, "handling click")
                 PreviewProvider.symbol_locator.processMessage(message);
         }
     }
+
     public async resolveCustomTextEditor(
         document: vscode.TextDocument,
         webviewPanel: vscode.WebviewPanel,

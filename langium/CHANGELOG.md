@@ -4,6 +4,7 @@
 - Leader: Sébastien Mosser
   - Features:
     - Fixing path issues for Windows
+    - Added goToDefinition from SVG to textEditor
 
 ### v0.2.7 (2025-02-24)
 - Leader: Cass Braun
