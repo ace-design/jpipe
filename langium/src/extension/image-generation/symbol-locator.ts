@@ -2,7 +2,6 @@
 import * as vscode from "vscode";
 import { Position, Range } from "vscode-languageserver-types";
 import { JPipeOutput, OutputManager } from "../managers/index.js";
-import { rangeToString } from "langium/test";
 
 export class SymbolLocator{
     private document!: vscode.TextDocument;
@@ -10,30 +9,24 @@ export class SymbolLocator{
     constructor(private readonly output_manager: OutputManager){
     }
     
+    //updates the document
     public updateDocument(document: vscode.TextDocument){
         this.document = document
     }
     
+    //processes the message and sends the vscode gotodefiniton request
     public processMessage(message:any){
-        this.output_manager.log(JPipeOutput.DEBUG, "beginning processing message");
         let text = message.text;
         let instruction_array: Array<string> = text.split("\n");
         let instruction_name = instruction_array[1];
         let instruction_text = instruction_array[3];
-        this.output_manager.log(JPipeOutput.DEBUG, "instruction_array: " + message.text + "instruction name: " + instruction_name + "\tinstruction text: " + instruction_text);
         
         let range = this.getSearchRange();
-        this.output_manager.log(JPipeOutput.DEBUG, "Search range for entire document found");
+
         let instruction_name_location = this.findInstructionNameLocation(instruction_name, instruction_text, range);
-       
-        this.output_manager.log(JPipeOutput.DEBUG, "instruction name location found:")
-        
+               
         if(instruction_name_location){
-            this.output_manager.log(JPipeOutput.DEBUG, "instruction name location: " + rangeToString(instruction_name_location))
-        
-            
             vscode.window.showTextDocument(this.document, {viewColumn: vscode.ViewColumn.One, selection: this.vscodeRange(instruction_name_location)}) 
-            this.output_manager.log(JPipeOutput.DEBUG, "client request sent?")
         }
     }
     
@@ -59,12 +52,16 @@ export class SymbolLocator{
         let range = this.vscodeRange(range1);
         let text_in_range = this.document.getText(range);
         let index = text_in_range.indexOf(text);
+        
         if(index == -1){
             return undefined;
         }
+        
         let start_offset = this.document.offsetAt(range.start) + index;
         let start = this.document.positionAt(start_offset);
+        
         let end = Position.create(start.line, start.character + text.length);
+        
         return Range.create (start, end);
     }
     
@@ -80,6 +77,7 @@ export class SymbolLocator{
         return line_range;
     }
     
+    //gets the search range of the entire document
     private getSearchRange(): Range {
        const start = Position.create(0, 0);
        const lastLine = this.document.lineCount - 1;
@@ -97,10 +95,12 @@ export class SymbolLocator{
        return range;
     }
     
+    //translates a range to a vscode range
     private vscodeRange(range: Range): vscode.Range{
         return new vscode.Range(this.vscodePosition(range.start), this.vscodePosition(range.end));
     }
     
+    //translates a position to a vscode position
     private vscodePosition(position: Position): vscode.Position{
         return new vscode.Position(position.line, position.character);
     }
