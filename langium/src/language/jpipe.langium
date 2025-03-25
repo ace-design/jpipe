@@ -25,7 +25,16 @@ JustificationPattern:
     '{' (variables+=Variable | instructions+=Instruction | supports += Support)* '}';
 
 Composition:
-    '{' (variables+=CompositionVariable | instructions+=CompositionInstruction)* '}';
+    '{' declaration=CompositionDeclaration '}';
+
+CompositionDeclaration returns Declaration:
+    kind=('justification' | 'pattern') name=ID CompositionBody;
+
+CompositionBody:
+    "is" "merge" '(' declaration1=[Declaration:ID] ',' declaration2=[Declaration:ID] ')' '{' (settings+=Setting)*'}';
+    
+Setting:
+    settingName=ID ':' settingValue=STRING;
 
 Variable: 
     kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion' | '@support') name=ID Instruction;
@@ -35,15 +44,6 @@ Instruction:
 
 Support:
     left=[Variable:ID] 'supports' right=[Variable:ID];
-
-CompositionVariable:
-    kind='justification' name=ID;
-
-CompositionInstruction:
-    CompositionVariable 'is' information=CompositionInformation;
-
-CompositionInformation:
-    left=[Declaration:ID] 'with' right=[Declaration:ID];
 
 
 hidden terminal WS: /\s+/;

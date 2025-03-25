@@ -1,6 +1,6 @@
 import { AstNodeDescription, ReferenceInfo, Stream, stream } from "langium";
 import { CompletionContext, CompletionValueItem, DefaultCompletionProvider } from "langium/lsp";
-import { isDeclaration, isCompositionInformation, isSupport, isInstruction } from "../../generated/ast.js";
+import { isDeclaration, isSupport, isInstruction } from "../../generated/ast.js";
 import { SupportCompletionProvider } from "./support-completion.js";
 import { DeclarationCompletionProvider } from "./class-completion.js";
 
@@ -24,7 +24,7 @@ export class JpipeCompletionProvider extends DefaultCompletionProvider{
         if(isSupport(_context.node)){
             //if the current context is of a supporting statement, determines which variables should appear for autocomplete
             completion_provider = new SupportCompletionProvider();
-        }else if(isDeclaration(_context.node) || isCompositionInformation(_context.node)){
+        }else if(isDeclaration(_context.node)){
             //provides completion for class references
             completion_provider = new DeclarationCompletionProvider()
         }
