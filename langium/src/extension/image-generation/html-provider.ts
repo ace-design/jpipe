@@ -1,13 +1,14 @@
-
 export type VsCodeNodeMessage = {
     command: string
     text: string
     id: string
 }
+
 export class HTMLProvider{
     
     constructor(){
     }
+
     //gives HTML code given svg data
     public static getHtmlForWebview(svg_data: string): string {
         const svgContent = svg_data || ''; // Ensure svg_data is not null or undefined\
@@ -53,6 +54,7 @@ export class HTMLProvider{
             </body>
         </html>`;
     }
+
     //creates the loading HTMLWebview
     public static getLoadingHTMLWebview(): string {
         return `
@@ -97,6 +99,7 @@ export class HTMLProvider{
         </html>     
         `
     }
+
     //helper function to create the script
     private static getScript(): string{
         return`
@@ -111,6 +114,7 @@ export class HTMLProvider{
         `+ HTMLProvider.getFunction()
         ;
     }
+
     //helper function to create the function within the script
     private static getFunction(): string{
         return `function handle_click(node_identifier) {

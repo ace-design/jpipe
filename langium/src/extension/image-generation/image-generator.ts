@@ -1,4 +1,3 @@
-
 import * as vscode from 'vscode';
 import util from "node:util";
 import { ConfigKey } from '../configuration/index.js';
@@ -10,6 +9,7 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
     private editor!: vscode.TextEditor; //current editor
     private document!: vscode.TextDocument; //current document
     private directory!: vscode.WorkspaceFolder; //current directory
+
     //possible image types and associated commands
     private types: ImageType[]; 
     private current_jar_file: string ;
@@ -32,7 +32,8 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         //automatically registers to start
         this.update(vscode.window.activeTextEditor);
     }
-    //used to register commands with command manager
+    
+	//used to register commands with command manager
     public getCommands(): Command[] | Command{
         let command_list: Command[] = [];
         this.types.forEach( (type) =>{
@@ -43,7 +44,8 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         });
         return command_list;
     }
-    //updater functions
+    
+	//updater functions
     public async update(data: vscode.TextEditor | undefined): Promise<void>{
         if(isTextEditor(data)){
             const {editor, document, directory} = this.updateEditor(data);
@@ -53,14 +55,16 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
             this.directory = directory;
         }
     }
-    public async generate(command_settings: CommandSettings): Promise<{stdout: any}>{
+    
+	public async generate(command_settings: CommandSettings): Promise<{stdout: any}>{
         const { exec } = require('node:child_process');
         const execPromise = util.promisify(exec);
         const command = await this.makeCommand(command_settings);
         const output: {error: any, stdout: any, stderr: any} = await execPromise(command);
         return {stdout: output.stdout};
     }
-    //creates the command based on command settings
+    
+	//creates the command based on command settings
     private async makeCommand(command_settings: CommandSettings): Promise<string>{
         let java_version = this.configuration.getConfiguration(ConfigKey.JAVAVERSION);
         let jar_file = this.configuration.getConfiguration(ConfigKey.JARFILE);
@@ -86,11 +90,13 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         
         return command;
     }
-    //returns the current diagram name
+    
+	//returns the current diagram name
     public getDiagramName(): string{
         return this.findDiagramName(this.document, this.editor);
     }
-    //helper function to get the diagram name from the document
+    
+	//helper function to get the diagram name from the document
     private findDiagramName(document: vscode.TextDocument, editor: vscode.TextEditor): string{
         let diagram_name: string | undefined;
         let match: RegExpExecArray | null;
@@ -112,7 +118,8 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         
         return diagram_name;
     }
-    //helper function to set default format
+    
+	//helper function to set default format
     private getFormat(command_settings: CommandSettings): Format{
         let format = command_settings.format;
         
@@ -122,7 +129,8 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         
         return format;
     }
-    //creates the output filepath by asking for user input
+    
+	//creates the output filepath by asking for user input
     private async makeOutputPath(diagram_name: string, command_settings: CommandSettings): Promise<vscode.Uri>{
         if(command_settings.format === undefined){
             command_settings.format = Format.PNG;
@@ -143,7 +151,8 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         
         return output_file;
     }
-    //helper function to perform updates related to a new text editor
+    
+	//helper function to perform updates related to a new text editor
     private updateEditor(editor: vscode.TextEditor | undefined): {editor: vscode.TextEditor, document: vscode.TextDocument, directory: vscode.WorkspaceFolder}{
         let document: vscode.TextDocument;
         let directory: vscode.WorkspaceFolder;
@@ -157,7 +166,8 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         }
         return{editor, document, directory};
     }
-    //helper function to get directory for updating
+    
+	//helper function to get directory for updating
     private getDirectory(document: vscode.TextDocument): vscode.WorkspaceFolder{
         let directory = vscode.workspace.getWorkspaceFolder(document.uri);
         if(!directory){
@@ -186,14 +196,17 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         return user_message;
     }
 }
+
 type ImageType = {
     exe_command: string,
     format: Format
 }
+
 export enum Format{
     PNG = "PNG",
     SVG = "SVG",
 }
+
 type CommandSettings = {
     format?: Format,
     save_image: boolean

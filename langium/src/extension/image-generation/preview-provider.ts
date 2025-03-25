@@ -1,25 +1,31 @@
-
 import * as vscode from 'vscode';
 import { Format, ImageGenerator, SymbolLocator, HTMLProvider } from './index.js';
 import { JPipeOutput, OutputManager, EventSubscriber, isTextEditor, isTextEditorSelectionChangeEvent, Command, CommandUser } from '../managers/index.js';
+
 //altered from editorReader
 export class PreviewProvider implements vscode.CustomTextEditorProvider, CommandUser, EventSubscriber<vscode.TextEditor | undefined>, EventSubscriber<vscode.TextEditorSelectionChangeEvent> {
     // Defines the command needed to execute the extension. 
     private static ext_command = "jpipe.vis";
     private static ext_command_preview = "jpipe.vis.preview";
-    // Stores the svg code to display.
+    
+	// Stores the svg code to display.
     protected static svg_data: string;
-    // Used to prevent jar files from executing concurrently.
+    
+	// Used to prevent jar files from executing concurrently.
     private static updating: boolean;
-    // Global webview panel used to display any and all svgs.
+    
+	// Global webview panel used to display any and all svgs.
     protected static webviewPanel: vscode.WebviewPanel;
-    // Used to determine whether webview was closed by user.
+    
+	// Used to determine whether webview was closed by user.
     private static webviewDisposed: boolean;
-    // Global text panel used to display the jd code. 
+    
+	// Global text panel used to display the jd code. 
     private static textPanel: Thenable<vscode.TextEditor>;
     private static image_generator: ImageGenerator;
     private static symbol_locator: SymbolLocator;
-    //private static HTMLProvider: HTMLProvider;
+    
+	//private static HTMLProvider: HTMLProvider;
     constructor(image_generator: ImageGenerator, private readonly output_manager: OutputManager, private readonly context: vscode.ExtensionContext) {
         // Without any initial data, must be empty string to prevent null error. 
         PreviewProvider.svg_data = "";
@@ -34,10 +40,12 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
             PreviewProvider.symbol_locator.updateDocument(vscode.window.activeTextEditor.document);
         }
     }
-    public getCommands(): Command[] | Command{
+    
+	public getCommands(): Command[] | Command{
         return {command: PreviewProvider.ext_command_preview, callback: () => this.createWebview()};
     }
-    //updates webview on change events
+    
+	//updates webview on change events
     public async update(editor: vscode.TextEditor | undefined): Promise<void>;
     public async update(changes: vscode.TextEditorSelectionChangeEvent): Promise<void>;
     public async update(data: (vscode.TextEditor | undefined) | vscode.TextEditorSelectionChangeEvent): Promise<void>{
@@ -50,7 +58,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
             }
         }
     }
-    private async createWebview(): Promise<void>{
+    
+	private async createWebview(): Promise<void>{
         // If previous global webview id disposed, create a new one.
         if (PreviewProvider.webviewDisposed){
             PreviewProvider.webviewPanel = PreviewProvider.createWebviewPanel();
@@ -75,7 +84,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
             PreviewProvider.webviewDisposed = true;
         }
     }
-    //private helper function to handle the message
+    
+	//private helper function to handle the message
     private handleMessage(message: any){
         switch(message.command){
             case("handle_click"):
@@ -127,7 +137,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
 
         updateWebview();
     }
-    // Executes the jar file for updated SVG
+    
+	// Executes the jar file for updated SVG
     public async updateSVG(): Promise<void> {
         try{
             const {stdout} = await PreviewProvider.image_generator.generate({format: Format.SVG, save_image: false})
@@ -141,7 +152,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
         }
         this.output_manager.log(JPipeOutput.CONSOLE, "Executed Jar");
     }   
-    //helper function to update editor
+    
+	//helper function to update editor
     private async updateEditor(editor: vscode.TextEditor | undefined){
         if (editor !== undefined && editor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
             try{
@@ -167,7 +179,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
             }
         }
     }
-    private static createWebviewPanel(): vscode.WebviewPanel{
+    
+	private static createWebviewPanel(): vscode.WebviewPanel{
         return vscode.window.createWebviewPanel(
             'SVG', // Identifies the type of the webview. Used internally
             'Diagram Preview', // Title of the panel displayed to the user
@@ -178,7 +191,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
             {enableScripts:true}
         )
     }
-    //helper function to update text selection
+    
+	//helper function to update text selection
     private async updateTextSelection(event: vscode.TextEditorSelectionChangeEvent){
         if (event !== undefined && event.textEditor.document.languageId=="jpipe" && !PreviewProvider.webviewDisposed){
             let new_diagram = PreviewProvider.image_generator.getDiagramName();
@@ -190,7 +204,8 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
             }
         }
     }
-    // HTML Code for the webview.
+    
+	// HTML Code for the webview.
     private static getHtmlForWebview(): string {
         return HTMLProvider.getHtmlForWebview(PreviewProvider.svg_data);
     }

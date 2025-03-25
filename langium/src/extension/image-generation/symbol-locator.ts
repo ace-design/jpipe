@@ -6,11 +6,14 @@ import { rangeToString } from "langium/test";
 
 export class SymbolLocator{
     private document!: vscode.TextDocument;
+    
     constructor(private readonly output_manager: OutputManager){
     }
+    
     public updateDocument(document: vscode.TextDocument){
         this.document = document
     }
+    
     public processMessage(message:any){
         this.output_manager.log(JPipeOutput.DEBUG, "beginning processing message");
         let text = message.text;
@@ -33,6 +36,7 @@ export class SymbolLocator{
             this.output_manager.log(JPipeOutput.DEBUG, "client request sent?")
         }
     }
+    
     private findInstructionNameLocation(instruction_name: string, text: string, range: Range): Range | undefined{
         let instruction_name_location: Range | undefined = undefined;
         let instruction_text_location = this.locateText(text, range);
@@ -63,6 +67,7 @@ export class SymbolLocator{
         let end = Position.create(start.line, start.character + text.length);
         return Range.create (start, end);
     }
+    
     private getLine(range: Range): Range {
         let line = range.start.line; // Get the line number from the range
     
@@ -74,6 +79,7 @@ export class SymbolLocator{
         let line_range =  Range.create(line_start, line_end);
         return line_range;
     }
+    
     private getSearchRange(): Range {
        const start = Position.create(0, 0);
        const lastLine = this.document.lineCount - 1;
@@ -90,9 +96,11 @@ export class SymbolLocator{
     
        return range;
     }
+    
     private vscodeRange(range: Range): vscode.Range{
         return new vscode.Range(this.vscodePosition(range.start), this.vscodePosition(range.end));
     }
+    
     private vscodePosition(position: Position): vscode.Position{
         return new vscode.Position(position.line, position.character);
     }
