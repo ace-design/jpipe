@@ -40,7 +40,7 @@ core_team:
     url: "https://www.linkedin.com/in/kalvin-khuu/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
-  - image_path: /assets/images/covers/team.jpg
+  - image_path: /assets/images/people/darshan.jpg
     title: "Darshan Shah"
     excerpt: "<p class=\"text-justify\">I am a first year engineering student here at Mac and will be pursuing Software Engineering next year. I have experiences in creating an app and smaller projects here and there. My interests include all sports (basketball mainly), video games, and anime.</p>"
     url: "https://www.linkedin.com/in/darshan-shah2/"
