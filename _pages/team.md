@@ -22,9 +22,9 @@ core_team:
     url: "https://www.linkedin.com/in/zhexuan-lyu/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
-  - image_path: /assets/images/covers/team.jpg
+  - image_path: /assets/images/people/cass.jpg
     title: "Cass Braun"
-    excerpt: "Meet the amazing people working hard to make jPipe available."
+    excerpt: "<p class=\"text-justify\">Cass is currently a software engineering and society student at McMaster University. She has loved working on Jpipe as a Research Assistant (May 2024-April 2025). Additionally, she is also a Teaching Assistant for Operating Systems (Winter 2025), Case Studies in History and Technology (Winter 2025), and Engineering Cornerstone Design Projects (Fall 2023-Fall 2024). She enjoys Data Structures and Algorithms as well as Signals and Systems and hopes to one day pursue a M.Eng. in one of these topics or a related topic. She hopes to one day to help create software systems that help improve the world.</p>"
     url: "https://www.linkedin.com/in/cass-braun/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"

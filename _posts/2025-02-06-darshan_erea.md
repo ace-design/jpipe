@@ -21,6 +21,3 @@ What is an EREA? Every year, a select group of scholarship winners and other hig
 {: .text-justify }
 
 
-
-{: .text-justify }
-
