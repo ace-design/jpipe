@@ -25,16 +25,20 @@ JustificationPattern:
     '{' (variables+=Variable | instructions+=Instruction | supports += Support)* '}';
 
 Composition:
-    '{' declaration=CompositionDeclaration '}';
+    '{' compositionKind=CompositionKind "is" compositionFunction=CompositionFunction compositionBody=CompositionBody '}';
 
-CompositionDeclaration returns Declaration:
-    kind=('justification' | 'pattern') name=ID CompositionBody;
+CompositionKind: 
+    "justification" name=ID;
+
+CompositionFunction:
+    'merge' '(' j1=[Declaration:ID] "," j2=[Declaration:ID] ')';
 
 CompositionBody:
-    "is" "merge" '(' declaration1=[Declaration:ID] ',' declaration2=[Declaration:ID] ')' '{' (settings+=Setting)*'}';
-    
+    '{' (settings+=Setting)* '}';
+
 Setting:
-    settingName=ID ':' settingValue=STRING;
+    kind=STRING':' setting=STRING;
+
 
 Variable: 
     kind=('evidence' | 'strategy' | 'sub-conclusion' | 'conclusion' | '@support') name=ID Instruction;
