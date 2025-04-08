@@ -1,4 +1,4 @@
-package ca.mcscert.jpipe.compiler.steps;
+package ca.mcscert.jpipe.compiler.steps.transformations;
 
 import ca.mcscert.jpipe.compiler.model.Transformation;
 import ca.mcscert.jpipe.model.Unit;
@@ -22,7 +22,17 @@ public class ScopeFiltering extends Transformation<Unit, JustificationModel> {
 
     @Override
     protected JustificationModel run(Unit input, String source) throws Exception {
-        return input.get(this.identifier);
+        String id = this.identifier;
+        if (id == null) {
+            if (input.getContents().size() == 1) {
+                JustificationModel m = input.getContents().toArray(new JustificationModel[]{})[0];
+                id = m.getName();
+                logger.info("No diagram provided, defaulting to {}", id);
+            } else {
+                throw new IllegalArgumentException("Cannot guess which diagram to work with");
+            }
+        }
+        return input.get(id);
     }
 
 }

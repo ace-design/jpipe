@@ -85,6 +85,7 @@ public final class ExecutionEngine {
                                                             + a + "]"));
                 return;
             }
+            logger.trace("Delaying action [{}]", a);
             actions.add(a);                 // Postponing the action to be the last one
         } else {                            // The action can be executed on this compilation unit
             if (a.isExpandable()) {         // Macro action that needs to be refined
@@ -111,6 +112,7 @@ public final class ExecutionEngine {
             }
         }
         // recursive call to go until the end of the list
+        //System.out.println(actions);
         this.execute(actions, u, errors);
     }
 }

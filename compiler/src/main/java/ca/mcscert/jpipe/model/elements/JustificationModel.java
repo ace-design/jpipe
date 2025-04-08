@@ -5,9 +5,6 @@ import ca.mcscert.jpipe.model.SymbolTable;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.Replicable;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * Abstraction to represent patters and justification in a uniform way.
@@ -18,12 +15,16 @@ public abstract class JustificationModel
     protected final String name;
     protected final SymbolTable<JustificationElement> symbols;
     protected Conclusion conclusion;
+    protected boolean ready;
 
-    private boolean locked = false;
-
-    protected JustificationModel(String name) {
+    protected JustificationModel(String name, boolean ready) {
         this.name = name;
         this.symbols = new SymbolTable<>();
+        this.ready = ready;
+    }
+
+    protected JustificationModel(String name) {
+        this(name, false);
     }
 
     public String getName() {
@@ -34,33 +35,25 @@ public abstract class JustificationModel
         return conclusion;
     }
 
-    public void lock() {
-        this.locked = true;
+    public void publish() {
+        this.ready = true;
     }
 
-    public boolean isLocked() {
-        return this.locked;
+    public boolean isReady() {
+        return this.ready;
     }
 
     /**
-     * Set the one and only conclusion for this justification (cannot be changed).
+     * Set the one and only conclusion for this justification.
      *
      * @param conclusion the conclusion reached by this justification.
      */
     public void setConclusion(Conclusion conclusion) {
-        if (locked) {
-            throw new IllegalArgumentException("Cannot set conclusion on a locked model");
+        if (this.conclusion == null) {
+            this.conclusion = conclusion;
+        } else {
+            this.replace(this.conclusion, conclusion);
         }
-        // Can add a conclusion if no conclusion, or replacing the one we already have by a
-        // new object.
-        if (this.conclusion != null
-                && ! this.conclusion.getIdentifier().equals(conclusion.getIdentifier())) {
-            String msg = String.format("Justification %s cannot be concluded by %s as it is "
-                            + "already using %s",
-                    name, conclusion.getIdentifier(), this.conclusion.getIdentifier());
-            throw new SemanticError(msg);
-        }
-        this.conclusion = conclusion;
     }
 
     /**
@@ -69,9 +62,6 @@ public abstract class JustificationModel
      * @param e the element to add
      */
     public void add(JustificationElement e) {
-        if (locked) {
-            throw new IllegalArgumentException("Cannot add an element to a locked model");
-        }
         this.symbols.record(e.getIdentifier(), e);
     }
 
@@ -99,9 +89,8 @@ public abstract class JustificationModel
             }
         }
         // Corner case: we're replacing the conclusion
-        if (this.conclusion != null
-                && this.conclusion.getIdentifier().equals(original.getIdentifier())) {
-            this.setConclusion((Conclusion) newOne);
+        if (this.conclusion != null && this.conclusion.equals(original)) {
+            this.conclusion = (Conclusion) newOne;
         }
         // Delete the original, and add the new one.
         this.symbols.delete(original.getIdentifier());
@@ -117,15 +106,25 @@ public abstract class JustificationModel
         return sb.toString();
     }
 
+    /**
+     * Method called in subclasses to implement the justification model replication (deep clone).
+     * Taking an empty shell as parameter, it fills the shell with all the elements contained inside
+     * this, and re-wire all relations between the newly cloned elements as they were in the
+     * original object.
+     *
+     * @param clone the justification model to modify (side-effect) with the deep-cloning process.
+     */
     protected final void deepLink(JustificationModel clone) {
-        clone.locked = false;
-        // Building shallow clone of eac element in the justification model
+        final boolean status = clone.ready; // remembering clone's status
+        clone.ready = false; // opening the clone to allow internal modification
+
+        // Building shallow clone of each element in the justification model
         for (String id : this.symbols.keys()) {
             JustificationElement elem = this.get(id).shallow();
             clone.symbols.record(id, elem); // replacing by the cloned (but still not wired) one.
         }
 
-        // Translating the relation existing in this into the clone.
+        // Translating the relation existing in 'this' into 'clone'.
         for (String id : clone.symbols.keys()) {
             JustificationElement cloned = clone.get(id);
             for (JustificationElement supporting : this.get(id).getSupports()) {
@@ -139,6 +138,8 @@ public abstract class JustificationModel
             JustificationElement clonedConclusion = clone.get(this.conclusion.getIdentifier());
             clone.setConclusion((Conclusion) clonedConclusion); // Cast-compliant by design
         }
+
+        clone.ready = status; // setting status back to the original one.
     }
 
 }

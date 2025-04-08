@@ -16,7 +16,7 @@ import org.apache.commons.cli.ParseException;
  */
 public final class CommandLineParser {
 
-    private static final String APP_NAME = "java -jar abc-jpipe.jar";
+    private static final String APP_NAME = "java -jar jpipe.jar";
     private final String[] userGiven;
 
     /**
