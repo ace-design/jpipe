@@ -17,11 +17,11 @@ export class SymbolLocator{
     //processes the message and sends the vscode gotodefiniton request
     public processMessage(message:any){
         let text = message.text;
-        let instruction_array: Array<string> = text.split("\n");
+        let instruction_array: Array<string> = text.split("\n"); //Change when have new version of compiler
         let instruction_name = instruction_array[1];
         let instruction_text = instruction_array[3];
         
-        let range = this.getSearchRange();
+        let range = this.getSearchRange(); //Change to only range of declaration given with new version of compiler
 
         let instruction_name_location = this.findInstructionNameLocation(instruction_name, instruction_text, range);
                
