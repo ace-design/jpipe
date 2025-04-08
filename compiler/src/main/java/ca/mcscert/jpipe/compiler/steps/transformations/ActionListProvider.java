@@ -1,4 +1,4 @@
-package ca.mcscert.jpipe.compiler.steps;
+package ca.mcscert.jpipe.compiler.steps.transformations;
 
 import ca.mcscert.jpipe.actions.Action;
 import ca.mcscert.jpipe.actions.creation.CreateAbstractSupport;
@@ -9,9 +9,9 @@ import ca.mcscert.jpipe.actions.creation.CreatePattern;
 import ca.mcscert.jpipe.actions.creation.CreateRelation;
 import ca.mcscert.jpipe.actions.creation.CreateStrategy;
 import ca.mcscert.jpipe.actions.creation.CreateSubConclusion;
-import ca.mcscert.jpipe.actions.creation.LockJustificationModel;
 import ca.mcscert.jpipe.actions.linking.ImplementsPattern;
 import ca.mcscert.jpipe.actions.linking.LoadFile;
+import ca.mcscert.jpipe.actions.linking.Publish;
 import ca.mcscert.jpipe.compiler.model.Transformation;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeParser;
@@ -164,12 +164,11 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         }
 
         private void closeJustificationModel(Token parent, Token id) {
-            List<String> dependencies = List.of();
             if (parent != null) {
                 result.add(new ImplementsPattern(id.getText(), parent.getText()));
-                dependencies = List.of(parent.getText());
+            } else {
+                result.add(new Publish(id.getText()));
             }
-            result.add(new LockJustificationModel(id.getText(), dependencies));
         }
 
     }

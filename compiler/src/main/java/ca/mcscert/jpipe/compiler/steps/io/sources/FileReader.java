@@ -1,4 +1,4 @@
-package ca.mcscert.jpipe.compiler.steps.io;
+package ca.mcscert.jpipe.compiler.steps.io.sources;
 
 import ca.mcscert.jpipe.cli.Configuration;
 import ca.mcscert.jpipe.compiler.model.Source;

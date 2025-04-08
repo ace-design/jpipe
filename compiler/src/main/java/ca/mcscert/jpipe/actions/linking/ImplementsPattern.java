@@ -1,15 +1,11 @@
 package ca.mcscert.jpipe.actions.linking;
 
-import ca.mcscert.jpipe.actions.Action;
-import ca.mcscert.jpipe.actions.MacroAction;
 import ca.mcscert.jpipe.actions.RegularAction;
 import ca.mcscert.jpipe.error.UnknownSymbol;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.elements.Pattern;
 import ca.mcscert.jpipe.operators.PatternImplementation;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -31,7 +27,7 @@ public class ImplementsPattern extends RegularAction {
         return (u -> {
             try { u.get(currentId); } catch (UnknownSymbol us) { return false; }
             try { u.get(parentId);  } catch (UnknownSymbol us) { return false; }
-            return (u.get(parentId).isLocked());
+            return (u.get(parentId).isReady());
         });
     }
 
@@ -43,6 +39,7 @@ public class ImplementsPattern extends RegularAction {
         JustificationModel implementing = op.apply(model, pattern);
         context.remove(model);
         context.add(implementing);
+        implementing.publish();
     }
 
     @Override
