@@ -34,10 +34,10 @@ core_team:
     url: "https://www.linkedin.com/in/darshan-shah2/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
-  - image_path: /assets/images/covers/team.jpg
+  - image_path: /assets/images/people/baptiste.jpg
     title: "Baptiste Lacroix"
-    excerpt: "Meet the amazing people working hard to make jPipe available."
-    url: "https://www.linkedin.com/in/corinne-pulgar-12a58190/"
+    excerpt: "I am currently studying computer science with a specialization in Software Architecture at Polytech Nice Sophia University, an engineering school. I’m in the final year of my program and will graduate in August 2026. As part of a work-study program, I’m completing an apprenticeship where I apply my skills to real-world software projects. Throughout my academic journey, I’ve worked on a variety of school and personal projects, helping me in software development and system design."
+    url: "https://www.linkedin.com/in/lacroix-baptiste/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
 alumni:
