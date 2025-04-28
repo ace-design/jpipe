@@ -36,7 +36,7 @@ core_team:
     btn_class: "btn--primary btn--small"
   - image_path: /assets/images/people/baptiste.jpg
     title: "Baptiste Lacroix"
-    excerpt: "I am currently studying computer science with a specialization in Software Architecture at Polytech Nice Sophia University, an engineering school. I’m in the final year of my program and will graduate in August 2026. As part of a work-study program, I’m completing an apprenticeship where I apply my skills to real-world software projects. Throughout my academic journey, I’ve worked on a variety of school and personal projects, helping me in software development and system design."
+    excerpt: "<p class=\"text-justify\">I am currently studying computer science with a specialization in Software Architecture at Polytech Nice Sophia University, an engineering school. I’m in the final year of my program and will graduate in August 2026. As part of a work-study program, I’m completing an apprenticeship where I apply my skills to real-world software projects. Throughout my academic journey, I’ve worked on a variety of school and personal projects, helping me in software development and system design.</p>"
     url: "https://www.linkedin.com/in/lacroix-baptiste/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
@@ -53,9 +53,9 @@ alumni:
     url: "https://www.linkedin.com/in/cass-braun/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
-  - image_path: /assets/images/covers/team.jpg
+  - image_path: /assets/images/people/corinne.jpg
     title: "Corinne Pulgar"
-    excerpt: "Meet the amazing people working hard to make jPipe available."
+    excerpt: "<p class=\"text-justify\">Corinne is a software engineer and researcher passionate about building safer, more inclusive digital spaces. They hold a Bachelor's in Computer Science from UQAM and are currently completing a Master's in Software Engineering at ÉTS, while working as a Cloud SecOps specialist. Their research, published in IEEE Software and presented at conferences like MODELS, ECMFA, and NorthSec, explores model-driven engineering, system architecture, and privacy-by-design practices. With a background in teaching, project management, and digital rights advocacy through institutions like McGill, UQAM, and Lab2038, Corinne bridges technical innovation with a strong commitment to social impact.</p>"
     url: "https://www.linkedin.com/in/corinne-pulgar-12a58190/"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
