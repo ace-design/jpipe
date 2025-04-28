@@ -18,7 +18,7 @@ active_projects:
     btn_class: "btn--primary btn--small"
   - image_path: /assets/images/sponsors/projects/fates.jpg
     title: "FATES-MLOps (2024 - 2028)"
-    excerpt: "<p class=\"text-justify\">This project target the following research challenge: \"Can we systematically and progressively include justifications related to the FATES (<i>Fairness, Accountability, Transparency, Ethics, and Security</i>) building and operating of a software system integrating Machine Learning?\". It is funded by the Agence Nationnale de la Recherche Scientifique (ANR, France).<br/><br/>PI: Dr. Jean-Michel Bruel</p>"
+    excerpt: "<p class=\"text-justify\">This project target the following research challenge: \"Can we systematically and progressively include justifications related to the FATES (<i>Fairness, Accountability, Transparency, Ethics, and Security</i>) building and operating of a software system integrating Machine Learning?\". It is funded by the Agence Nationnale de la Recherche Scientifique (ANR, France) and NSERC (Canada).<br/><br/>PI: Dr. Jean-Michel Bruel (ANR), Dr. Sébastien Mosser (NSERC)</p>"
     url: "https://fates-site-80675c.gitlab.io/main/1.0/index.html"
     btn_label: "Read More"
     btn_class: "btn--primary btn--small"
