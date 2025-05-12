@@ -28,6 +28,7 @@ public abstract class CompositionOperator {
                                         String name,
                                         List<JustificationModel> inputs,
                                         Map<String, String> params) {
+        // Need to clone elements before composing.
         if (! checkParameters(params)) {
             throw new SemanticError("Invalid parameters for " + name());
         }

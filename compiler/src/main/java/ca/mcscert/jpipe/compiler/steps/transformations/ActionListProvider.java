@@ -13,7 +13,6 @@ import ca.mcscert.jpipe.actions.linking.CallOperator;
 import ca.mcscert.jpipe.actions.linking.ImplementsPattern;
 import ca.mcscert.jpipe.actions.linking.LoadFile;
 import ca.mcscert.jpipe.actions.linking.Publish;
-import ca.mcscert.jpipe.actions.linking.RecordSymbol;
 import ca.mcscert.jpipe.compiler.model.Transformation;
 import ca.mcscert.jpipe.operators.externals.CompositionOperator;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
@@ -100,7 +99,6 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             } else {
                 result.add(new CreateJustification(ctx.id.getText(), ctx.parent.getText()));
             }
-            result.add(recordGobal(ctx.id));
         }
 
         @Override
@@ -117,7 +115,6 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             } else {
                 result.add(new CreatePattern(ctx.id.getText(), ctx.parent.getText()));
             }
-            result.add(recordGobal(ctx.id));
         }
 
         @Override
@@ -135,7 +132,6 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             String identifier = ctx.element().id.getText();
             result.add(new CreateEvidence(buildContext.justificationId,
                         identifier, strip(ctx.element().name.getText())));
-            result.add(record(ctx.element().id));
         }
 
 
@@ -145,7 +141,6 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             String identifier = ctx.element().id.getText();
             result.add(new CreateAbstractSupport(buildContext.justificationId,
                     identifier, strip(ctx.element().name.getText())));
-            result.add(record(ctx.element().id));
         }
 
         @Override
@@ -153,7 +148,6 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             String identifier = ctx.element().id.getText();
             result.add(new CreateStrategy(buildContext.justificationId,
                         identifier, strip(ctx.element().name.getText())));
-            result.add(record(ctx.element().id));
         }
 
         @Override
@@ -161,7 +155,6 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             String identifier = ctx.element().id.getText();
             result.add(new CreateConclusion(buildContext.justificationId,
                     identifier, strip(ctx.element().name.getText())));
-            result.add(record(ctx.element().id));
         }
 
         @Override
@@ -169,7 +162,6 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             String identifier = ctx.element().id.getText();
             result.add(new CreateSubConclusion(buildContext.justificationId,
                     identifier, strip(ctx.element().name.getText())));
-            result.add(record(ctx.element().id));
         }
 
         @Override
@@ -197,7 +189,6 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         public void exitRule_decl(JPipeParser.Rule_declContext ctx) {
             result.add(this.currentCall);
             this.currentCall = null;
-            result.add(record(ctx.id));
         }
 
         @Override
@@ -231,17 +222,6 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             } else {
                 result.add(new Publish(id.getText()));
             }
-        }
-
-        private Action record(Token token) {
-            return new RecordSymbol(buildContext.justificationId, token.getText(),
-                                    buildContext.unitFileName(), token.getLine(),
-                                    token.getCharPositionInLine());
-        }
-
-        private Action recordGobal(Token token) {
-            return new RecordSymbol(null, token.getText(), buildContext.unitFileName(),
-                                    token.getLine(), token.getCharPositionInLine());
         }
 
     }
