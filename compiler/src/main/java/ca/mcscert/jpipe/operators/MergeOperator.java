@@ -1,4 +1,4 @@
-package ca.mcscert.jpipe.operators.externals;
+package ca.mcscert.jpipe.operators;
 
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import java.util.List;
@@ -23,10 +23,9 @@ public class MergeOperator extends CompositionOperator {
     }
 
     @Override
-    protected JustificationModel execute(JustificationModel output, List<JustificationModel> inputs,
+    protected void execute(JustificationModel output, List<JustificationModel> inputs,
                            Map<String, String> params) {
         System.out.println("Calling MERGE on " + inputs + "(" + params + ")");
-        return output;
     }
 
 }

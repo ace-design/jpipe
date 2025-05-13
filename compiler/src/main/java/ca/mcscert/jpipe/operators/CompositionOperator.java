@@ -1,10 +1,10 @@
-package ca.mcscert.jpipe.operators.externals;
+package ca.mcscert.jpipe.operators;
 
 import ca.mcscert.jpipe.error.SemanticError;
+import ca.mcscert.jpipe.model.cloning.Replicable;
 import ca.mcscert.jpipe.model.elements.Justification;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.elements.Pattern;
-import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +35,10 @@ public abstract class CompositionOperator {
         if (! checkInputs(inputs)) {
             throw new SemanticError("Invalid inputs for " + name());
         }
-        return execute(buildOutput(outputType, name), inputs, params);
+        JustificationModel output = buildOutput(outputType, name);
+        List<JustificationModel> cloned = inputs.stream().map(Replicable::replicate).toList();
+        execute(output, cloned, params);
+        return output; // modified by side effect of the execute method
     }
 
     /**
@@ -69,7 +72,7 @@ public abstract class CompositionOperator {
      * @param inputs the justification models used as input
      * @param params the optional parameters provided;
      */
-    protected abstract JustificationModel execute(JustificationModel output,
+    protected abstract void execute(JustificationModel output,
                                                   List<JustificationModel> inputs,
                                                   Map<String, String> params);
 
@@ -78,7 +81,24 @@ public abstract class CompositionOperator {
      * Allowed return types when calling operators.
      */
     public enum ReturnType {
-        PATTERN, JUSTIFICATION
+        PATTERN, JUSTIFICATION;
+
+        /**
+         * Build a ReturnType out of a justification model instance.
+         *
+         * @param m the model used as example
+         * @return the associated ReturnType
+         */
+        public static ReturnType of(JustificationModel m) {
+            if (m.getClass().getCanonicalName()
+                    .equals(Pattern.class.getCanonicalName())) {
+                return PATTERN;
+            } else if (m.getClass().getCanonicalName()
+                            .equals(Justification.class.getCanonicalName())) {
+                return JUSTIFICATION;
+            }
+            throw new RuntimeException("Unsupported return type");
+        }
     }
 
     private JustificationModel buildOutput(CompositionOperator.ReturnType outputType,
