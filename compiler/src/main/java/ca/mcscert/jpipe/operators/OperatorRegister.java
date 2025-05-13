@@ -1,8 +1,6 @@
 package ca.mcscert.jpipe.operators;
 
 import ca.mcscert.jpipe.error.SemanticError;
-import ca.mcscert.jpipe.operators.externals.CompositionOperator;
-import ca.mcscert.jpipe.operators.externals.MergeOperator;
 import java.util.HashMap;
 import java.util.Map;
 

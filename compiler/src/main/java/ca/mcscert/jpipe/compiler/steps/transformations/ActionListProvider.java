@@ -14,7 +14,7 @@ import ca.mcscert.jpipe.actions.linking.ImplementsPattern;
 import ca.mcscert.jpipe.actions.linking.LoadFile;
 import ca.mcscert.jpipe.actions.linking.Publish;
 import ca.mcscert.jpipe.compiler.model.Transformation;
-import ca.mcscert.jpipe.operators.externals.CompositionOperator;
+import ca.mcscert.jpipe.operators.CompositionOperator;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
 import ca.mcscert.jpipe.syntax.JPipeLexer;
 import ca.mcscert.jpipe.syntax.JPipeParser;

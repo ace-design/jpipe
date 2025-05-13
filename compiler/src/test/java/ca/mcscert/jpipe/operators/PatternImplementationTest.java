@@ -7,7 +7,8 @@ import ca.mcscert.jpipe.model.elements.Justification;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.elements.Pattern;
 import ca.mcscert.jpipe.model.elements.Strategy;
-import ca.mcscert.jpipe.operators.internals.PatternImplementation;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,7 @@ public class PatternImplementationTest {
         assertEquals(3, p.contents().size());
         assertEquals(1, j.contents().size());
 
-        PatternImplementation op = new PatternImplementation();
-        JustificationModel result = op.apply(j, p);
+        JustificationModel result = implementsPattern(j, p);
 
         assertEquals(3, p.contents().size()); // p is untouched
         assertEquals(1, j.contents().size()); // j is untouched
@@ -55,16 +55,16 @@ public class PatternImplementationTest {
     public void resultIsTheRightType() {
         PatternImplementation op = new PatternImplementation();
         // Implements: Justification x Pattern -> Justification
-        assertDoesNotThrow(() -> (Justification) op.apply(j, p));
+        assertDoesNotThrow(() -> (Justification) implementsPattern(j, p));
         // Implements: Pattern x Pattern -> Pattern
-        assertDoesNotThrow(() -> (Pattern) op.apply(new Pattern("?"), p));
+        assertDoesNotThrow(() -> (Pattern) implementsPattern(new Pattern("?"), p));
     }
 
 
     @Test
     public void elementsAvailableInTheJustification() {
         PatternImplementation op = new PatternImplementation();
-        JustificationModel result = op.apply(j, p);
+        JustificationModel result = implementsPattern(j, p);
         assertEquals(result.get("c"), result.get("j:c"));
         assertEquals(result.get("s"), result.get("j:s"));
         assertEquals(result.get("x"), result.get("j:x"));
@@ -73,13 +73,19 @@ public class PatternImplementationTest {
     @Test
     public void modelStructureIsOk() {
         PatternImplementation op = new PatternImplementation();
-        JustificationModel result = op.apply(j, p);
+        JustificationModel result = implementsPattern(j, p);
         assertEquals(Set.of("s"), result.get("c").getSupportingIds());
         assertEquals(Set.of("x"), result.get("s").getSupportingIds());
         assertEquals(Set.of(), result.get("x").getSupportingIds());
     }
 
-
+    private JustificationModel implementsPattern(JustificationModel j, Pattern p) {
+        PatternImplementation op = new PatternImplementation();
+        JustificationModel result =
+                op.run(CompositionOperator.ReturnType.of(j), j.getName(),
+                        List.of(j, p), Map.of());
+        return result;
+    }
 
 
 

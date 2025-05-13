@@ -28,7 +28,7 @@ public final class Pattern extends JustificationModel {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer("Pattern{");
+        StringBuffer sb = new StringBuffer("Pattern {");
         sb.append(super.toString());
         sb.append('}');
         return sb.toString();
