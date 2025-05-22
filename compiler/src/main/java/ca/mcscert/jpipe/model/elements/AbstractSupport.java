@@ -19,6 +19,9 @@ public final class AbstractSupport extends Support {
     }
 
     @Override
+    public void removeAllSupports() {}
+
+    @Override
     public AbstractSupport shallow() {
         return new AbstractSupport(this.identifier, this.label);
     }
@@ -32,4 +35,6 @@ public final class AbstractSupport extends Support {
     public Set<JustificationElement> getSupports() {
         return Set.of();
     }
+
+
 }

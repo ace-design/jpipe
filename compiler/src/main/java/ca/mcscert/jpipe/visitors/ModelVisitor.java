@@ -1,13 +1,7 @@
 package ca.mcscert.jpipe.visitors;
 
 import ca.mcscert.jpipe.model.Unit;
-import ca.mcscert.jpipe.model.elements.AbstractSupport;
-import ca.mcscert.jpipe.model.elements.Conclusion;
-import ca.mcscert.jpipe.model.elements.Evidence;
-import ca.mcscert.jpipe.model.elements.Justification;
-import ca.mcscert.jpipe.model.elements.Pattern;
-import ca.mcscert.jpipe.model.elements.Strategy;
-import ca.mcscert.jpipe.model.elements.SubConclusion;
+import ca.mcscert.jpipe.model.elements.*;
 
 /**
  * Define what a Visitor is for jPipe models. We are using "typed" visitors, i.e., visitors that

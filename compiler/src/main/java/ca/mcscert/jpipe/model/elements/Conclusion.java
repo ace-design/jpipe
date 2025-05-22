@@ -30,6 +30,11 @@ public final class Conclusion extends JustificationElement {
     }
 
     @Override
+    public void removeAllSupports() {
+        this.strategy = null;
+    }
+
+    @Override
     public Set<JustificationElement> getSupports() {
         return (this.strategy == null ? Set.of() : Set.of(this.strategy));
     }

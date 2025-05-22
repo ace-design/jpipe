@@ -29,6 +29,11 @@ public final class Evidence extends Support {
     }
 
     @Override
+    public void removeAllSupports() {
+        return;
+    }
+
+    @Override
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
     }
@@ -38,4 +43,6 @@ public final class Evidence extends Support {
     public Set<JustificationElement> getSupports() {
         return Set.of();
     }
+
+
 }

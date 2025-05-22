@@ -3,7 +3,10 @@ package ca.mcscert.jpipe.model.elements;
 import ca.mcscert.jpipe.model.SymbolTable;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.Replicable;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Abstraction to represent patters and justification in a uniform way.
@@ -93,6 +96,22 @@ public abstract class JustificationModel
             for (JustificationElement supporting : elem.getSupports()) {
                 if (supporting.getIdentifier().equals(original.getIdentifier())) {
                     newOne.supports(elem);
+                }
+            }
+        }
+        // Delete the original, and add the new one.
+        this.remove(original);
+        this.add(newOne);
+    }
+
+    public void replaceAll(JustificationElement original, JustificationElement newOne, List<List<JustificationElement>> groups) {
+        // Re-wire things in the justification model body.
+        for(JustificationElement sup: original.getSupports()) {
+            for(List<JustificationElement> group: groups) {
+                for (JustificationElement elem : group) {
+                    if (sup.getIdentifier().equals(elem.getIdentifier())) {
+                        newOne.supports(group.getFirst());
+                    }
                 }
             }
         }

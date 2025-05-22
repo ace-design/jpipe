@@ -35,6 +35,11 @@ public final class SubConclusion extends Support {
     }
 
     @Override
+    public void removeAllSupports() {
+        this.strategy = null;
+    }
+
+    @Override
     protected void acceptAsSupport(Strategy s) {
         this.strategy = s;
     }
