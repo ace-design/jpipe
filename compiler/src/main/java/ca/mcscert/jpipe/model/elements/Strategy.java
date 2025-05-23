@@ -44,6 +44,11 @@ public final class Strategy extends JustificationElement {
     }
 
     @Override
+    public void removeSupport(JustificationElement that) {
+        this.supports.removeIf(support -> support.equals(that));
+    }
+
+    @Override
     protected void acceptAsSupport(Evidence e) {
         removeAsSupportIfExisting(e.getIdentifier());
         this.supports.add(e);

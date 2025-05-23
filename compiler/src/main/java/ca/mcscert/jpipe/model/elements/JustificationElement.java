@@ -73,6 +73,8 @@ public abstract class JustificationElement
 
     public abstract void removeAllSupports();
 
+    public abstract void removeSupport(JustificationElement that);
+
 
     /* *************************************************************
      * * Double-dispatch mechanism for adding supporting relations *

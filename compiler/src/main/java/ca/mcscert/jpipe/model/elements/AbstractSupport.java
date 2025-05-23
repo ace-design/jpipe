@@ -22,6 +22,11 @@ public final class AbstractSupport extends Support {
     public void removeAllSupports() {}
 
     @Override
+    public void removeSupport(JustificationElement that) {
+
+    }
+
+    @Override
     public AbstractSupport shallow() {
         return new AbstractSupport(this.identifier, this.label);
     }

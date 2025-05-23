@@ -40,6 +40,13 @@ public final class SubConclusion extends Support {
     }
 
     @Override
+    public void removeSupport(JustificationElement that) {
+        if(this.strategy.equals(that)){
+            this.strategy = null;
+        }
+    }
+
+    @Override
     protected void acceptAsSupport(Strategy s) {
         this.strategy = s;
     }

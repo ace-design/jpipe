@@ -62,7 +62,6 @@ public class MergeOperator extends CompositionOperator {
                         areSimilar(justificationElement.getLabel(), otherJustificationElement.getLabel(), threshold)) {
                     group.add(otherJustificationElement);
                     representatives[j] = justificationElement;
-                    break;
                 }
             }
             groups.add(group);
@@ -89,14 +88,13 @@ public class MergeOperator extends CompositionOperator {
 
                     }
                 }
-                else if (!output.contents().containsAll(justificationElement.getSupports())) {
-                    // Slow as hell
+                else {
                     for (JustificationElement sup : justificationElement.getSupports()) {
                         if (!output.contents().contains(sup)) {
                             JustificationElement representativeElement = getJustificationElement(sup, justificationElementList, representatives);
+                            justificationElement.removeSupport(sup);
                             representativeElement.supports(justificationElement);
                             output.replace(representativeElement, representativeElement);
-                            System.out.println(representativeElement);
                         }
                     }
 
@@ -124,22 +122,6 @@ public class MergeOperator extends CompositionOperator {
                 (double)distance / (double)s1.length() : (double)distance / (double)s2.length();
         return distancePercentage <= ((double) threshold /100);
 
-    }
-
-    private JustificationElement mergeNodes(List<JustificationElement> justificationElements) {
-        JustificationElement mergedElement = null;
-        // Combine all the names of the group
-        for(JustificationElement justificationElement : justificationElements) {
-            if(mergedElement == null) {
-                mergedElement = justificationElement;
-            }
-            else {
-                for(JustificationElement e: justificationElement.getSupports()){
-                    mergedElement.getSupports().add(e);
-                }
-            }
-        }
-        return mergedElement;
     }
 
 }
