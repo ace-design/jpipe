@@ -23,7 +23,7 @@ public class multipleMergeIT extends SourceFileTest {
     public void containsTheRightModels(){
         Counter counter = new Counter();
         this.unit.accept(counter);
-        assertEquals(3, unit.getContents().size());
+        assertEquals(4, unit.getContents().size());
     }
 
     @Nested
@@ -40,8 +40,8 @@ public class multipleMergeIT extends SourceFileTest {
         public void justificationContainsRightElements() {
             Counter counter = new Counter();
             unit.get("j").accept(counter);
-            assertEquals(3, counter.getAccumulator().get(Counter.Element.EVIDENCE));
-            assertEquals(2, counter.getAccumulator().get(Counter.Element.SUB_CONCLUSION));
+            assertEquals(2, counter.getAccumulator().get(Counter.Element.EVIDENCE));
+            assertEquals(3, counter.getAccumulator().get(Counter.Element.SUB_CONCLUSION));
             assertEquals(3, counter.getAccumulator().get(Counter.Element.STRATEGY));
             assertEquals(1, counter.getAccumulator().get(Counter.Element.CONCLUSION));
         }
@@ -76,7 +76,7 @@ public class multipleMergeIT extends SourceFileTest {
         public void elementsAreCorrectlySupported() {
             JustificationModel j = unit.get("j");
             assertEquals(Set.of("AND1"), asIdentifiers(j.get("c1").getSupports()));
-            assertEquals(Set.of("sc1","sc3"), asIdentifiers(j.get("AND1").getSupports()));
+            assertEquals(Set.of("sc1","sc2","sc3"), asIdentifiers(j.get("AND1").getSupports()));
             assertEquals(Set.of("s1"), asIdentifiers(j.get("sc1").getSupports()));
             assertEquals(Set.of("s2"), asIdentifiers(j.get("sc3").getSupports()));
             assertEquals(Set.of("e1"), asIdentifiers(j.get("s1").getSupports()));

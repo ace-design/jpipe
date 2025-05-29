@@ -1,5 +1,6 @@
 package ca.mcscert.jpipe.operators;
 
+import ca.mcscert.jpipe.model.GlobalTable;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.elements.Pattern;
@@ -38,18 +39,21 @@ public class MergeOperator extends CompositionOperator {
 
         int threshold = Integer.parseInt(params.get("threshold"));
 
+        GlobalTable globalTable = GlobalTable.getInstance();
+
         // Flatten all JustificationElement
         List<JustificationElement> justificationElementList = new LinkedList<>();
         for(JustificationModel justification : inputs) {
             justificationElementList.addAll(justification.contents());
         }
-        JustificationElement[] representatives = new JustificationElement[justificationElementList.size()];
+        JustificationElement[] representatives = new JustificationElement[justificationElementList.size()]; // Change to list
         Arrays.fill(representatives, null);
 
         // Group similar elements
-        List<List<JustificationElement>> groups = new LinkedList<>();
+        List<List<JustificationElement>> groups = new LinkedList<>(); // Change to set
         for(int i = 0; i < justificationElementList.size(); i++) {
             JustificationElement justificationElement = justificationElementList.get(i);
+            globalTable.put(justificationElement.getUid(), justificationElement.shallow());
             List<JustificationElement> group = new LinkedList<>();
             if (representatives[i] != null) {
                 continue;
@@ -70,7 +74,6 @@ public class MergeOperator extends CompositionOperator {
         // Merge groups
         for(List<JustificationElement> group : groups) {
             JustificationElement first = group.getFirst();
-//            first.removeAllSupports();
             output.add(first);
         }
         // Check the supporting elements of new element
@@ -84,6 +87,7 @@ public class MergeOperator extends CompositionOperator {
                         if (output.contents().contains(sup)) {
                             // newSup supports the representative element in the output
                             sup.supports(first);
+                            globalTable.put(first.getUid(), first.shallow());
                         }
 
                     }
@@ -94,7 +98,8 @@ public class MergeOperator extends CompositionOperator {
                             JustificationElement representativeElement = getJustificationElement(sup, justificationElementList, representatives);
                             justificationElement.removeSupport(sup);
                             representativeElement.supports(justificationElement);
-                            output.replace(representativeElement, representativeElement);
+                            globalTable.put(justificationElement.getUid(), justificationElement.shallow());
+
                         }
                     }
 
@@ -108,7 +113,7 @@ public class MergeOperator extends CompositionOperator {
 
     private static JustificationElement getJustificationElement(JustificationElement sup, List<JustificationElement> justificationElementList, JustificationElement[] representatives) {
         for (int i = 0; i < justificationElementList.size(); i++) {
-            if(justificationElementList.get(i).getIdentifier().equals(sup.getIdentifier())) {
+            if(justificationElementList.get(i).equals(sup)) {
                 return representatives[i];
             }
         }

@@ -13,7 +13,7 @@ justification j1 {
 justification j2 {
     conclusion c2 is "a shared conclusion"
     strategy AND2 is "<AND>"
-    sub-conclusion sc2 is "an equivalent sub-conclusion"
+    sub-conclusion sc2 is "a distinct non-similar sub-conclusion"
     strategy s2   is "completely separate strategy"
     evidence e2   is "an unique evidence"
     e2 supports s2
