@@ -29,6 +29,9 @@ public final class Evidence extends Support {
     }
 
     @Override
+    public void removeSupport(JustificationElement that) {}
+
+    @Override
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
     }
