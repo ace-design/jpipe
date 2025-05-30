@@ -48,4 +48,10 @@ public final class Conclusion extends JustificationElement {
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
     }
+
+    public SubConclusion intoSubConclusion() {
+        SubConclusion subConclusion = new SubConclusion(this.identifier, this.label);
+        subConclusion.acceptAsSupport(this.strategy);
+        return subConclusion;
+    }
 }

@@ -19,6 +19,8 @@ public class OperatorRegister {
 
     private void initialize() {
         this.operators.put("merge", new MergeOperator());
+        this.operators.put("assemble", new AssembleOperator());
+        this.operators.put("refine", new RefinementOperator());
     }
 
     /**
