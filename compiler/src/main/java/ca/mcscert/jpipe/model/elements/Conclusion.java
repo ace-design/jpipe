@@ -30,6 +30,11 @@ public final class Conclusion extends JustificationElement {
     }
 
     @Override
+    public void removeSupport(JustificationElement that) {
+        this.strategy = null;
+    }
+
+    @Override
     public Set<JustificationElement> getSupports() {
         return (this.strategy == null ? Set.of() : Set.of(this.strategy));
     }
@@ -49,8 +54,9 @@ public final class Conclusion extends JustificationElement {
         visitor.visit(this);
     }
 
-    public SubConclusion intoSubConclusion() {
+    public SubConclusion intoSubConclusion(Strategy strategy) {
         SubConclusion subConclusion = new SubConclusion(this.identifier, this.label);
+        subConclusion.supports(strategy);
         subConclusion.acceptAsSupport(this.strategy);
         return subConclusion;
     }
