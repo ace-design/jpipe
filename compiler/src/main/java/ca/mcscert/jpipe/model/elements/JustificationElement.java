@@ -4,6 +4,7 @@ import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.ShallowCloneable;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 public abstract class JustificationElement
         implements Visitable, ShallowCloneable<JustificationElement> {
 
+    protected final long UID;
     protected final String identifier;
     protected final String label;
     protected JustificationModel container;
@@ -24,6 +26,7 @@ public abstract class JustificationElement
      * @param label the label associated to the element.
      */
     public JustificationElement(String identifier, String label) {
+        this.UID = UUID.randomUUID().getMostSignificantBits();
         this.identifier = identifier;
         this.label = label;
     }
@@ -31,6 +34,8 @@ public abstract class JustificationElement
     public final String getIdentifier() {
         return identifier;
     }
+
+    public final Long getUID() { return UID; }
 
     public final String getLabel() {
         return label;
@@ -140,7 +145,7 @@ public abstract class JustificationElement
             return false;
         }
         JustificationElement that = (JustificationElement) o;
-        return Objects.equals(identifier, that.identifier);
+        return this.UID == that.UID;
     }
 
     @Override

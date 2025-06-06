@@ -60,4 +60,9 @@ public final class Conclusion extends JustificationElement {
         subConclusion.acceptAsSupport(this.strategy);
         return subConclusion;
     }
+    public SubConclusion intoSubConclusion() {
+        SubConclusion subConclusion = new SubConclusion(this.identifier, this.label);
+        subConclusion.acceptAsSupport(this.strategy);
+        return subConclusion;
+    }
 }

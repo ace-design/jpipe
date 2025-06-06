@@ -16,6 +16,7 @@ justification j2 {
 
 composition {
     justification j is assemble(j1, j2) {
-      conclusionLabel:  "levenshtein"
+      conclusionLabel:  "This model is ready to deploy"
+      strategyLabel: "Aggregating all subconclusion"
     }
 }
