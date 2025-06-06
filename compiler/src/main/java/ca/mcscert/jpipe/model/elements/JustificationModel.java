@@ -4,6 +4,7 @@ import ca.mcscert.jpipe.model.SymbolTable;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.Replicable;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Abstraction to represent patters and justification in a uniform way.

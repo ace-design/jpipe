@@ -14,7 +14,7 @@ public class AssembleOperator extends CompositionOperator {
 
     @Override
     protected boolean checkParameters(Map<String, String> params) {
-        return params.containsKey("conclusionLabel");
+        return params.containsKey("conclusionLabel") && params.containsKey("strategyLabel");
     }
 
     @Override
@@ -26,11 +26,12 @@ public class AssembleOperator extends CompositionOperator {
     protected void execute(JustificationModel output, List<JustificationModel> inputs, Map<String, String> params) {
         System.out.println("Calling ASSEMBLE on " + inputs + "(" + params + ")");
         String conclusionLabel = params.get("conclusionLabel");
+        String strategyLabel = params.get("strategyLabel");
         // Create conclusion and add it
         Conclusion newConclusion = new Conclusion("c", conclusionLabel);
         output.add(newConclusion);
         // Create AND strat
-        Strategy newStrategy = new Strategy("AND", "<AND>");
+        Strategy newStrategy = new Strategy("AND", strategyLabel);
         newStrategy.supports(newConclusion);
         output.add(newStrategy);
         // Go through each justification models
@@ -72,6 +73,7 @@ public class AssembleOperator extends CompositionOperator {
                 }
             }
             output.add(justificationElement);
+            justificationElement.supports(evi2Strats.get(justificationElement).getFirst());
         }
 
 
