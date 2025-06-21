@@ -140,16 +140,19 @@ export class PreviewProvider implements vscode.CustomTextEditorProvider, Command
     
 	// Executes the jar file for updated SVG
     public async updateSVG(): Promise<void> {
+        let img: string = '';
         try{
             const {stdout} = await PreviewProvider.image_generator.generate({format: Format.SVG, save_image: false})
-            
-            PreviewProvider.webviewPanel.title = PreviewProvider.image_generator.getDiagramName();
-            PreviewProvider.svg_data = stdout;
-            this.output_manager.log(JPipeOutput.IMAGE, stdout +"\n\n");
+            img = stdout
+            //this.output_manager.log(JPipeOutput.CONSOLE, img);
         }catch (error: any){
+            //this.output_manager.log(JPipeOutput.CONSOLE, "IMG: " + img);
             this.output_manager.log(JPipeOutput.USER, "Error found!");//logs to both
             this.output_manager.log(JPipeOutput.CONSOLE, "[Preview Provider]" + error.toString());
         }
+        PreviewProvider.webviewPanel.title = PreviewProvider.image_generator.getDiagramName();
+        PreviewProvider.svg_data = img;
+        this.output_manager.log(JPipeOutput.IMAGE, img +"\n\n");
         this.output_manager.log(JPipeOutput.CONSOLE, "Executed Jar");
     }   
     

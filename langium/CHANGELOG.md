@@ -1,5 +1,12 @@
 ## Changelog
 
+### v0.2.10 (2025-06-21)
+- Leader:  Sébastien Mosser
+  - Features:
+    - New compiler release
+    - Add export format (dot, jpipe, runner)
+    - slightly change graphical rendering (using different shapes and not only colors)
+
 ### v0.2.9 (2025-03-05)
 - Leader: Cass Braun
   - Features:

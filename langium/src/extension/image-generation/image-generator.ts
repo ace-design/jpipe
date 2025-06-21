@@ -27,6 +27,22 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
             {
                 exe_command: "jpipe.downloadSVG", 
                 format: Format.SVG
+            },
+            {
+                exe_command: "jpipe.downloadJSON", 
+                format: Format.JSON
+            },
+            {
+                exe_command: "jpipe.downloadDOT", 
+                format: Format.DOT
+            },
+            {
+                exe_command: "jpipe.downloadRUNNER", 
+                format: Format.RUNNER
+            },
+            {
+                exe_command: "jpipe.downloadJPIPE", 
+                format: Format.JPIPE
             }
         ];
         
@@ -61,12 +77,18 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         const { exec } = require('node:child_process');
         const execPromise = util.promisify(exec);
         const command = await this.makeCommand(command_settings);
-        const output: {error: any, stdout: any, stderr: any} = await execPromise(command);
-        return {stdout: output.stdout};
+        let result = {stdout: ""};
+        try {
+            const output = await execPromise(command);
+            result.stdout = output.stdout;
+        } catch (error: any) {
+            result.stdout = error.stdout;
+        }
+        return result;
     }
     
 	//creates the command based on command settings
-    private async makeCommand(command_settings: CommandSettings): Promise<string>{
+    private async makeCommand(command_settings: CommandSettings): Promise<string> {
         let java_version = this.configuration.getConfiguration(ConfigKey.JAVAVERSION);
         let jar_file = this.configuration.getConfiguration(ConfigKey.JARFILE);
         
@@ -79,14 +101,14 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         let log_level = this.configuration.getConfiguration(ConfigKey.LOGLEVEL);
         
 
-        let command = java_version + ' -jar ' + path.normalize(jar_file) + ' -i ' + path.normalize(input_file) + ' -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
+        let command = java_version + ' -jar "' + path.normalize(jar_file) + '" -i "' + path.normalize(input_file) + '" -d '+ diagram_name + ' --format ' + format + ' --log-level ' + log_level;
         
         this.output_manager.log(JPipeOutput.USER, this.generateUserMessage(jar_file));
         this.output_manager.log(JPipeOutput.CONSOLE, "Image made using jar file: " + jar_file.toString()); //Shows user relevant info
 
         if(command_settings.save_image){
             let output_file = await this.makeOutputPath(diagram_name, command_settings);
-            command += ' -o ' + output_file.path;
+            command += ' -o "' + output_file.path + '"';
         }
         
         return command;
@@ -139,10 +161,10 @@ export class ImageGenerator implements CommandUser, EventSubscriber<vscode.TextE
         let default_output_file = vscode.Uri.joinPath(this.directory.uri, diagram_name + "." + command_settings.format.toLowerCase());
         let save_dialog_options: vscode.SaveDialogOptions = {
             defaultUri:  default_output_file,
-            saveLabel: "Save proof model",
+            saveLabel: "Save model" /*,
             filters: {
                     'Images': [Format.PNG.toLowerCase(), Format.SVG.toLowerCase()]
-                }
+                } */
         }
         let output_file = await vscode.window.showSaveDialog(save_dialog_options);
         
@@ -204,8 +226,12 @@ type ImageType = {
 }
 
 export enum Format{
-    PNG = "PNG",
-    SVG = "SVG",
+    PNG    = "png",
+    SVG    = "svg",
+    JSON   = "json",
+    DOT    = "dot",
+    RUNNER = "runner",
+    JPIPE  = "jpipe"
 }
 
 type CommandSettings = {

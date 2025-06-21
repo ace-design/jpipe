@@ -4,7 +4,7 @@
     "description": "Language Support for the jPipe language",
     "author": "McMaster Centre for Software Certification (McSCert)",
     "publisher": "mcscert",
-    "version": "0.2.8",
+    "version": "0.2.10",
     "license": "MIT",
     "icon": "images/logo.png",
     "repository": {
@@ -145,6 +145,22 @@
                 "title": ".svg"
             },
             {
+                "command": "jpipe.downloadJSON",
+                "title": ".json"
+            },
+            {
+                "command": "jpipe.downloadDOT",
+                "title": ".dot"
+            },
+            {
+                "command": "jpipe.downloadRUNNER",
+                "title": ".jd.py (runner)"
+            },
+            {
+                "command": "jpipe.downloadJPIPE",
+                "title": ".jd"
+            },
+            {
                 "command": "jpipe.vis.preview",
                 "title": "Preview Diagram",
                 "category": "jPipeVis",
@@ -170,6 +186,18 @@
                 },
                 {
                     "command": "jpipe.downloadPNG"
+                },
+                {
+                    "command": "jpipe.downloadJSON"
+                },
+                {
+                    "command": "jpipe.downloadDOT"
+                },
+                {
+                    "command": "jpipe.downloadRUNNER"
+                },
+                {
+                    "command": "jpipe.downloadJPIPE"
                 }
             ],
             "editor/title": [
@@ -183,7 +211,7 @@
                 {
                     "submenu": "jpipe.submenu.downloadImage",
                     "group": "navigation",
-                    "when": "jpipe.atJustification"
+                    "when": "jpipe.inJustification || jpipe.atJustification"
                 },
                 {
                     "command": "jpipe.vis.preview",
