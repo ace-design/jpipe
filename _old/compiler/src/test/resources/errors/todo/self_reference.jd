@@ -1,7 +1,0 @@
-justification self_ref {
-
-    evidence Su1 is "Evidence 1"
-
-    Su1 supports Su1  // Component supports itself
-
-}
