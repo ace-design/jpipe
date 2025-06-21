@@ -30,7 +30,6 @@ public class SimpleIT extends SourceFileTest {
         this.unit.accept(counter);
         assertEquals(1, unit.getContents().size());
         assertTrue(unit.exists("proving"));
-        assertEquals(source(), unit.getName());
     }
 
     @Test

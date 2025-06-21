@@ -41,7 +41,7 @@ public final class CreateJustification extends RegularAction {
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("CreateJustification{");
-        sb.append(", identifier='").append(identifier).append('\'');
+        sb.append("identifier='").append(identifier).append('\'');
         sb.append(", parent='").append(parent).append('\'');
         sb.append('}');
         return sb.toString();

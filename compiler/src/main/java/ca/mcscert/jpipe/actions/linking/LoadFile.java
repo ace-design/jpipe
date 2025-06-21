@@ -30,8 +30,10 @@ public class LoadFile extends MacroAction {
 
     @Override
     public List<Action> expand(Unit context) throws Exception {
-        Path p = new File(fileName).toPath().normalize();
+        Path p = new File(fileName).toPath().normalize().toAbsolutePath();
+        System.out.println(p);
         if (canLoad(p, context)) {
+
             context.addLoadedFile(p);
             Transformation<InputStream, List<Action>> partial = CompilerFactory.actionProvider();
             Source<InputStream> reader = new FileReader();

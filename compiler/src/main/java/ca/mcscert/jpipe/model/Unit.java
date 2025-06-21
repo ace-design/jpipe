@@ -16,6 +16,7 @@ public final class Unit implements Visitable {
 
     private final String name;
     private final SymbolTable<JustificationModel> contents;
+    private final Path location;
     private final Set<String> loaded;
 
     /**
@@ -28,7 +29,8 @@ public final class Unit implements Visitable {
         this.name = name;
         this.contents = new SymbolTable<>();
         this.loaded = new HashSet<>();
-        loaded.add(filePath.normalize().toString());
+        this.location = filePath;
+        addLoadedFile(filePath);
     }
 
     public String getName() {
@@ -43,7 +45,7 @@ public final class Unit implements Visitable {
      * @return true is already loaded, false elsewhere.
      */
     public boolean isInScope(Path p) {
-        return this.loaded.contains(p.normalize().toString());
+        return this.loaded.contains(p.normalize().toAbsolutePath().toString());
     }
 
     /**
@@ -52,7 +54,7 @@ public final class Unit implements Visitable {
      * @param p the path to add
      */
     public void addLoadedFile(Path p) {
-        this.loaded.add(p.normalize().toString());
+        this.loaded.add(p.normalize().toAbsolutePath().toString());
     }
 
     /**

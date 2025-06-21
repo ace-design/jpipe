@@ -1,4 +1,13 @@
 
+
+composition {
+    justification j is merge(j1, j2) {
+      equivalence:  "levenshtein"
+      threshold:    "10"
+    }
+}
+
+
 justification j1 {
     conclusion c1 is "a shared conclusion"
     strategy s1   is "an equivalent strategy"
@@ -13,11 +22,4 @@ justification j2 {
     evidence e2   is "another unique evidence"
     e2 supports s2
     s2 supports c2
-}
-
-composition {
-    justification j is merge(j1, j2) {
-      equivalence:  "levenshtein"
-      threshold:    "10"
-    }
 }

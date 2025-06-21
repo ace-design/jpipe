@@ -17,10 +17,10 @@ public enum Option {
             "output file path (default: stdout)"),
 
     DIAG_NAME("d", "diagram",
-            "diagram name (default if only one)"),
+            "diagram name (optional if only one)"),
 
     OUT_FORMAT("f", "format",
-            "output format in [png, svg, dot, json, jd, runner]\n(Default: png)"),
+            "output format in [png, svg, dot, json, jpipe, runner]\n(Default: png)"),
 
     COMPILE_MODE("mode",
             "compiler's mode in [print, list] (default: print)"),
