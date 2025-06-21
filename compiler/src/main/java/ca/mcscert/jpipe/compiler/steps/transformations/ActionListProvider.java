@@ -9,11 +9,14 @@ import ca.mcscert.jpipe.actions.creation.CreatePattern;
 import ca.mcscert.jpipe.actions.creation.CreateRelation;
 import ca.mcscert.jpipe.actions.creation.CreateStrategy;
 import ca.mcscert.jpipe.actions.creation.CreateSubConclusion;
+import ca.mcscert.jpipe.actions.linking.CallOperator;
 import ca.mcscert.jpipe.actions.linking.ImplementsPattern;
 import ca.mcscert.jpipe.actions.linking.LoadFile;
 import ca.mcscert.jpipe.actions.linking.Publish;
 import ca.mcscert.jpipe.compiler.model.Transformation;
+import ca.mcscert.jpipe.operators.CompositionOperator;
 import ca.mcscert.jpipe.syntax.JPipeBaseListener;
+import ca.mcscert.jpipe.syntax.JPipeLexer;
 import ca.mcscert.jpipe.syntax.JPipeParser;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -62,6 +65,8 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         private final List<Action> result;
         private Context buildContext;
 
+        private CallOperator currentCall = null;
+
         public ActionBuilder(String name) {
             this.result = new ArrayList<>();
             this.buildContext = new Context(name, null);
@@ -71,6 +76,10 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             return result;
         }
 
+        /* ******************************** *
+         * * Parsing Load file Directives * *
+         * ******************************** */
+
         @Override
         public void enterLoad(JPipeParser.LoadContext ctx) {
             String relativePath = normalizePath(this.buildContext.unitFileName,
@@ -78,14 +87,17 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             result.add(new LoadFile(relativePath));
         }
 
+        /* ********************************************** *
+         * * Parsing Justification/Patterns declaration * *
+         * ********************************************** */
+
         @Override
         public void enterJustification(JPipeParser.JustificationContext ctx) {
             this.buildContext = buildContext.updateCurrentJustification(ctx.id.getText());
             if (ctx.parent == null) {
-                result.add(new CreateJustification(buildContext.unitFileName, ctx.id.getText()));
+                result.add(new CreateJustification(ctx.id.getText()));
             } else {
-                result.add(new CreateJustification(buildContext.unitFileName,
-                                                    ctx.id.getText(), ctx.parent.getText()));
+                result.add(new CreateJustification(ctx.id.getText(), ctx.parent.getText()));
             }
         }
 
@@ -99,10 +111,9 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
         public void enterPattern(JPipeParser.PatternContext ctx) {
             this.buildContext = buildContext.updateCurrentJustification(ctx.id.getText());
             if (ctx.parent == null) {
-                result.add(new CreatePattern(buildContext.unitFileName, ctx.id.getText()));
+                result.add(new CreatePattern(ctx.id.getText()));
             } else {
-                result.add(new CreatePattern(buildContext.unitFileName,
-                                                ctx.id.getText(), ctx.parent.getText()));
+                result.add(new CreatePattern(ctx.id.getText(), ctx.parent.getText()));
             }
         }
 
@@ -112,12 +123,18 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             this.buildContext = buildContext.updateCurrentJustification(null);
         }
 
+        /* ********************************** *
+         * * Parsing justification elements * *
+         * ********************************** */
+
         @Override
         public void enterEvidence(JPipeParser.EvidenceContext ctx) {
             String identifier = ctx.element().id.getText();
             result.add(new CreateEvidence(buildContext.justificationId,
                         identifier, strip(ctx.element().name.getText())));
         }
+
+
 
         @Override
         public void enterAbstract(JPipeParser.AbstractContext ctx) {
@@ -152,6 +169,42 @@ public final class ActionListProvider extends Transformation<ParseTree, List<Act
             result.add(new CreateRelation(buildContext.justificationId,
                     ctx.from.getText(), ctx.to.getText()));
         }
+
+        /* ***************************** *
+         * * Parsing Composition units * *
+         * ***************************** */
+
+
+        @Override
+        public void enterRule_decl(JPipeParser.Rule_declContext ctx) {
+            CompositionOperator.ReturnType type = switch (ctx.type.getType()) {
+                case JPipeLexer.JUSTIFICATION -> CompositionOperator.ReturnType.JUSTIFICATION;
+                case JPipeLexer.PATTERN -> CompositionOperator.ReturnType.PATTERN;
+                default -> throw new IllegalArgumentException(ctx.type.getText());
+            };
+            this.currentCall = new CallOperator(type, ctx.id.getText(), ctx.operator.getText());
+        }
+
+        @Override
+        public void exitRule_decl(JPipeParser.Rule_declContext ctx) {
+            result.add(this.currentCall);
+            this.currentCall = null;
+        }
+
+        @Override
+        public void enterParams_decl(JPipeParser.Params_declContext ctx) {
+            this.currentCall.addInputModel(ctx.id.getText());
+
+        }
+
+        @Override
+        public void enterKey_val_decl(JPipeParser.Key_val_declContext ctx) {
+            this.currentCall.addParameter(ctx.key.getText(), strip(ctx.value.getText()));
+        }
+
+        /* ******************** *
+         * * Helper functions * *
+         * ******************** */
 
         private String strip(String s) {
             return s.substring(1, s.length() - 1);

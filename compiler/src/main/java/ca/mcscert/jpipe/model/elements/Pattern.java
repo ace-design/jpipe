@@ -28,7 +28,7 @@ public final class Pattern extends JustificationModel {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer("Pattern{");
+        StringBuffer sb = new StringBuffer("Pattern {");
         sb.append(super.toString());
         sb.append('}');
         return sb.toString();
@@ -36,7 +36,7 @@ public final class Pattern extends JustificationModel {
 
     @Override
     public Pattern replicate() {
-        Pattern clone = new Pattern(this.name, this.ready);
+        Pattern clone = new Pattern(this.name, this.frozen);
         deepLink(clone);
         return clone;
     }

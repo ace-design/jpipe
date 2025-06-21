@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Define what an Action is. (Actions implement a command pattern for model creation)
+ * Define what an Action is. (Actions implement a command pattern for model creation).
  */
 public interface Action {
 
@@ -18,7 +18,7 @@ public interface Action {
     boolean isExpandable();
 
     /**
-     * Can this action be executed right now or should it be delayed?
+     * Can this action be executed right now or should it be delayed?.
      * Delayed actions are quite rare (e.g., linking to a concept that should be defined later on),
      * so we provide a default implementation
      *

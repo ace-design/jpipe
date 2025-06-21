@@ -30,7 +30,7 @@ public class Publish extends RegularAction {
 
     @Override
     public void execute(Unit context) throws Exception {
-        context.get(identifier).publish();
+        context.get(identifier).freeze();
     }
 
 

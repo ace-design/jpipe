@@ -36,7 +36,6 @@ public final class Conclusion extends JustificationElement {
 
     @Override
     protected void acceptAsSupport(Strategy s) {
-        assertCanBeReplaced(this.strategy, s);
         this.strategy = s;
     }
 

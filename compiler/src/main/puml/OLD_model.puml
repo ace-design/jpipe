@@ -1,7 +1,7 @@
 @startuml model
 !include ./commons.style
 
-title "Justification Domain Model (jPipe)"
+'title "Justification Domain Model (jPipe)"
 
 class Unit {
     + name: String

@@ -5,7 +5,10 @@ import ca.mcscert.jpipe.error.UnknownSymbol;
 import ca.mcscert.jpipe.model.Unit;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.elements.Pattern;
+import ca.mcscert.jpipe.operators.CompositionOperator;
 import ca.mcscert.jpipe.operators.PatternImplementation;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -27,7 +30,7 @@ public class ImplementsPattern extends RegularAction {
         return (u -> {
             try { u.get(currentId); } catch (UnknownSymbol us) { return false; }
             try { u.get(parentId);  } catch (UnknownSymbol us) { return false; }
-            return (u.get(parentId).isReady());
+            return (u.get(parentId).isFrozen());
         });
     }
 
@@ -36,10 +39,13 @@ public class ImplementsPattern extends RegularAction {
         JustificationModel model = context.get(this.currentId);
         Pattern pattern = (Pattern) context.get(this.parentId); // Cast OK by design (condition)
         PatternImplementation op = new PatternImplementation();
-        JustificationModel implementing = op.apply(model, pattern);
+
+        JustificationModel implementing =
+                op.run(CompositionOperator.ReturnType.of(model), model.getName(),
+                        List.of(model, pattern), Map.of());
         context.remove(model);
         context.add(implementing);
-        implementing.publish();
+        implementing.freeze();
     }
 
     @Override

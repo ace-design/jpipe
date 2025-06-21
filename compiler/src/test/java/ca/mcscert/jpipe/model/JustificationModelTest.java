@@ -26,7 +26,6 @@ public class JustificationModelTest {
 
         Conclusion c = new Conclusion("c", "This is my conclusion");
         justification.add(c);
-        justification.setConclusion(c);
 
         Strategy s = new Strategy("s", "this is a strategy");
         justification.add(s);
@@ -36,7 +35,7 @@ public class JustificationModelTest {
         justification.add(e);
         e.supports(s);
 
-        justification.publish();
+        justification.freeze();
     }
 
     @BeforeEach
@@ -45,7 +44,6 @@ public class JustificationModelTest {
 
         Conclusion c = new Conclusion("c", "This is my conclusion");
         pattern.add(c);
-        pattern.setConclusion(c);
 
         Strategy s = new Strategy("s", "this is a strategy");
         pattern.add(s);
@@ -55,7 +53,7 @@ public class JustificationModelTest {
         pattern.add(ae);
         ae.supports(s);
 
-        pattern.publish();
+        pattern.freeze();
     }
 
     @Test
