@@ -1,5 +1,6 @@
 package ca.mcscert.jpipe.model.elements;
 
+import ca.mcscert.jpipe.model.RepTable;
 import ca.mcscert.jpipe.model.SymbolTable;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.Replicable;
@@ -14,11 +15,13 @@ public abstract class JustificationModel
 
     protected final String name;
     protected final SymbolTable<JustificationElement> symbols;
+    protected RepTable<JustificationElement> repTable;
     protected boolean frozen;
 
     protected JustificationModel(String name, boolean isFrozen) {
         this.name = name;
         this.symbols = new SymbolTable<>();
+        this.repTable = new RepTable<>();
         this.frozen = isFrozen;
     }
 
@@ -51,6 +54,8 @@ public abstract class JustificationModel
         return this.symbols.values();
     }
 
+    public HashMap<JustificationElement, JustificationElement> representations() { return this.repTable.getTable(); }
+
     /**
      * Add an element inside an unlocked justification.
      *
@@ -61,7 +66,18 @@ public abstract class JustificationModel
             throw new IllegalStateException("Cannot add an element to a frozen justification");
         }
         this.symbols.record(e.getIdentifier(), e);
+        this.repTable.record(e);
         e.setContainer(this);
+    }
+
+    public void add(JustificationElement e, JustificationElement rep) {
+        if (this.isFrozen()) {
+            throw new IllegalStateException("Cannot add an element to a frozen justification");
+        }
+        this.symbols.record(e.getIdentifier(), e);
+        this.repTable.record(e, rep);
+        e.setContainer(this);
+
     }
 
     /**
@@ -116,6 +132,7 @@ public abstract class JustificationModel
         // Building shallow clone of each element in the justification model
         for (String id : this.symbols.keys()) {
             JustificationElement elem = this.get(id).shallow();
+            repTable.record(elem, this.get(id));
             clone.add(elem); // replacing by the cloned (but still not wired) one.
         }
 
@@ -127,6 +144,21 @@ public abstract class JustificationModel
                 supportingClone.supports(cloned);
             }
         }
+        clone.repTable = this.repTable;
+    }
+
+    public void mergeElement(JustificationElement target, JustificationElement toBeReplaced) {
+        // Transfer support relationships
+        for (JustificationElement elem : this.contents()) {
+            for (JustificationElement support : elem.getSupports()) {
+                if (support.equals(toBeReplaced)) {
+                    target.supports(elem); // Reconnect supports to target
+                }
+            }
+        }
+
+        // RepTable tracking is already handled in replace
+        this.replace(toBeReplaced, target);
     }
 
 
@@ -138,6 +170,18 @@ public abstract class JustificationModel
         sb.append(", ready=").append(frozen);
         sb.append('}');
         return sb.toString();
+    }
+
+    public JustificationElement getDirectReplacementOf(JustificationElement elem) {
+        return repTable.getParent(elem);
+    }
+
+    public JustificationElement getOriginalOf(JustificationElement elem) {
+        return repTable.getOriginalParent(elem);
+    }
+
+    public boolean hasReplacementRecord(JustificationElement elem) {
+        return repTable.containsKey(elem);
     }
 
 }
