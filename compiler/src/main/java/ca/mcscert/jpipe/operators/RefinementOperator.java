@@ -42,7 +42,7 @@ public class RefinementOperator extends CompositionOperator {
         List<JustificationElement> supported = new ArrayList<>();
         for(JustificationElement JE: original.contents()){
             if(!JE.fullyQualifiedName().equals(hookElement.fullyQualifiedName())){
-                output.add(JE);
+                output.add(JE, original.representations().get(JE));
             }
             if(JE.getSupports().contains(hookElement)){
                 supported.add(JE);
@@ -56,7 +56,7 @@ public class RefinementOperator extends CompositionOperator {
         Conclusion con = null;
         for(JustificationElement JE: hookModel.contents()){
             if(!(JE instanceof Conclusion)){
-                output.add(JE);
+                output.add(JE, original.representations().get(JE));
             }
             else{
                 con = (Conclusion) JE;
@@ -65,7 +65,7 @@ public class RefinementOperator extends CompositionOperator {
 
         assert con != null;
         SubConclusion newSubCon = con.intoSubConclusion(); // might need to change
-        output.add(newSubCon);
+        output.add(newSubCon, hookModel.representations().get(con));
         for(JustificationElement JE: supported){
             JE.removeSupport(con);
             newSubCon.supports(JE);

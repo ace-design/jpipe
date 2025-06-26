@@ -19,7 +19,7 @@ public class AssembleOperator extends CompositionOperator {
 
     @Override
     protected boolean checkInputs(List<JustificationModel> inputs) {
-        return inputs.size() == 2;
+        return inputs.size() > 1;
     }
 
     @Override
@@ -34,17 +34,19 @@ public class AssembleOperator extends CompositionOperator {
         Strategy newStrategy = new Strategy("AND", strategyLabel);
         newStrategy.supports(newConclusion);
         output.add(newStrategy);
+        HashMap<JustificationElement, JustificationElement> representations = new HashMap<>();
         // Go through each justification models
         HashMap<JustificationElement, List<JustificationElement>> evi2Strats = new HashMap<>();
         for (JustificationModel justificationModel : inputs) {
+            representations.putAll(justificationModel.representations());
             for (JustificationElement justificationElement: justificationModel.contents()){
                 // Transform each conclusion --> sub-conclusion
                 if(justificationElement instanceof Conclusion){
                     SubConclusion subConclusion = ((Conclusion) justificationElement).intoSubConclusion(newStrategy);
-                    output.add(subConclusion);
+                    output.add(subConclusion, justificationElement);
                 }
                 else if(justificationElement instanceof Strategy){
-                    output.add(justificationElement);
+                    output.add(justificationElement, representations.get(justificationElement));
                     for(JustificationElement sup: justificationElement.getSupports()){
                         if(!(sup instanceof Evidence)){ continue; }
                         if(similarLabels(evi2Strats.keySet(), sup)){
@@ -55,11 +57,9 @@ public class AssembleOperator extends CompositionOperator {
                         }
                         justificationElement.removeSupport(sup);
                     }
-
-
                 }
-                else if(! (justificationElement instanceof Evidence)){
-                    output.add(justificationElement);
+                else if(justificationElement instanceof SubConclusion){
+                    output.add(justificationElement,  representations.get(justificationElement));
                 }
             }
         }
@@ -68,12 +68,17 @@ public class AssembleOperator extends CompositionOperator {
         for(JustificationElement justificationElement: evi2Strats.keySet()){
             if(evi2Strats.get(justificationElement).size() > 1){
                 for(JustificationElement strat: evi2Strats.get(justificationElement)){
-
                     justificationElement.supports(strat);
                 }
             }
-            output.add(justificationElement);
+            output.add(justificationElement,  representations.get(justificationElement));
             justificationElement.supports(evi2Strats.get(justificationElement).getFirst());
+            // Context: When merging different element together, the subsequent elements will disappear from the repTable
+            // Problem: This prevents the error management to find the original value
+            // Dilemma: Assuming that the error handling will not be go deeper than one layer, do we really need to keep track of it
+            // Solution: Map<T, List<T>> --> one to many
+                // Issue: How will we find the original value (2 parents)
+
         }
 
 
