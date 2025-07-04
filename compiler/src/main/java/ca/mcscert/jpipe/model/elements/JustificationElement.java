@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public abstract class JustificationElement
         implements Visitable, ShallowCloneable<JustificationElement> {
 
-    protected final long UID;
+    protected final long uid;
     protected final String identifier;
     protected final String label;
     protected JustificationModel container;
@@ -26,7 +26,7 @@ public abstract class JustificationElement
      * @param label the label associated to the element.
      */
     public JustificationElement(String identifier, String label) {
-        this.UID = UUID.randomUUID().getMostSignificantBits();
+        this.uid = UUID.randomUUID().getMostSignificantBits();
         this.identifier = identifier;
         this.label = label;
     }
@@ -35,7 +35,9 @@ public abstract class JustificationElement
         return identifier;
     }
 
-    public final Long getUID() { return UID; }
+    public final Long getuid() {
+        return uid;
+    }
 
     public final String getLabel() {
         return label;
@@ -147,7 +149,7 @@ public abstract class JustificationElement
             return false;
         }
         JustificationElement that = (JustificationElement) o;
-        return this.UID == that.UID;
+        return this.uid == that.uid;
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Source file: src/test/resources/examples/recruitement.jd")
-public class recruitementIT extends SourceFileTest {
+public class recruitmentIT extends SourceFileTest {
     @Override
     protected String source() {
         return "examples/recruitement.jd";
@@ -18,7 +18,7 @@ public class recruitementIT extends SourceFileTest {
     public void containsOneJustification() {
         Counter counter = new Counter();
         this.unit.accept(counter);
-        assertEquals(3, unit.getContents().size());
+        assertEquals(11, unit.getContents().size());
     }
 
 

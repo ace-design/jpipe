@@ -4,11 +4,13 @@ import ca.mcscert.jpipe.model.elements.Conclusion;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.elements.SubConclusion;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Refines an evidence with a justification model.
+ */
 public class RefinementOperator extends CompositionOperator {
 
     @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:RightCurly"})
@@ -19,7 +21,7 @@ public class RefinementOperator extends CompositionOperator {
 
     @Override
     protected boolean checkParameters(Map<String, String> params) {
-        return params.containsKey("hook") && params.get("hook").contains(":");
+        return params.containsKey("hook");
     }
 
     @Override
@@ -27,48 +29,62 @@ public class RefinementOperator extends CompositionOperator {
         return inputs.size() == 2;
     }
 
-    // inputs[0] = original JM
-    // inputs[1] = refinement JM
+    // inputs[0] = JM with the evidence to refine
+    // inputs[1] = JM which attaches to an evidence
+    // hook: Label of the hook
     @Override
-    protected void execute(JustificationModel output, List<JustificationModel> inputs, Map<String, String> params) {
+    protected void execute(JustificationModel output, List<JustificationModel> inputs,
+                           Map<String, String> params) {
         System.out.println("Calling REFINE on " + inputs + "(" + params + ")");
 
         // Find hook
-        String[] hook = params.get("hook").split(":");
+        String hook = params.get("hook");
 
-        JustificationModel original = hook[0].equals(inputs.getFirst().getName()) ? inputs.getFirst() : inputs.getLast();
-        JustificationModel hookModel = inputs.getFirst().equals(original) ? inputs.getLast() : inputs.getFirst();
-        JustificationElement hookElement = original.get(hook[1]);
+        JustificationModel original = inputs.getFirst();
+        JustificationModel hookModel = inputs.getLast();
+        JustificationElement hookElement = findJustificationModelbyLabel(original, hook);
         List<JustificationElement> supported = new ArrayList<>();
-        for(JustificationElement JE: original.contents()){
-            if(!JE.fullyQualifiedName().equals(hookElement.fullyQualifiedName())){
-                output.add(JE, original.representations().get(JE));
+        for (JustificationElement je : original.contents()) {
+            if (!je.getLabel().equals(hook)) {
+                output.add(je, original.representations().get(je));
             }
-            if(JE.getSupports().contains(hookElement)){
-                supported.add(JE);
+            if (je.getSupports().contains(hookElement)) {
+                supported.add(je);
             }
         }
-
-        supported.getFirst().removeSupport(hookElement);
+        if (!supported.isEmpty()) {
+            for (JustificationElement je : supported) {
+                je.removeSupport(hookElement);
+            }
+        }
         // Replace evidence with sub-conclusion
         // Add all elements to the output
 
         Conclusion con = null;
-        for(JustificationElement JE: hookModel.contents()){
-            if(!(JE instanceof Conclusion)){
-                output.add(JE, original.representations().get(JE));
-            }
-            else{
-                con = (Conclusion) JE;
+        for (JustificationElement je : hookModel.contents()) {
+            if (!(je instanceof Conclusion)) {
+                output.add(je, hookModel.representations().get(je));
+            } else {
+                con = (Conclusion) je;
             }
         }
 
         assert con != null;
-        SubConclusion newSubCon = con.intoSubConclusion(); // might need to change
+        SubConclusion newSubCon = con.intoSubConclusion(null); // might need to change
         output.add(newSubCon, hookModel.representations().get(con));
-        for(JustificationElement JE: supported){
-            JE.removeSupport(con);
-            newSubCon.supports(JE);
+        for (JustificationElement je : supported) {
+            je.removeSupport(con);
+            newSubCon.supports(je);
         }
+    }
+
+    private JustificationElement findJustificationModelbyLabel(JustificationModel jm,
+                                                               String label) {
+        for (JustificationElement je : jm.contents()) {
+            if (je.getLabel().equals(label)) {
+                return je;
+            }
+        }
+        return null;
     }
 }

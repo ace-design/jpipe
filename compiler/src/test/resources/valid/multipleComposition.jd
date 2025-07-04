@@ -63,18 +63,10 @@ justification locations {
 
 }
 
-/*
+
 justification phone_reuse {
-    conclusion c1 is "Only interested individuals are contacted"
 
-    strategy calling is "Individual calls to invite for participation"
-    calling supports c1
-
-    evidence script is "Call script is available"
-    script supports calling
-
-    sub-conclusion reused is "Phone directory can be reused"
-    reused supports calling
+    conclusion reused is "Phone directory can be reused"
 
     strategy check is "Assessing the TOU w.r.t. the intended usage"
     check supports reused
@@ -85,23 +77,23 @@ justification phone_reuse {
     evidence tou is "Terms of use (TOU)"
     tou supports check
 }
-*/
 
 
 composition {
-    justification recruitement is assemble(phone, posters, trusted) {
+    justification recruitment is assemble(phone, posters, trusted) {
         conclusionLabel: "Potential participant pool is large enough"
         strategyLabel: "Combining recruitments methods"
     }
     justification temp is refine(recruitment, locations) {
-        hook: "loc_available"
+        hook: "Approved locations list"
+    }
+    justification final is refine(temp, phone_reuse) {
+        hook: "Phone directory is available"
     }
 }
 
 /*
 
-    justification final is refine(temp, phone_reuse) {
-        hook: "directory"
-    }
+
 
 */

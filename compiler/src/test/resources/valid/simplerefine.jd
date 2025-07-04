@@ -29,7 +29,7 @@ justification existing_directory {
 
 composition {
     justification phone_reuse is refine(phone, existing_directory) {
-        hook: "phone:directory"
+        hook: "Phone directory is available"
     }
 }
 
