@@ -56,8 +56,8 @@ justification trusted {
 
 composition {
     justification recruitement is assemble(phone, posters, trusted) {
-        conclusion: "Potential participant pool is large enough"
-        strategy: "Combining recruitments methods"
+        conclusionLabel: "Potential participant pool is large enough"
+        strategyLabel: "Combining recruitments methods"
     }
 }
 
@@ -135,7 +135,7 @@ justification build_directory {
 
 composition {
     justification phone_reuse is refine(phone, existing_directory) {
-        hook: "phone:directory"
+        hook: "Phone directory is available"
     }
 }
 
@@ -165,7 +165,7 @@ justification phone_reuse {
 
 composition {
     justification phone_build is refine(phone, build_directory) {
-        hook: "phone:directory"
+        hook: "Phone directory is available"
     }
 }
 
@@ -222,17 +222,15 @@ justification locations {
 
 composition {
 
-    justification recruitement is assemble(phone, posters, trusted) {
-        conclusion: "Potential participant pool is large enough"
-        strategy: "Combining recruitments methods"
+    justification recruitment is assemble(phone, posters, trusted) {
+        conclusionLabel: "Potential participant pool is large enough"
+        strategyLabel: "Combining recruitments methods"
     }
-
     justification temp is refine(recruitment, locations) {
-        hook: "loc_available"
+        hook: "Approved locations list"
     }
-
     justification final is refine(temp, phone_reuse) {
-        hook: "directory"
+        hook: "Phone directory is available"
     }
 
 }

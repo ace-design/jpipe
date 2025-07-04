@@ -54,7 +54,9 @@ public abstract class JustificationModel
         return this.symbols.values();
     }
 
-    public HashMap<JustificationElement, JustificationElement> representations() { return this.repTable.getTable(); }
+    public HashMap<JustificationElement, JustificationElement> representations() {
+        return this.repTable.getTable();
+    }
 
     /**
      * Add an element inside an unlocked justification.
@@ -70,6 +72,12 @@ public abstract class JustificationModel
         e.setContainer(this);
     }
 
+    /**
+     * Add an element inside an unlocked justification with the representative element.
+     *
+     * @param e the element to add
+     * @param rep the representative element of e
+     */
     public void add(JustificationElement e, JustificationElement rep) {
         if (this.isFrozen()) {
             throw new IllegalStateException("Cannot add an element to a frozen justification");
@@ -145,20 +153,6 @@ public abstract class JustificationModel
             }
         }
         clone.repTable = this.repTable;
-    }
-
-    public void mergeElement(JustificationElement target, JustificationElement toBeReplaced) {
-        // Transfer support relationships
-        for (JustificationElement elem : this.contents()) {
-            for (JustificationElement support : elem.getSupports()) {
-                if (support.equals(toBeReplaced)) {
-                    target.supports(elem); // Reconnect supports to target
-                }
-            }
-        }
-
-        // RepTable tracking is already handled in replace
-        this.replace(toBeReplaced, target);
     }
 
 
