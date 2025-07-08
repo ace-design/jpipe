@@ -121,7 +121,8 @@ public class MergeOperator extends CompositionOperator {
         LevenshteinDistance levenshteinDistance = LevenshteinDistance.getDefaultInstance();
         int distance = levenshteinDistance.apply(s1, s2);
         double distancePercentage = s1.length() > s2.length()
-                ? (double) distance / (double) s1.length() : (double) distance / (double) s2.length();
+                ? (double) distance / (double) s1.length() :
+                (double) distance / (double) s2.length();
         return distancePercentage <= ((double) threshold / 100);
 
     }
