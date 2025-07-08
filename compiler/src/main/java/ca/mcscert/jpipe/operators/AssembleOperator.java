@@ -58,7 +58,7 @@ public class AssembleOperator extends CompositionOperator {
                 if (justificationElement instanceof Conclusion) {
                     SubConclusion subConclusion = ((Conclusion) justificationElement)
                             .intoSubConclusion(newStrategy);
-                    output.add(subConclusion, justificationElement);
+                    output.add(subConclusion, representations.get(justificationElement));
                 } else if (justificationElement instanceof Strategy) {
                     output.add(justificationElement, representations.get(justificationElement));
                     for (JustificationElement sup : justificationElement.getSupports()) {

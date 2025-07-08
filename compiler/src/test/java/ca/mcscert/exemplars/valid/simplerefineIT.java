@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -83,6 +84,15 @@ public class simplerefineIT extends SourceFileTest {
             assertEquals(Set.of("directory", "tou"), j.get("check").getSupportingIds());
             assertEquals(Set.of(), j.get("directory").getSupportingIds());
             assertEquals(Set.of(), j.get("tou").getSupportingIds());
+        }
+
+        @Test
+        public void elementsAreCorrectlyLinked() {
+            JustificationModel j1 = unit.get("phone");
+            JustificationModel j2 = unit.get("existing_directory");
+            JustificationModel j = unit.get("phone_reuse");
+            HashMap<JustificationElement, JustificationElement> map = j.representations();
+            assertEquals(map.get(j.get("c4")), j1.get("directory"));
         }
 
 

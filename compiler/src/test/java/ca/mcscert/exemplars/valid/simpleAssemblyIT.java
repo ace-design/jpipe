@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -88,6 +89,20 @@ public class simpleAssemblyIT extends SourceFileTest {
             assertEquals(Set.of("e2"), j.get("s2").getSupportingIds());
             assertEquals(Set.of(), j.get("e1").getSupportingIds());
             assertEquals(Set.of(), j.get("e2").getSupportingIds());
+        }
+
+        @Test
+        public void elementsAreCorrectlyLinked() {
+            JustificationModel j1 = unit.get("j1");
+            JustificationModel j2 = unit.get("j2");
+            JustificationModel j = unit.get("j");
+            HashMap<JustificationElement, JustificationElement> map = j.representations();
+            assertNull(map.get(j.get("c")));
+            assertNull(map.get(j.get("AND")));
+            assertEquals(map.get(j.get("c1")), j1.get("c1"));
+            assertEquals(map.get(j.get("c2")), j2.get("c2"));
+            assertEquals(map.get(j.get("s1")), j1.get("s1"));
+            assertEquals(map.get(j.get("s2")), j2.get("s2"));
         }
 
     }

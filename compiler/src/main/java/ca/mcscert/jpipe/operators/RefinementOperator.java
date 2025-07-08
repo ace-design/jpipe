@@ -71,7 +71,7 @@ public class RefinementOperator extends CompositionOperator {
 
         assert con != null;
         SubConclusion newSubCon = con.intoSubConclusion(null); // might need to change
-        output.add(newSubCon, hookModel.representations().get(con));
+        output.add(newSubCon, original.representations().get(hookElement));
         for (JustificationElement je : supported) {
             je.removeSupport(con);
             newSubCon.supports(je);
