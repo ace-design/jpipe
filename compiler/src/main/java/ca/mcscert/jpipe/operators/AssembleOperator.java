@@ -12,12 +12,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Assembles different justification models together under a single conclusion.
  */
 public class AssembleOperator extends CompositionOperator {
+
+    private static final Logger logger = LogManager.getLogger();
 
     @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:RightCurly"})
     @Override
@@ -38,7 +41,7 @@ public class AssembleOperator extends CompositionOperator {
     @Override
     protected void execute(JustificationModel output, List<JustificationModel> inputs,
                            Map<String, String> params) {
-        System.out.println("Calling ASSEMBLE on " + inputs + "(" + params + ")");
+        logger.info("Calling ASSEMBLE on {}({})", inputs, params);
         String conclusionLabel = params.get("conclusionLabel");
         String strategyLabel = params.get("strategyLabel");
         // Create conclusion and add it

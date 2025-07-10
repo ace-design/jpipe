@@ -69,4 +69,16 @@ public final class Conclusion extends JustificationElement {
         subConclusion.acceptAsSupport(this.strategy);
         return subConclusion;
     }
+
+    /**
+     * This method creates a new {@code SubConclusion} instance
+     * using the current conclusion's identifier and label.
+     *
+     * @return a new {@code SubConclusion} instance derived from this {@code Conclusion}
+     */
+    public SubConclusion intoSubConclusion() {
+        SubConclusion subConclusion = new SubConclusion(this.identifier, this.label);
+        subConclusion.acceptAsSupport(this.strategy);
+        return subConclusion;
+    }
 }

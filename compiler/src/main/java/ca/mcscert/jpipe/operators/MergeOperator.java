@@ -8,11 +8,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Merge operator.
  */
 public class MergeOperator extends CompositionOperator {
+
+    private static final Logger logger = LogManager.getLogger();
 
     @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:RightCurly"})
     @Override public String name() { return "merge"; }
@@ -35,7 +39,7 @@ public class MergeOperator extends CompositionOperator {
     @Override
     protected void execute(JustificationModel output, List<JustificationModel> inputs,
                            Map<String, String> params) {
-        System.out.println("Calling MERGE on " + inputs + "(" + params + ")");
+        logger.info("MERGE on {}({})", inputs, params);
 
         int threshold = Integer.parseInt(params.get("threshold"));
 

@@ -5,7 +5,7 @@ import ca.mcscert.jpipe.model.SymbolTable;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.Replicable;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Abstraction to represent patters and justification in a uniform way.
@@ -54,7 +54,7 @@ public abstract class JustificationModel
         return this.symbols.values();
     }
 
-    public HashMap<JustificationElement, JustificationElement> representations() {
+    public Map<JustificationElement, JustificationElement> representations() {
         return this.repTable.getTable();
     }
 

@@ -7,11 +7,15 @@ import ca.mcscert.jpipe.model.elements.SubConclusion;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Refines an evidence with a justification model.
  */
 public class RefinementOperator extends CompositionOperator {
+
+    private static final Logger logger = LogManager.getLogger();
 
     @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:RightCurly"})
     @Override
@@ -35,8 +39,7 @@ public class RefinementOperator extends CompositionOperator {
     @Override
     protected void execute(JustificationModel output, List<JustificationModel> inputs,
                            Map<String, String> params) {
-        System.out.println("Calling REFINE on " + inputs + "(" + params + ")");
-
+        logger.info("REFINE on {}({})", inputs, params);
         // Find hook
         String hook = params.get("hook");
 
@@ -68,9 +71,11 @@ public class RefinementOperator extends CompositionOperator {
                 con = (Conclusion) je;
             }
         }
-
-        assert con != null;
-        SubConclusion newSubCon = con.intoSubConclusion(null); // might need to change
+        if (con == null) {
+            throw new RuntimeException("Justification "
+                    + hookModel.getName() + "has no conclusion");
+        }
+        SubConclusion newSubCon = con.intoSubConclusion(); // might need to change
         output.add(newSubCon, original.representations().get(hookElement));
         for (JustificationElement je : supported) {
             je.removeSupport(con);
