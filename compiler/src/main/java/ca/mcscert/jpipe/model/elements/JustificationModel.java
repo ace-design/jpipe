@@ -4,8 +4,8 @@ import ca.mcscert.jpipe.model.RepTable;
 import ca.mcscert.jpipe.model.SymbolTable;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.Replicable;
-import java.util.Collection;
-import java.util.Map;
+
+import java.util.*;
 
 /**
  * Abstraction to represent patters and justification in a uniform way.
@@ -54,8 +54,8 @@ public abstract class JustificationModel
         return this.symbols.values();
     }
 
-    public Map<JustificationElement, JustificationElement> representations() {
-        return this.repTable.getTable();
+    public RepTable<JustificationElement> representations() {
+        return this.repTable;
     }
 
     /**
@@ -87,6 +87,26 @@ public abstract class JustificationModel
         e.setContainer(this);
 
     }
+
+    /**
+     * Add an element inside an unlocked justification with the representative elements.
+     *
+     * @param e the element to add
+     * @param reps the representative element of e
+     */
+    public void add(JustificationElement e, Set<JustificationElement> reps) {
+        if (this.isFrozen()) {
+            throw new IllegalStateException("Cannot add an element to a frozen justification");
+        }
+        this.symbols.record(e.getIdentifier(), e);
+        for (JustificationElement rep : reps) {
+            this.repTable.record(e, rep);
+        }
+        e.setContainer(this);
+
+    }
+
+
 
     /**
      * Remove an element from a given justification.

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -97,7 +98,7 @@ public class simpleAssemblyIT extends SourceFileTest {
             JustificationModel j1 = unit.get("j1");
             JustificationModel j2 = unit.get("j2");
             JustificationModel j = unit.get("j");
-            Map<JustificationElement, JustificationElement> map = j.representations();
+            Map<JustificationElement, Set<JustificationElement>> map = j.representations().getTable();
             assertNull(map.get(j.get("c")));
             assertNull(map.get(j.get("AND")));
             assertEquals(map.get(j.get("c1")), j1.get("c1"));

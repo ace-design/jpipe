@@ -1,5 +1,6 @@
 package ca.mcscert.jpipe.operators;
 
+import ca.mcscert.jpipe.model.RepTable;
 import ca.mcscert.jpipe.model.elements.Conclusion;
 import ca.mcscert.jpipe.model.elements.Evidence;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
@@ -51,19 +52,20 @@ public class AssembleOperator extends CompositionOperator {
         Strategy newStrategy = new Strategy("AND", strategyLabel);
         newStrategy.supports(newConclusion);
         output.add(newStrategy);
-        HashMap<JustificationElement, JustificationElement> representations = new HashMap<>();
+        RepTable<JustificationElement> representations = new RepTable<>();
         // Go through each justification models
         HashMap<JustificationElement, List<JustificationElement>> evi2Strats = new HashMap<>();
         for (JustificationModel justificationModel : inputs) {
-            representations.putAll(justificationModel.representations());
+            representations.recordAll(justificationModel.representations());
             for (JustificationElement justificationElement : justificationModel.contents()) {
                 // Transform each conclusion --> sub-conclusion
                 if (justificationElement instanceof Conclusion) {
                     SubConclusion subConclusion = ((Conclusion) justificationElement)
                             .intoSubConclusion(newStrategy);
-                    output.add(subConclusion, representations.get(justificationElement));
+                    output.add(subConclusion, justificationModel.representations().getAllParents(justificationElement));
                 } else if (justificationElement instanceof Strategy) {
-                    output.add(justificationElement, representations.get(justificationElement));
+                    output.add(justificationElement,
+                            justificationModel.representations().getAllParents(justificationElement));
                     for (JustificationElement sup : justificationElement.getSupports()) {
                         if (!(sup instanceof Evidence)) {
                             continue;
@@ -77,7 +79,7 @@ public class AssembleOperator extends CompositionOperator {
                         justificationElement.removeSupport(sup);
                     }
                 } else if (justificationElement instanceof SubConclusion) {
-                    output.add(justificationElement,  representations.get(justificationElement));
+                    output.add(justificationElement,  justificationModel.representations().getAllParents(justificationElement));
                 }
             }
         }
@@ -88,7 +90,7 @@ public class AssembleOperator extends CompositionOperator {
                     justificationElement.supports(strat);
                 }
             }
-            output.add(justificationElement,  representations.get(justificationElement));
+            output.add(justificationElement,  representations.getAllParents(justificationElement));
             justificationElement.supports(evi2Strats.get(justificationElement).getFirst());
             // Context: When merging different element together, the subsequent
             //  elements will disappear from the repTable

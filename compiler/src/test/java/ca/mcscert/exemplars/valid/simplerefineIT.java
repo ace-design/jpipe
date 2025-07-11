@@ -2,12 +2,14 @@ package ca.mcscert.exemplars.valid;
 
 import ca.mcscert.exemplars.Counter;
 import ca.mcscert.exemplars.SourceFileTest;
+import ca.mcscert.jpipe.model.RepTable;
 import ca.mcscert.jpipe.model.elements.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -92,8 +94,8 @@ public class simplerefineIT extends SourceFileTest {
             JustificationModel j1 = unit.get("phone");
             JustificationModel j2 = unit.get("existing_directory");
             JustificationModel j = unit.get("phone_reuse");
-            Map<JustificationElement, JustificationElement> map = j.representations();
-            assertEquals(map.get(j.get("c4")), j1.get("directory"));
+            RepTable<JustificationElement> map = j.representations();
+            assertEquals(map.getAllParents(j.get("c4")), Set.of(j1.get("directory")));
         }
 
 
