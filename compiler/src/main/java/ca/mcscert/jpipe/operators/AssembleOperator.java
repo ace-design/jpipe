@@ -92,13 +92,6 @@ public class AssembleOperator extends CompositionOperator {
             }
             output.add(justificationElement,  representations.getAllParents(justificationElement));
             justificationElement.supports(evi2Strats.get(justificationElement).getFirst());
-            // Context: When merging different element together, the subsequent
-            //  elements will disappear from the repTable
-            // Problem: This prevents the error management to find the original value
-            // Dilemma: Assuming that the error handling will not be go deeper than one layer,
-            //  do we really need to keep track of it
-            // Solution: Map<T, List<T>> --> one to many
-            // Issue: How will we find the original value (2 parents)
         }
     }
 

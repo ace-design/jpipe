@@ -72,8 +72,8 @@ public final class RepTable<T> {
      * @throws DuplicateSymbol if the element is already recorded
      */
     public void recordAll(RepTable<T> current) {
-        current.allNodes.addAll(allNodes);
-        current.table.putAll(table);
+        this.table.putAll(current.table);
+        this.allNodes.addAll(current.allNodes);
     }
 
     /**
