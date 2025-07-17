@@ -7,13 +7,19 @@ env:
   FOLDER: './compiler'   # Source code location
 
 on:
-  push: 
-  pull_request:
-  workflow_dispatch: 
+  push:               # Triggered if compiler source code is changed
+    paths:            
+      - 'compiler/**'
+  pull_request:       # Triggered if compiler source code is changed
+    paths:
+      - 'compiler/**'
+  workflow_dispatch:  # can be triggered manually
+  workflow_call:      # can be called from other workflows
 
 jobs:
 
   build:
+    name: "Build source code (Java LTS)"
     runs-on: ubuntu-latest
     defaults: 
       run:
@@ -34,7 +40,7 @@ jobs:
 
       # Building the jpipe.jar artefact
       - name: Create executable jar with Maven
-        run: mvn clean package -DskipTests -Dcheckstyle.skip
+        run: mvn clean package -Dskip.tests.unit -Dskip.tests.integration -Dcheckstyle.skip
 
       # Cache Maven packages
       - name: Cache Maven packages
@@ -45,6 +51,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
   linter:
+    name: "Runnit Checkstyle (Google)"
     runs-on: ubuntu-latest
     defaults: 
       run:
@@ -66,6 +73,7 @@ jobs:
         run: mvn checkstyle:check
 
   test:
+    name: "Running Unit Tests"
     runs-on: ubuntu-latest
     defaults: 
       run:
@@ -87,6 +95,7 @@ jobs:
         run: mvn test
 
   integration-test:
+    name: "Running Integration Tests"
     runs-on: ubuntu-latest
     defaults: 
       run:
@@ -107,7 +116,7 @@ jobs:
         run: mvn verify -Dskip.tests.unit
 
   sonarqube:
-    name: Code Quality check
+    name: Code Quality check (Sonarqube)
     needs: [ linter ]
     defaults: 
       run:
@@ -147,6 +156,7 @@ jobs:
 
 
   upload:
+    name: "Uploading Artefacts"
     runs-on: ubuntu-latest
     defaults: 
       run:
