@@ -108,6 +108,7 @@ jobs:
 
   sonarqube:
     name: Code Quality check
+    needs: [ linter ]
     defaults: 
       run:
         working-directory: './compiler'
@@ -142,7 +143,7 @@ jobs:
         continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ace-design_jpipe    
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=jpipe-mcscert_jpipe-compiler  
 
 
   upload:
