@@ -8,5 +8,4 @@ target
 *.svg
 *.jar
 .DS_Store
-node_modules/
 .java-version

@@ -8,10 +8,12 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - given-names: Sébastien
+  - given-names:  Sébastien
     family-names: Mosser
-repository-code: 'https://github.com/ace-design/jpipe'
-url: 'https://github.com/ace-design/jpipe/wiki'
+  - given-names:  Kalvin
+    family-names: Thuan-Phong Khuu
+repository-code: 'https://github.com/jpipe-mcscert/jpipe-compiler'
+url: 'https://www.jpipe.org'
 abstract: >-
   The jPipe environment supports the definition of
   justification to support software maintenance activities.

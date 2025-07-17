@@ -33,7 +33,7 @@
         <skip.tests.integration>false</skip.tests.integration>
 
         <!-- Sonar code quality analysis (requires a SONAR_TOKEN env variable)  -->
-        <sonar.organization>ace-design</sonar.organization>
+        <sonar.organization>jpipe-mcscert</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
         <!-- Code Dependencies versions -->
