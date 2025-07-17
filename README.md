@@ -6,14 +6,6 @@
 
 </div>
 
-
-<div align="center">
-
-[![jPipe Compiler (action-based)](https://github.com/ace-design/jpipe/actions/workflows/compiler.yml/badge.svg)](https://github.com/ace-design/jpipe/actions/workflows/compiler.yml) &nbsp; &nbsp; &nbsp; 
-[![jPipe Language Extension](https://github.com/ace-design/jpipe/actions/workflows/extension.yml/badge.svg)](https://github.com/ace-design/jpipe/actions/workflows/extension.yml)
-</div>
-
-
 The jPipe environment supports the definition of justification to support software maintenance activities. The name comes from "justified pipelines", as the key idea is to design an environment supporting the justification of CI/CD pipelines by design.
 
 ## General Information
@@ -24,7 +16,6 @@ The jPipe environment supports the definition of justification to support softwa
 
 </div>
 
-- Version: 24.07
 - Architect and main developer:
   - [Sébastien Mosser](https://mosser.github.io/), McSCert, McMaster University.
 - Main Contributors:
@@ -41,11 +32,7 @@ The jPipe environment supports the definition of justification to support softwa
 
   - `compiler`: source code of the (action-based) compiler
   - `brew`: distribution of the code using HomeBrew
-  - `langium`: source code of the Visual Code extension IDE
 
-## Documentation
-
-We're using GitHub wiki system to document jPipe: [https://github.com/ace-design/jpipe/wiki](https://github.com/ace-design/jpipe/wiki).
 
 ## How to cite?
 

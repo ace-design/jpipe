@@ -1,28 +1,25 @@
 # Workflow to produce a version of the compiler
 
-name: Compiler
+name: Build the compiler
 
 env:
-  JAVA_ENV_VERSION: '21'      # LTS version
+  JAVA_ENV_VERSION: '21' # LTS version
   FOLDER: './compiler'   # Source code location
 
 on:
-  push: 
-    paths:
+  push:               # Triggered if compiler source code is changed
+    paths:            
       - 'compiler/**'
-    tags-ignore:
-      - '**'
-  pull_request:
-    paths:
-      - 'compiler/**'
-  
-  workflow_call:      # Allow the workflow to be called by others
-  workflow_dispatch:  # Can be triggered manually
+  pull_request:       # Triggered if compiler source code is changed
+    branches:
+      - main 
+  workflow_dispatch:  # can be triggered manually
+  workflow_call:      # can be called from other workflows
 
 jobs:
 
   build:
-    # The type of runner that the job will run on
+    name: "Build source code (Java LTS)"
     runs-on: ubuntu-latest
     defaults: 
       run:
@@ -43,9 +40,40 @@ jobs:
 
       # Building the jpipe.jar artefact
       - name: Create executable jar with Maven
-        run: mvn clean package -DskipTests -Dcheckstyle.skip
+        run: mvn clean package -Dskip.tests.unit -Dskip.tests.integration -Dcheckstyle.skip
+
+      # Cache Maven packages
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+  linter:
+    name: "Runnit Checkstyle (Google)"
+    runs-on: ubuntu-latest
+    defaults: 
+      run:
+        working-directory: ${{env.FOLDER}}
+
+    needs: [build]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{env.JAVA_ENV_VERSION}}
+          distribution: 'adopt'
+          cache: 'maven'
+      # run linter
+      - name: CheckStyle (Google ruleset)
+        run: mvn checkstyle:check
 
   test:
+    name: "Running Unit Tests"
     runs-on: ubuntu-latest
     defaults: 
       run:
@@ -67,6 +95,7 @@ jobs:
         run: mvn test
 
   integration-test:
+    name: "Running Integration Tests"
     runs-on: ubuntu-latest
     defaults: 
       run:
@@ -86,29 +115,48 @@ jobs:
       - name: Integration tests with Maven (failsafe)
         run: mvn verify -Dskip.tests.unit
 
-
-  linter:
-    runs-on: ubuntu-latest
+  sonarqube:
+    name: Code Quality check (Sonarqube)
+    needs: [ linter ]
     defaults: 
       run:
-        working-directory: ${{env.FOLDER}}
-
-    needs: [build]
+        working-directory: './compiler'
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Set up Java
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
+
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           java-version: ${{env.JAVA_ENV_VERSION}}
-          distribution: 'adopt'
-          cache: 'maven'
-      # run linter
-      - name: CheckStyle (Google ruleset)
-        run: mvn checkstyle:check
+          distribution: 'adopt' 
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build and analyze
+        continue-on-error: true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=jpipe-mcscert_jpipe-compiler  
+
 
   upload:
+    name: "Uploading Artefacts"
     runs-on: ubuntu-latest
     defaults: 
       run:
@@ -119,13 +167,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: ${{env.JAVA_ENV_VERSION}}
           distribution: 'adopt'
           cache: 'maven'
-      # run packager
+
       - name: 
         run: mvn clean install -DskipTests -Dcheckstyle.skip
       
