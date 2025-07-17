@@ -30,6 +30,11 @@ public final class Conclusion extends JustificationElement {
     }
 
     @Override
+    public void removeSupport(JustificationElement that) {
+        this.strategy = null;
+    }
+
+    @Override
     public Set<JustificationElement> getSupports() {
         return (this.strategy == null ? Set.of() : Set.of(this.strategy));
     }
@@ -47,5 +52,33 @@ public final class Conclusion extends JustificationElement {
     @Override
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
+    }
+
+    /**
+     * This method creates a new {@code SubConclusion} instance
+     * using the current conclusion's identifier and label.
+     *
+     * @param strategy the {@code Strategy} that the generated {@code SubConclusion} will support
+     * @return a new {@code SubConclusion} instance derived from this {@code Conclusion}
+     */
+    public SubConclusion intoSubConclusion(Strategy strategy) {
+        SubConclusion subConclusion = new SubConclusion(this.identifier, this.label);
+        if (strategy != null) {
+            subConclusion.supports(strategy);
+        }
+        subConclusion.acceptAsSupport(this.strategy);
+        return subConclusion;
+    }
+
+    /**
+     * This method creates a new {@code SubConclusion} instance
+     * using the current conclusion's identifier and label.
+     *
+     * @return a new {@code SubConclusion} instance derived from this {@code Conclusion}
+     */
+    public SubConclusion intoSubConclusion() {
+        SubConclusion subConclusion = new SubConclusion(this.identifier, this.label);
+        subConclusion.acceptAsSupport(this.strategy);
+        return subConclusion;
     }
 }

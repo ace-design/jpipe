@@ -29,6 +29,12 @@ public final class Evidence extends Support {
     }
 
     @Override
+    public void removeSupport(JustificationElement that) {
+        throw new IllegalArgumentException("Justification element "
+                + this + " should not be supported by " + that);
+    }
+
+    @Override
     public void accept(ModelVisitor<?> visitor) {
         visitor.visit(this);
     }
