@@ -11,8 +11,8 @@ on:
     paths:            
       - 'compiler/**'
   pull_request:       # Triggered if compiler source code is changed
-    paths:
-      - 'compiler/**'
+    branches:
+      - main 
   workflow_dispatch:  # can be triggered manually
   workflow_call:      # can be called from other workflows
 
