@@ -4,7 +4,9 @@ import java.util.List;
 
 @JPipeError
 public class MultipleSymbols extends RuntimeException {
-    public MultipleSymbols(List<String> symbols) {
-        super("Multiple symbols found [" + symbols + "], Please specify scopes");
+
+    public MultipleSymbols(String identifier) {
+        super("Multiple variables found under " + identifier + ", Please specify scope");
     }
+
 }

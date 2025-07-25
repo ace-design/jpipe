@@ -65,9 +65,9 @@ public class PatternImplementationTest {
     public void elementsAvailableInTheJustification() {
         PatternImplementation op = new PatternImplementation();
         JustificationModel result = implementsPattern(j, p);
-        assertEquals(result.get("c"), result.get("j:c"));
-        assertEquals(result.get("s"), result.get("j:s"));
-        assertEquals(result.get("x"), result.get("j:x"));
+        assertEquals(result.get("c"), result.get("j:p:c"));
+        assertEquals(result.get("s"), result.get("j:p:s"));
+        assertEquals(result.get("x"), result.get("j:p:x"));
     }
 
     @Test

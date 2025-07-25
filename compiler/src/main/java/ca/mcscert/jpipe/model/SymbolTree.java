@@ -1,87 +1,144 @@
 package ca.mcscert.jpipe.model;
 
-import java.util.*;
+import ca.mcscert.jpipe.error.DuplicateSymbol;
+import ca.mcscert.jpipe.error.MultipleSymbols;
+import ca.mcscert.jpipe.error.UnknownSymbol;
+import ca.mcscert.jpipe.model.elements.JustificationElement;
+import org.apache.commons.lang3.tuple.Pair;
 
-public class SymbolTree<T> {
-    private SymbolNode<T> root;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public final class SymbolTree {
+
+
+    private final Map<String, Set<JustificationElement>> elements;
 
     public SymbolTree() {
-        this.root = null;
+        this.elements = new HashMap<>();
     }
 
-    public SymbolTree(String identifier, T value) {
-        this.root = new SymbolNode<>(identifier, value);
-    }
-
-    public SymbolNode<T> getRoot() {
-        return root;
-    }
-
-    /** Find a node by identifier (DFS) */
-    public SymbolNode<T> find(String identifier) {
-        if (root == null) return null;
-        return findRecursive(root, identifier);
-    }
-
-    private SymbolNode<T> findRecursive(SymbolNode<T> current, String identifier) {
-        if (current.getIdentifier().equals(identifier)) {
-            return current;
+    public void record(String identifier, JustificationElement element) throws DuplicateSymbol {
+        if (this.keys().contains(identifier)) {
+            for (JustificationElement je : this.elements.get(identifier)) {
+                if (je.equals(element)) {
+                    throw new DuplicateSymbol(identifier);
+                }
+            }
+            this.elements.get(identifier).add(element);
+        } else {
+            this.elements.put(identifier, new HashSet<>());
+            this.elements.get(identifier).add(element);
         }
+    }
 
-        for (SymbolNode<T> child : current.getChildrenModels()) {
-            SymbolNode<T> result = findRecursive(child, identifier);
-            if (result != null) {
-                return result;
+    public void delete(String identifier) {
+        if (!this.keys().contains(identifier)) {
+            throw new UnknownSymbol(identifier);
+        }
+        this.elements.remove(identifier);
+    }
+
+    public void delete(String identifier, JustificationElement element) {
+        if (this.keys().contains(identifier)) {
+            for (JustificationElement je : this.elements.get(identifier)) {
+                if (je.equals(element)) {
+                    this.elements.get(identifier).remove(je);
+                    if (this.elements.get(identifier).isEmpty()) {
+                        this.elements.remove(identifier);
+                    }
+                    return;
+                }
             }
         }
-        return null;
+        throw new UnknownSymbol(identifier);
+
     }
 
-    /** Add a node under a parent identified by parentIdentifier */
-    public boolean addNode(String parentIdentifier, String childIdentifier, T value) {
-        SymbolNode<T> parent = find(parentIdentifier);
-        if (parent == null) {
-            return false; // parent not found
+    public void delete(String identifier, String scope) {
+        if (this.keys().contains(identifier)) {
+            for (JustificationElement je : this.elements.get(identifier)) {
+                if (je.getScope().equals(scope)) {
+                    this.elements.get(identifier).remove(je);
+                    return;
+                }
+            }
         }
-        SymbolNode<T> newChild = new SymbolNode<>(childIdentifier, value);
-        parent.addChild(newChild);
-        return true;
+        throw new UnknownSymbol(identifier);
     }
 
-    /** Check if identifier exists in the tree */
-    public boolean contains(String identifier) {
-        return find(identifier) != null;
-    }
-
-    /** Find all nodes with the given identifier (DFS) */
-    public List<SymbolNode<T>> findAll(String identifier) {
-        List<SymbolNode<T>> matches = new ArrayList<>();
-        if (root == null) return matches;
-        findAllRecursive(root, identifier, matches);
-        return matches;
-    }
-
-    private void findAllRecursive(SymbolNode<T> current, String identifier, List<SymbolNode<T>> matches) {
-        if (current.getIdentifier().equals(identifier)) {
-            matches.add(current);
+    /**
+     * Get the element associated to a given symbol inside the table.
+     *
+     * @param identifier the identifier one is looking for.
+     * @return the stored element, if any.
+     * @throws UnknownSymbol if the symbol is not defined in the table.
+     */
+    public JustificationElement get(String identifier) throws UnknownSymbol {
+        if (this.elements.containsKey(identifier)) {
+            if (this.elements.get(identifier).size() == 1) {
+                return this.elements.get(identifier).iterator().next();
+            }
+            throw new MultipleSymbols(identifier);
         }
-
-        for (SymbolNode<T> child : current.getChildrenModels()) {
-            findAllRecursive(child, identifier, matches);
-        }
+        throw new UnknownSymbol(identifier);
     }
 
-    /** Print the tree structure (for debugging) */
-    public void printTree() {
-        printTreeRecursive(root, 0);
+    /**
+     * Get the element associated to a given symbol inside the table.
+     *
+     * @param identifier the identifier one is looking for.
+     * @return the stored element, if any.
+     * @throws UnknownSymbol if the symbol is not defined in the table.
+     */
+    public JustificationElement get(String identifier, String scope) throws UnknownSymbol {
+        if (this.elements.containsKey(identifier)) {
+            JustificationElement je = null;
+            for (JustificationElement e : this.elements.get(identifier)) {
+                if (e.getScope().equals(scope)) {
+                    return e;
+                }
+                if (e.getScope().contains(scope)) {
+                    if (je != null) {
+                        throw new MultipleSymbols(identifier);
+                    }
+                    je = e;
+                }
+            }
+            if (je != null) {
+                return je;
+            }
+        }
+        throw new UnknownSymbol(identifier);
     }
 
-    private void printTreeRecursive(SymbolNode<T> node, int level) {
-        if (node == null) return;
+    /**
+     * Return all the elements recorded inside the table.
+     *
+     * @return a collection of elements.
+     */
+    public Collection<JustificationElement> values() {
+        return elements.values().stream()
+                .flatMap(Set::stream)
+                .collect(Collectors.toList());
+    }
 
-        System.out.println("  ".repeat(level) + "- " + node.getIdentifier() + ": " + node.getValue());
-        for (SymbolNode<T> child : node.getChildrenModels()) {
-            printTreeRecursive(child, level + 1);
-        }
+    /**
+     * Compute the set of keys defined in this symbol table.
+     *
+     * @return The symbols, as a set of strings.
+     */
+    public Set<String> keys() {
+        return new HashSet<>(this.elements.keySet());
+    }
+
+    /**
+     * Check if a given symbol exists inside the table.
+     *
+     * @param identifier the symbol to look for.
+     * @return true if it exists, false elsewhere.
+     */
+    public boolean exists(String identifier) {
+        return this.elements.containsKey(identifier);
     }
 }

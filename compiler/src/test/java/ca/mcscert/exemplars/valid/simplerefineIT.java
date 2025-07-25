@@ -57,25 +57,25 @@ public class simplerefineIT extends SourceFileTest {
         @Test
         public void elementsCanBeAccessed() {
             JustificationModel j = unit.get("phone_reuse");
-            assertEquals(j.get("c1"),   j.get("phone_reuse:c1"));
-            assertEquals(j.get("calling"), j.get("phone_reuse:calling"));
-            assertEquals(j.get("script"), j.get("phone_reuse:script"));
-            assertEquals(j.get("c4"), j.get("phone_reuse:c4"));
-            assertEquals(j.get("check"), j.get("phone_reuse:check"));
-            assertEquals(j.get("directory"), j.get("phone_reuse:directory"));
-            assertEquals(j.get("tou"), j.get("phone_reuse:tou"));
+            assertEquals(j.get("c1"),   j.get("phone_reuse:phone:c1"));
+            assertEquals(j.get("calling"), j.get("phone_reuse:phone:calling"));
+            assertEquals(j.get("script"), j.get("phone_reuse:phone:script"));
+            assertEquals(j.get("c4"), j.get("phone_reuse:existing_directory:c4"));
+            assertEquals(j.get("check"), j.get("phone_reuse:existing_directory:check"));
+            assertEquals(j.get("directory"), j.get("phone_reuse:existing_directory:directory"));
+            assertEquals(j.get("tou"), j.get("phone_reuse:existing_directory:tou"));
         }
 
         @Test
         public void elementsHaveTheRightType() {
             JustificationModel j = unit.get("phone_reuse");
-            assertInstanceOf(Conclusion.class,   j.get("phone_reuse:c1"));
-            assertInstanceOf(Strategy.class, j.get("phone_reuse:calling"));
-            assertInstanceOf(Evidence.class, j.get("phone_reuse:script"));
-            assertInstanceOf(SubConclusion.class, j.get("phone_reuse:c4"));
-            assertInstanceOf(Strategy.class, j.get("phone_reuse:check"));
-            assertInstanceOf(Evidence.class, j.get("phone_reuse:directory"));
-            assertInstanceOf(Evidence.class, j.get("phone_reuse:tou"));
+            assertInstanceOf(Conclusion.class,   j.get("c1"));
+            assertInstanceOf(Strategy.class, j.get("calling"));
+            assertInstanceOf(Evidence.class, j.get("script"));
+            assertInstanceOf(SubConclusion.class, j.get("c4"));
+            assertInstanceOf(Strategy.class, j.get("check"));
+            assertInstanceOf(Evidence.class, j.get("directory"));
+            assertInstanceOf(Evidence.class, j.get("tou"));
         }
 
         @Test

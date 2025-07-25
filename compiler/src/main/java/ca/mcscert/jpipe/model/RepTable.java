@@ -1,6 +1,7 @@
 package ca.mcscert.jpipe.model;
 
 import ca.mcscert.jpipe.error.DuplicateSymbol;
+import ca.mcscert.jpipe.error.MultipleSymbols;
 import ca.mcscert.jpipe.error.UnknownSymbol;
 
 import java.util.*;
@@ -60,7 +61,10 @@ public final class RepTable<T> {
      * @param current the element to record
      * @throws DuplicateSymbol if the element is already recorded
      */
-    public void record(T current) {
+    public void record(T current) throws DuplicateSymbol {
+        if (table.containsKey(current)) {
+            throw new DuplicateSymbol(current.toString());
+        }
         allNodes.add(current);
         table.putIfAbsent(current, new HashSet<>());
     }

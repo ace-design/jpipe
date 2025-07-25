@@ -47,7 +47,7 @@ public class sameNameDiffVarIT extends SourceFileTest {
         public void patternContainsRightElements() {
             Counter counter = new Counter();
             unit.get("recruitment").accept(counter);
-            assertEquals(5, counter.getAccumulator().getOrDefault(Counter.Element.EVIDENCE,0));
+            assertEquals(6, counter.getAccumulator().getOrDefault(Counter.Element.EVIDENCE,0));
             assertEquals(4, counter.getAccumulator().getOrDefault(Counter.Element.STRATEGY,0));
             assertEquals(3, counter.getAccumulator().getOrDefault(Counter.Element.SUB_CONCLUSION,0));
             assertEquals(1, counter.getAccumulator().getOrDefault(Counter.Element.CONCLUSION,0));
@@ -58,53 +58,56 @@ public class sameNameDiffVarIT extends SourceFileTest {
             JustificationModel j = unit.get("recruitment");
             assertEquals(j.get("c"),   j.get("recruitment:c"));
             assertEquals(j.get("AND"), j.get("recruitment:AND"));
-            assertEquals(j.get("c1"), j.get("recruitment:c1"));
-            assertEquals(j.get("c2"), j.get("recruitment:c2"));
-            assertEquals(j.get("c3"), j.get("recruitment:c3"));
-            assertEquals(j.get("calling"), j.get("recruitment:calling"));
-            assertEquals(j.get("script"), j.get("recruitment:script"));
-            assertEquals(j.get("directory"), j.get("recruitment:directory"));
-            assertEquals(j.get("display"), j.get("recruitment:display"));
-            assertEquals(j.get("locations"), j.get("recruitment:locations"));
-            assertEquals(j.get("poster"), j.get("recruitment:poster"));
-            assertEquals(j.get("chat"), j.get("recruitment:chat"));
-            assertEquals(j.get("talking_points"), j.get("recruitment:talking_points"));
+            assertEquals(j.get("c1"), j.get("recruitment:phone:c1"));
+            assertEquals(j.get("c2"), j.get("recruitment:posters:c2"));
+            assertEquals(j.get("c3"), j.get("recruitment:trusted:c3"));
+            assertEquals(j.get("calling"), j.get("recruitment:phone:calling"));
+            assertEquals(j.get("script"), j.get("recruitment:phone:script"));
+            assertEquals(j.get("directory"), j.get("recruitment:phone:directory"));
+            assertEquals(j.get("display"), j.get("recruitment:posters:display"));
+            assertEquals(j.get("posters:locations"), j.get("recruitment:posters:locations"));
+            assertEquals(j.get("poster"), j.get("recruitment:posters:poster"));
+            assertEquals(j.get("chat"), j.get("recruitment:trusted:chat"));
+            assertEquals(j.get("talking_points"), j.get("recruitment:trusted:talking_points"));
+            assertEquals(j.get("trusted:locations"), j.get("recruitment:trusted:locations"));
+
         }
 
         @Test
         public void elementsHaveTheRightType() {
             JustificationModel j = unit.get("recruitment");
-            assertInstanceOf(Conclusion.class, j.get("recruitment:c"));
-            assertInstanceOf(Strategy.class, j.get("recruitment:calling"));
-            assertInstanceOf(SubConclusion.class, j.get("recruitment:c1"));
-            assertInstanceOf(SubConclusion.class, j.get("recruitment:c2"));
-            assertInstanceOf(SubConclusion.class, j.get("recruitment:c3"));
-            assertInstanceOf(Strategy.class, j.get("recruitment:calling"));
-            assertInstanceOf(Strategy.class, j.get("recruitment:display"));
-            assertInstanceOf(Strategy.class, j.get("recruitment:chat"));
-            assertInstanceOf(Evidence.class, j.get("recruitment:script"));
-            assertInstanceOf(Evidence.class, j.get("recruitment:directory"));
-            assertInstanceOf(Evidence.class, j.get("recruitment:locations"));
-            assertInstanceOf(Evidence.class, j.get("recruitment:poster"));
-            assertInstanceOf(Evidence.class, j.get("recruitment:talking_points"));
+            assertInstanceOf(Conclusion.class, j.get("c"));
+            assertInstanceOf(Strategy.class, j.get("calling"));
+            assertInstanceOf(SubConclusion.class, j.get("c1"));
+            assertInstanceOf(SubConclusion.class, j.get("c2"));
+            assertInstanceOf(SubConclusion.class, j.get("c3"));
+            assertInstanceOf(Strategy.class, j.get("calling"));
+            assertInstanceOf(Strategy.class, j.get("display"));
+            assertInstanceOf(Strategy.class, j.get("chat"));
+            assertInstanceOf(Evidence.class, j.get("script"));
+            assertInstanceOf(Evidence.class, j.get("directory"));
+            assertInstanceOf(Evidence.class, j.get("posters:locations"));
+            assertInstanceOf(Evidence.class, j.get("poster"));
+            assertInstanceOf(Evidence.class, j.get("talking_points"));
+            assertInstanceOf(Evidence.class, j.get("trusted:locations"));
         }
 
         @Test
         public void elementsAreCorrectlySupported() {
             JustificationModel j = unit.get("recruitment");
-            assertEquals(Set.of("AND"),   j.get("recruitment:c").getSupportingIds());
-            assertEquals(Set.of("c1", "c2", "c3"), j.get("recruitment:AND").getSupportingIds());
-            assertEquals(Set.of("calling"), j.get("recruitment:c1").getSupportingIds());
-            assertEquals(Set.of("display"), j.get("recruitment:c2").getSupportingIds());
-            assertEquals(Set.of("chat"), j.get("recruitment:c3").getSupportingIds());
-            assertEquals(Set.of("script", "directory"), j.get("recruitment:calling").getSupportingIds());
-            assertEquals(Set.of(), j.get("recruitment:script").getSupportingIds());
-            assertEquals(Set.of(), j.get("recruitment:directory").getSupportingIds());
-            assertEquals(Set.of("locations", "poster"), j.get("recruitment:display").getSupportingIds());
-            assertEquals(Set.of(), j.get("recruitment:locations").getSupportingIds());
-            assertEquals(Set.of(), j.get("recruitment:poster").getSupportingIds());
-            assertEquals(Set.of("talking_points", "locations"), j.get("recruitment:chat").getSupportingIds());
-            assertEquals(Set.of(), j.get("recruitment:talking_points").getSupportingIds());
+            assertEquals(Set.of("AND"),   j.get("c").getSupportingIds());
+            assertEquals(Set.of("c1", "c2", "c3"), j.get("AND").getSupportingIds());
+            assertEquals(Set.of("calling"), j.get("c1").getSupportingIds());
+            assertEquals(Set.of("display"), j.get("c2").getSupportingIds());
+            assertEquals(Set.of("chat"), j.get("c3").getSupportingIds());
+            assertEquals(Set.of("script", "directory"), j.get("calling").getSupportingIds());
+            assertEquals(Set.of(), j.get("script").getSupportingIds());
+            assertEquals(Set.of(), j.get("directory").getSupportingIds());
+            assertEquals(Set.of("locations", "poster"), j.get("display").getSupportingIds());
+            assertEquals(Set.of(), j.get("posters:locations").getSupportingIds());
+            assertEquals(Set.of(), j.get("poster").getSupportingIds());
+            assertEquals(Set.of("talking_points", "locations"), j.get("chat").getSupportingIds());
+            assertEquals(Set.of(), j.get("talking_points").getSupportingIds());
         }
 
     }

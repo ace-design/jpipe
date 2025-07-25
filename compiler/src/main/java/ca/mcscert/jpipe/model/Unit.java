@@ -37,7 +37,6 @@ public final class Unit implements Visitable {
         return name;
     }
 
-
     /**
      * Check if a given path is already loaded in the current compilation unit.
      *

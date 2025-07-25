@@ -54,7 +54,7 @@ public class PatternImplementation extends CompositionOperator {
 
         // Dumping input into output
         for (JustificationElement e : input.contents()) {
-            output.add(e);
+            output.add(e, input.representations().getAllParents(e)); // would need to add the representative element
             input.remove(e);
         }
 
@@ -67,9 +67,10 @@ public class PatternImplementation extends CompositionOperator {
         // Loading remaining elements
         for (JustificationElement patternElement : pattern.contents()) {
             if (overlapping.contains(patternElement.getIdentifier())) {
+                patternElement.recordScope(output.getName());
                 continue;
             }
-            output.add(patternElement);
+            output.add(patternElement, pattern.representations().getAllParents(patternElement)); // would need to add the representative element
         }
 
     }
