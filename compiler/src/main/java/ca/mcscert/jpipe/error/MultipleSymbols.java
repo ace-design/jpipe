@@ -1,7 +1,8 @@
 package ca.mcscert.jpipe.error;
 
-import java.util.List;
-
+/**
+ * Error thrown when multiple symbols are found under a given identifier.
+ */
 @JPipeError
 public class MultipleSymbols extends RuntimeException {
 

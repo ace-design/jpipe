@@ -3,8 +3,10 @@ package ca.mcscert.jpipe.model;
 import ca.mcscert.jpipe.error.DuplicateSymbol;
 import ca.mcscert.jpipe.error.MultipleSymbols;
 import ca.mcscert.jpipe.error.UnknownSymbol;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The {@code RepTable} class represents a simple symbolic mapping

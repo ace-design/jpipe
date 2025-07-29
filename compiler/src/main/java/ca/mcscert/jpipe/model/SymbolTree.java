@@ -4,13 +4,21 @@ import ca.mcscert.jpipe.error.DuplicateSymbol;
 import ca.mcscert.jpipe.error.MultipleSymbols;
 import ca.mcscert.jpipe.error.UnknownSymbol;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Define the hierarchical status of each Justification Element by their given string identifier.
+ * Each Justification Model have a symbol tree to contain
+ * all their own Justification Elements with their respective scope.
+ * A single identifier has a one-to-many relationship with Justification Elements.
+ *
+ */
 public final class SymbolTree {
-
 
     private final Map<String, Set<JustificationElement>> elements;
 
@@ -18,6 +26,12 @@ public final class SymbolTree {
         this.elements = new HashMap<>();
     }
 
+    /**
+     * Records an identifier and its related justification element.
+     *
+     * @param identifier String identifier
+     * @param element Justification element
+     */
     public void record(String identifier, JustificationElement element) throws DuplicateSymbol {
         if (this.keys().contains(identifier)) {
             for (JustificationElement je : this.elements.get(identifier)) {
@@ -32,6 +46,12 @@ public final class SymbolTree {
         }
     }
 
+    /**
+     * Deletes an identifier and all its related justification element.
+     *
+     * @param identifier String identifier
+     * @throws UnknownSymbol if element is not found in the SymbolTree
+     */
     public void delete(String identifier) {
         if (!this.keys().contains(identifier)) {
             throw new UnknownSymbol(identifier);
@@ -39,6 +59,12 @@ public final class SymbolTree {
         this.elements.remove(identifier);
     }
 
+    /**
+     * Deletes an identifier and the given justification element.
+     *
+     * @param identifier String identifier
+     * @throws UnknownSymbol if element is not found in the SymbolTree
+     */
     public void delete(String identifier, JustificationElement element) {
         if (this.keys().contains(identifier)) {
             for (JustificationElement je : this.elements.get(identifier)) {
@@ -52,9 +78,15 @@ public final class SymbolTree {
             }
         }
         throw new UnknownSymbol(identifier);
-
     }
 
+    /**
+     * Deletes an identifier and given justification element based on the scope.
+     *
+     * @param identifier String identifier
+     * @param scope String scope of the element
+     * @throws UnknownSymbol if element is not found in the SymbolTree
+     */
     public void delete(String identifier, String scope) {
         if (this.keys().contains(identifier)) {
             for (JustificationElement je : this.elements.get(identifier)) {

@@ -54,7 +54,7 @@ public class PatternImplementation extends CompositionOperator {
 
         // Dumping input into output
         for (JustificationElement e : input.contents()) {
-            output.add(e, input.representations().getAllParents(e)); // would need to add the representative element
+            output.add(e, input.representations().getAllParents(e));
             input.remove(e);
         }
 
@@ -70,7 +70,7 @@ public class PatternImplementation extends CompositionOperator {
                 patternElement.recordScope(output.getName());
                 continue;
             }
-            output.add(patternElement, pattern.representations().getAllParents(patternElement)); // would need to add the representative element
+            output.add(patternElement, pattern.representations().getAllParents(patternElement));
         }
 
     }

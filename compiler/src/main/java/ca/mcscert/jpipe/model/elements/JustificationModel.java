@@ -6,24 +6,22 @@ import ca.mcscert.jpipe.model.SymbolTable;
 import ca.mcscert.jpipe.model.SymbolTree;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.Replicable;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 
 /**
- * Abstraction to represent patters and justification in a uniform way.
+ * Abstraction to represent patterns and justification in a uniform way.
  */
 public abstract class JustificationModel
         implements Visitable, Replicable<JustificationModel> {
 
     protected final String name;
-    protected final SymbolTable<JustificationElement> symbols;
     protected final SymbolTree symbolTree;
     protected RepTable<JustificationElement> repTable;
     protected boolean frozen;
 
     protected JustificationModel(String name, boolean isFrozen) {
         this.name = name;
-        this.symbols = new SymbolTable<>();
         this.symbolTree = new SymbolTree();
         this.repTable = new RepTable<>();
         this.frozen = isFrozen;
@@ -49,6 +47,12 @@ public abstract class JustificationModel
         return this.frozen;
     }
 
+
+    /**
+     * Get an element inside an unlocked justification.
+     *
+     * @param identifier String identifier
+     */
     public JustificationElement get(String identifier) {
         if (identifier.contains(":")) {
             String[] parts = identifier.split(":");
@@ -95,11 +99,7 @@ public abstract class JustificationModel
         this.symbolTree.record(e.getIdentifier(), e);
         e.setContainer(this);
         e.recordScope(this.getName(), rep.getScope());
-//        this.symbolTree.recordHistory(e.getIdentifier(), e, this.name);
         this.repTable.record(e, rep);
-        // could add to the scope
-        // scope = this.scope + ":" + rep.scope
-
     }
 
     /**
@@ -114,7 +114,6 @@ public abstract class JustificationModel
         }
         this.symbolTree.record(e.getIdentifier(), e);
         e.setContainer(this);
-//        this.symbolTree.recordHistory(e.getIdentifier(), e, this.name);
         for (JustificationElement rep : reps) {
             if (!e.getIdentifier().equals(rep.getIdentifier())) {
                 e.recordScope(this.getName());
@@ -123,9 +122,6 @@ public abstract class JustificationModel
             }
             this.repTable.record(e, rep);
         }
-
-        // could add to the scope
-        // scope = this.scope + ":" + rep.scope
 
     }
 
@@ -142,8 +138,6 @@ public abstract class JustificationModel
             String msg = "Cannot remove a non-existing element from a justification";
             throw new IllegalStateException(msg);
         }
-//        e.setContainer(null);
-//        e.setScope("");
         this.symbolTree.delete(e.getIdentifier(), e);
     }
 
@@ -183,7 +177,6 @@ public abstract class JustificationModel
         // Building shallow clone of each element in the justification model
         for (String id : this.symbolTree.keys()) {
             JustificationElement elem = this.get(id).shallow();
-//            repTable.record(elem, this.get(id));
             clone.add(elem, this.get(id)); // replacing by the cloned (but still not wired) one.
         }
 
@@ -195,7 +188,6 @@ public abstract class JustificationModel
                 supportingClone.supports(cloned);
             }
         }
-//        clone.repTable = this.repTable;
     }
 
 

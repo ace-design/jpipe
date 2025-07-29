@@ -61,6 +61,11 @@ public abstract class JustificationElement
         this.scope = scope;
     }
 
+    /**
+     * Adding outer scope to the Justification Element.
+     *
+     * @param prefix String outer scope
+     */
     public void recordScope(String prefix) {
         String[] args = scope.split(":");
         if (!args[0].equals(prefix)) {
@@ -68,6 +73,12 @@ public abstract class JustificationElement
         }
     }
 
+    /**
+     * Changing the scope of the Justification Element.
+     *
+     * @param prefix String current scope of the justification element
+     * @param repScope String representative element scope
+     */
     public void recordScope(String prefix, String repScope) {
         String[] args = repScope.split(":");
         if (!args[0].equals(prefix)) {

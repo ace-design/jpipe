@@ -62,10 +62,11 @@ public class AssembleOperator extends CompositionOperator {
                 if (justificationElement instanceof Conclusion) {
                     SubConclusion subConclusion = ((Conclusion) justificationElement)
                             .intoSubConclusion(newStrategy);
-                    output.add(subConclusion, justificationModel.representations().getAllParents(justificationElement));
+                    output.add(subConclusion, justificationModel
+                            .representations().getAllParents(justificationElement));
                 } else if (justificationElement instanceof Strategy) {
-                    output.add(justificationElement,
-                            justificationModel.representations().getAllParents(justificationElement));
+                    output.add(justificationElement, justificationModel
+                            .representations().getAllParents(justificationElement));
                     for (JustificationElement sup : justificationElement.getSupports()) {
                         if (!(sup instanceof Evidence)) {
                             continue;
@@ -79,7 +80,8 @@ public class AssembleOperator extends CompositionOperator {
                         justificationElement.removeSupport(sup);
                     }
                 } else if (justificationElement instanceof SubConclusion) {
-                    output.add(justificationElement,  justificationModel.representations().getAllParents(justificationElement));
+                    output.add(justificationElement, justificationModel
+                            .representations().getAllParents(justificationElement));
                 }
             }
         }
