@@ -18,7 +18,7 @@ public class recruitmentIT extends SourceFileTest {
     public void containsOneJustification() {
         Counter counter = new Counter();
         this.unit.accept(counter);
-        assertEquals(11, unit.getContents().size());
+        assertEquals(12, unit.getContents().size());
     }
 
 

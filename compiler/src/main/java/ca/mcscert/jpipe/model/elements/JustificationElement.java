@@ -18,6 +18,7 @@ public abstract class JustificationElement
     protected final String identifier;
     protected final String label;
     protected JustificationModel container;
+    protected String scope;
 
     /**
      * A justification element comes minimally with a label and an identifier.
@@ -48,8 +49,43 @@ public abstract class JustificationElement
         return prefix + ":" + this.identifier;
     }
 
+    public final String getScope() {
+        return scope;
+    }
+
     final void setContainer(JustificationModel container) {
         this.container = container;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    /**
+     * Adding outer scope to the Justification Element.
+     *
+     * @param prefix String outer scope
+     */
+    public void recordScope(String prefix) {
+        String[] args = scope.split(":");
+        if (!args[0].equals(prefix)) {
+            scope = prefix + ":" + scope;
+        }
+    }
+
+    /**
+     * Changing the scope of the Justification Element.
+     *
+     * @param prefix String current scope of the justification element
+     * @param repScope String representative element scope
+     */
+    public void recordScope(String prefix, String repScope) {
+        String[] args = repScope.split(":");
+        if (!args[0].equals(prefix)) {
+            scope = prefix + ":" + repScope;
+        } else {
+            scope = repScope;
+        }
     }
 
     /**
@@ -138,7 +174,6 @@ public abstract class JustificationElement
         throw new IllegalArgumentException("Justification element "
                 + this + " cannot be supported by " + as);
     }
-
 
     @Override
     public final boolean equals(Object o) {

@@ -49,7 +49,7 @@ public class RefinementOperator extends CompositionOperator {
         List<JustificationElement> supported = new ArrayList<>();
         for (JustificationElement je : original.contents()) {
             if (!je.getLabel().equals(hook)) {
-                output.add(je, original.representations().get(je));
+                output.add(je, original.representations().getAllParents(je));
             }
             if (je.getSupports().contains(hookElement)) {
                 supported.add(je);
@@ -66,7 +66,7 @@ public class RefinementOperator extends CompositionOperator {
         Conclusion con = null;
         for (JustificationElement je : hookModel.contents()) {
             if (!(je instanceof Conclusion)) {
-                output.add(je, hookModel.representations().get(je));
+                output.add(je, hookModel.representations().getAllParents(je));
             } else {
                 con = (Conclusion) je;
             }
@@ -76,7 +76,7 @@ public class RefinementOperator extends CompositionOperator {
                     + hookModel.getName() + "has no conclusion");
         }
         SubConclusion newSubCon = con.intoSubConclusion(); // might need to change
-        output.add(newSubCon, original.representations().get(hookElement));
+        output.add(newSubCon, original.representations().getAllParents(hookElement));
         for (JustificationElement je : supported) {
             je.removeSupport(con);
             newSubCon.supports(je);

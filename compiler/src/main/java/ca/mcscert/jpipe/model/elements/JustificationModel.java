@@ -1,26 +1,28 @@
 package ca.mcscert.jpipe.model.elements;
 
+import ca.mcscert.jpipe.error.UnknownSymbol;
 import ca.mcscert.jpipe.model.RepTable;
 import ca.mcscert.jpipe.model.SymbolTable;
+import ca.mcscert.jpipe.model.SymbolTree;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.Replicable;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Set;
 
 /**
- * Abstraction to represent patters and justification in a uniform way.
+ * Abstraction to represent patterns and justification in a uniform way.
  */
 public abstract class JustificationModel
         implements Visitable, Replicable<JustificationModel> {
 
     protected final String name;
-    protected final SymbolTable<JustificationElement> symbols;
+    protected final SymbolTree symbolTree;
     protected RepTable<JustificationElement> repTable;
     protected boolean frozen;
 
     protected JustificationModel(String name, boolean isFrozen) {
         this.name = name;
-        this.symbols = new SymbolTable<>();
+        this.symbolTree = new SymbolTree();
         this.repTable = new RepTable<>();
         this.frozen = isFrozen;
     }
@@ -45,17 +47,27 @@ public abstract class JustificationModel
         return this.frozen;
     }
 
+
+    /**
+     * Get an element inside an unlocked justification.
+     *
+     * @param identifier String identifier
+     */
     public JustificationElement get(String identifier) {
-        String id = (identifier.startsWith(this.name) ? identifier.split(":")[1] : identifier);
-        return this.symbols.get(id);
+        if (identifier.contains(":")) {
+            String[] parts = identifier.split(":");
+            String id = parts[parts.length - 1];
+            return this.symbolTree.get(id, identifier);
+        }
+        return this.symbolTree.get(identifier);
     }
 
     public Collection<JustificationElement> contents() {
-        return this.symbols.values();
+        return this.symbolTree.values();
     }
 
-    public Map<JustificationElement, JustificationElement> representations() {
-        return this.repTable.getTable();
+    public RepTable<JustificationElement> representations() {
+        return this.repTable;
     }
 
     /**
@@ -67,9 +79,11 @@ public abstract class JustificationModel
         if (this.isFrozen()) {
             throw new IllegalStateException("Cannot add an element to a frozen justification");
         }
-        this.symbols.record(e.getIdentifier(), e);
-        this.repTable.record(e);
         e.setContainer(this);
+        e.setScope(e.fullyQualifiedName());
+        this.symbolTree.record(e.getIdentifier(), e);
+        this.repTable.record(e);
+
     }
 
     /**
@@ -82,9 +96,32 @@ public abstract class JustificationModel
         if (this.isFrozen()) {
             throw new IllegalStateException("Cannot add an element to a frozen justification");
         }
-        this.symbols.record(e.getIdentifier(), e);
-        this.repTable.record(e, rep);
+        this.symbolTree.record(e.getIdentifier(), e);
         e.setContainer(this);
+        e.recordScope(this.getName(), rep.getScope());
+        this.repTable.record(e, rep);
+    }
+
+    /**
+     * Add an element inside an unlocked justification with the representative elements.
+     *
+     * @param e the element to add
+     * @param reps the representative element of e
+     */
+    public void add(JustificationElement e, Set<JustificationElement> reps) {
+        if (this.isFrozen()) {
+            throw new IllegalStateException("Cannot add an element to a frozen justification");
+        }
+        this.symbolTree.record(e.getIdentifier(), e);
+        e.setContainer(this);
+        for (JustificationElement rep : reps) {
+            if (!e.getIdentifier().equals(rep.getIdentifier())) {
+                e.recordScope(this.getName());
+            } else {
+                e.recordScope(this.getName(), rep.getScope());
+            }
+            this.repTable.record(e, rep);
+        }
 
     }
 
@@ -97,12 +134,11 @@ public abstract class JustificationModel
         if (this.isFrozen()) {
             throw new IllegalStateException("Cannot remove an element from a frozen justification");
         }
-        if (! this.symbols.exists(e.getIdentifier())) {
+        if (! this.symbolTree.exists(e.getIdentifier())) {
             String msg = "Cannot remove a non-existing element from a justification";
             throw new IllegalStateException(msg);
         }
-        e.setContainer(null);
-        this.symbols.delete(e.getIdentifier());
+        this.symbolTree.delete(e.getIdentifier(), e);
     }
 
 
@@ -122,8 +158,9 @@ public abstract class JustificationModel
             }
         }
         // Delete the original, and add the new one.
+        this.add(newOne, original);
         this.remove(original);
-        this.add(newOne);
+
     }
 
     /**
@@ -138,21 +175,19 @@ public abstract class JustificationModel
         clone.unfreeze(); // opening the clone for modification
 
         // Building shallow clone of each element in the justification model
-        for (String id : this.symbols.keys()) {
+        for (String id : this.symbolTree.keys()) {
             JustificationElement elem = this.get(id).shallow();
-            repTable.record(elem, this.get(id));
-            clone.add(elem); // replacing by the cloned (but still not wired) one.
+            clone.add(elem, this.get(id)); // replacing by the cloned (but still not wired) one.
         }
 
         // Translating the relation existing in 'this' into 'clone'.
-        for (String id : clone.symbols.keys()) {
+        for (String id : clone.symbolTree.keys()) {
             JustificationElement cloned = clone.get(id);
             for (JustificationElement supporting : this.get(id).getSupports()) {
                 JustificationElement supportingClone = clone.get(supporting.getIdentifier());
                 supportingClone.supports(cloned);
             }
         }
-        clone.repTable = this.repTable;
     }
 
 
@@ -160,7 +195,7 @@ public abstract class JustificationModel
     public String toString() {
         final StringBuffer sb = new StringBuffer("JustificationModel{");
         sb.append("name='").append(name).append('\'');
-        sb.append(", symbols=").append(symbols);
+        sb.append(", symbols=").append(symbolTree);
         sb.append(", ready=").append(frozen);
         sb.append('}');
         return sb.toString();

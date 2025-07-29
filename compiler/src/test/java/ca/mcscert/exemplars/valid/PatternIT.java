@@ -118,11 +118,11 @@ public class PatternIT extends SourceFileTest {
         @Test
         public void elementsCanBeAccessedInsideThePattern() {
             JustificationModel j = unit.get("partial");
-            assertEquals(j.get("C"),   j.get("partial:C"));
-            assertEquals(j.get("St1"), j.get("partial:St1"));
-            assertEquals(j.get("Su3"), j.get("partial:Su3"));
-            assertEquals(j.get("Su2"), j.get("partial:Su2"));
-            assertEquals(j.get("Su1"), j.get("partial:Su1"));
+            assertEquals(j.get("C"),   j.get("partial:prover:C"));
+            assertEquals(j.get("St1"), j.get("partial:prover:St1"));
+            assertEquals(j.get("Su3"), j.get("partial:prover:Su3"));
+            assertEquals(j.get("Su2"), j.get("partial:prover:Su2"));
+            assertEquals(j.get("Su1"), j.get("partial:prover:Su1"));
         }
 
         @Test
@@ -175,13 +175,13 @@ public class PatternIT extends SourceFileTest {
         @Test
         public void elementsCanBeAccessed() {
             JustificationModel j = unit.get("proving");
-            assertEquals(j.get("C"),   j.get("proving:C"));
+            assertEquals(j.get("C"),   j.get("proving:prover:C"));
             assertEquals(j.get("St0"), j.get("proving:St0"));
-            assertEquals(j.get("St1"), j.get("proving:St1"));
+            assertEquals(j.get("St1"), j.get("proving:prover:St1"));
             assertEquals(j.get("Su0"), j.get("proving:Su0"));
-            assertEquals(j.get("Su1"), j.get("proving:Su1"));
-            assertEquals(j.get("Su2"), j.get("proving:Su2"));
-            assertEquals(j.get("Su3"), j.get("proving:Su3"));
+            assertEquals(j.get("Su1"), j.get("proving:prover:Su1"));
+            assertEquals(j.get("Su2"), j.get("proving:prover:Su2"));
+            assertEquals(j.get("Su3"), j.get("proving:prover:Su3"));
         }
 
         @Test
