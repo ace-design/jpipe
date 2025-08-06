@@ -1,7 +1,6 @@
 package ca.mcscert.jpipe.model;
 
 import ca.mcscert.jpipe.error.DuplicateSymbol;
-import ca.mcscert.jpipe.error.MultipleSymbols;
 import ca.mcscert.jpipe.error.UnknownSymbol;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,7 +17,7 @@ import java.util.Set;
  *
  * @param <T> the type of the elements managed by this representation table
  */
-public final class RepTable<T> {
+public final class HierarchyMap<T> {
 
     private final Map<T, Set<T>> table;
     private final Set<T> allNodes;
@@ -26,7 +25,7 @@ public final class RepTable<T> {
     /**
      * Constructs an empty representation table.
      */
-    public RepTable() {
+    public HierarchyMap() {
         table = new HashMap<>();
         allNodes = new HashSet<>();
     }
@@ -58,6 +57,25 @@ public final class RepTable<T> {
     }
 
     /**
+     * Records a new child-parent relationship in the representation table.
+     *
+     * @param current the element to record as a child
+     * @param parents set of parents of the element
+     * @throws DuplicateSymbol if the element is already recorded
+     */
+    public void record(T current, Set<T> parents) {
+        allNodes.add(current);
+        for (T parent : parents) {
+            table.computeIfAbsent(parent, k -> new HashSet<>()).add(current);
+
+            if (parent != null) {
+                allNodes.add(parent);
+            }
+        }
+
+    }
+
+    /**
      * Records a new root element (with no parent) in the representation table.
      *
      * @param current the element to record
@@ -77,7 +95,7 @@ public final class RepTable<T> {
      * @param current the element to record
      * @throws DuplicateSymbol if the element is already recorded
      */
-    public void recordAll(RepTable<T> current) {
+    public void recordAll(HierarchyMap<T> current) {
         this.table.putAll(current.table);
         this.allNodes.addAll(current.allNodes);
     }
@@ -102,7 +120,7 @@ public final class RepTable<T> {
      * @return the parent of the element, or {@code null} if it's a root
      * @throws UnknownSymbol if the element is not found
      */
-    public T getParent(T child) {
+    public T getDirectParent(T child) {
         for (Map.Entry<T, Set<T>> entry : table.entrySet()) {
             if (entry.getValue().contains(child)) {
                 return entry.getKey();
@@ -141,7 +159,7 @@ public final class RepTable<T> {
             throw new UnknownSymbol("Cycle detected for symbol: " + current.toString());
         }
 
-        T parent = getParent(current);
+        T parent = getDirectParent(current);
         if (parent == null) {
             return current;
         }
@@ -167,7 +185,7 @@ public final class RepTable<T> {
             table.computeIfAbsent(null, k -> new HashSet<>()).add(child);
         }
 
-        T parent = getParent(current);
+        T parent = getDirectParent(current);
         if (parent != null) {
             table.get(parent).remove(current);
         }
@@ -202,7 +220,7 @@ public final class RepTable<T> {
         if (!parents.isEmpty()) {
             return parents;
         } else if (table.containsKey(child)) {
-            return null;
+            return Set.of();
         }
         throw new UnknownSymbol(child.toString());
     }

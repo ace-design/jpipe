@@ -1,6 +1,6 @@
 package ca.mcscert.jpipe.operators;
 
-import ca.mcscert.jpipe.model.RepTable;
+import ca.mcscert.jpipe.model.HierarchyMap;
 import ca.mcscert.jpipe.model.elements.Conclusion;
 import ca.mcscert.jpipe.model.elements.Evidence;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
@@ -52,7 +52,7 @@ public class AssembleOperator extends CompositionOperator {
         Strategy newStrategy = new Strategy("AND", strategyLabel);
         newStrategy.supports(newConclusion);
         output.add(newStrategy);
-        RepTable<JustificationElement> representations = new RepTable<>();
+        HierarchyMap<JustificationElement> representations = new HierarchyMap<>();
         // Go through each justification models
         HashMap<JustificationElement, List<JustificationElement>> evi2Strats = new HashMap<>();
         for (JustificationModel justificationModel : inputs) {

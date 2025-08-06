@@ -182,6 +182,12 @@ public class PatternIT extends SourceFileTest {
             assertEquals(j.get("Su1"), j.get("proving:prover:Su1"));
             assertEquals(j.get("Su2"), j.get("proving:prover:Su2"));
             assertEquals(j.get("Su3"), j.get("proving:prover:Su3"));
+            // With partial scope
+            assertEquals(j.get("C"),   j.get("prover:C"));
+            assertEquals(j.get("St1"), j.get("prover:St1"));
+            assertEquals(j.get("Su1"), j.get("prover:Su1"));
+            assertEquals(j.get("Su2"), j.get("prover:Su2"));
+            assertEquals(j.get("Su3"), j.get("prover:Su3"));
         }
 
         @Test

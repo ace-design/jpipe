@@ -246,6 +246,28 @@ public class multipleCompositionIT extends SourceFileTest {
             assertEquals(j.get("check"), j.get("final:phone_reuse:check"));
             assertEquals(j.get("directory"), j.get("final:phone_reuse:directory"));
             assertEquals(j.get("tou"), j.get("final:phone_reuse:tou"));
+            // With partial scope
+            assertEquals(j.get("c"),   j.get("temp:recruitment:c"));
+            assertEquals(j.get("AND"), j.get("temp:recruitment:AND"));
+            assertEquals(j.get("c1"), j.get("temp:recruitment:phone:c1"));
+            assertEquals(j.get("c2"), j.get("temp:recruitment:posters:c2"));
+            assertEquals(j.get("c3"), j.get("temp:recruitment:trusted:c3"));
+            assertEquals(j.get("calling"), j.get("temp:recruitment:phone:calling"));
+            assertEquals(j.get("script"), j.get("temp:recruitment:phone:script"));
+            assertEquals(j.get("display"), j.get("temp:recruitment:posters:display"));
+            assertEquals(j.get("poster"), j.get("temp:recruitment:posters:poster"));
+            assertEquals(j.get("chat"), j.get("temp:recruitment:trusted:chat"));
+            assertEquals(j.get("talking_points"), j.get("temp:recruitment:trusted:talking_points"));
+            assertEquals(j.get("loc_available"), j.get("temp:locations:loc_available"));
+            assertEquals(j.get("combining"), j.get("temp:locations:combining"));
+            assertEquals(j.get("public"), j.get("temp:locations:public"));
+            assertEquals(j.get("authorized"), j.get("temp:locations:authorized"));
+            assertEquals(j.get("authorization"), j.get("temp:locations:authorization"));
+            assertEquals(j.get("places"), j.get("temp:locations:places"));
+            assertEquals(j.get("reused"), j.get("phone_reuse:reused"));
+            assertEquals(j.get("check"), j.get("phone_reuse:check"));
+            assertEquals(j.get("directory"), j.get("phone_reuse:directory"));
+            assertEquals(j.get("tou"), j.get("phone_reuse:tou"));
         }
 
         @Test

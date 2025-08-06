@@ -30,6 +30,7 @@ public abstract class JustificationElement
         this.uid = UUID.randomUUID().getMostSignificantBits();
         this.identifier = identifier;
         this.label = label;
+        this.scope = "";
     }
 
     public final String getIdentifier() {
