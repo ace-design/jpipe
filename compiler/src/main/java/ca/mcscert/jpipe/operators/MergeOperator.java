@@ -4,6 +4,7 @@ import ca.mcscert.jpipe.model.elements.JustificationElement;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.model.elements.Pattern;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class MergeOperator extends CompositionOperator {
         // Merge groups
         for (List<JustificationElement> group : groups) {
             JustificationElement first = group.getFirst();
-            output.add(first);
+            output.add(first, new HashSet<>(group));
         }
         // Check the supporting elements of new element
         // Find representative element

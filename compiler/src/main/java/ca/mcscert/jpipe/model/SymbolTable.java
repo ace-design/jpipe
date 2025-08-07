@@ -112,9 +112,12 @@ public final class SymbolTable {
         if (identifier.contains(":")) {
             String[] parts = identifier.split(":");
             String id = parts[parts.length - 1];
-            return this.get(id, identifier);
+            return getElement(id, identifier);
         }
+        return getElement(identifier);
+    }
 
+    private JustificationElement getElement(String identifier) {
         if (this.elements.containsKey(identifier)) {
             if (this.elements.get(identifier).size() == 1) {
                 return this.elements.get(identifier).iterator().next();
@@ -131,7 +134,7 @@ public final class SymbolTable {
      * @return the stored element, if any.
      * @throws UnknownSymbol if the symbol is not defined in the table.
      */
-    public JustificationElement get(String identifier, String scope) throws UnknownSymbol {
+    private JustificationElement getElement(String identifier, String scope) throws UnknownSymbol {
         if (this.elements.containsKey(identifier)) {
             JustificationElement je = null;
             for (JustificationElement e : this.elements.get(identifier)) {

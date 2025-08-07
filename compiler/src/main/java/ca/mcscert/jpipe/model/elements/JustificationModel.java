@@ -178,7 +178,7 @@ public abstract class JustificationModel
 
     private void registerElement(JustificationElement e) {
         e.setContainer(this);
-        e.setScope(e.fullyQualifiedName());
+        e.recordScope(this.getName(), e.getIdentifier());
         this.symbolTable.record(e.getIdentifier(), e);
     }
 

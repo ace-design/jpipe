@@ -41,8 +41,9 @@ public class SymbolTableTest {
     @Test
     public void canRecordDuplicatesIdentifiers() {
         Evidence e2 = new Evidence("e", "Another evidence");
-        e2.setScope("test scope");
+        e2.setScope(e2.getIdentifier());
+        e2.recordScope("test scope");
         t1.record(e2.getIdentifier(), e2);
-        assertEquals(t1.get("e", "test scope"), e2);
+        assertEquals(t1.get("test scope:e"), e2);
     }
 }

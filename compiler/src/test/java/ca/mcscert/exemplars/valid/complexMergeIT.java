@@ -51,25 +51,25 @@ public class complexMergeIT extends SourceFileTest {
         @Test
         public void elementsCanBeAccessedInsideTheJustification() {
             JustificationModel j = unit.get("j");
-            assertEquals(j.get("c1"), j.get("j:c1"));
-            assertEquals(j.get("AND1"), j.get("j:AND1"));
-            assertEquals(j.get("sc1"), j.get("j:sc1"));
-            assertEquals(j.get("sc2"), j.get("j:sc2"));
-            assertEquals(j.get("s1"), j.get("j:s1"));
-            assertEquals(j.get("s2"), j.get("j:s2"));
-            assertEquals(j.get("e1"), j.get("j:e1"));
+            assertEquals(j.get("c1"), j.get("j:j1:c1"));
+            assertEquals(j.get("AND1"), j.get("j:j1:AND1"));
+            assertEquals(j.get("sc1"), j.get("j:j1:sc1"));
+            assertEquals(j.get("sc2"), j.get("j:j2:sc2"));
+            assertEquals(j.get("s1"), j.get("j:j1:s1"));
+            assertEquals(j.get("s2"), j.get("j:j2:s2"));
+            assertEquals(j.get("e1"), j.get("j:j1:e1"));
         }
 
         @Test
         public void elementsHaveTheRightType() {
             JustificationModel j = unit.get("j");
-            assertInstanceOf(Conclusion.class, j.get("j:c1"));
-            assertInstanceOf(Strategy.class, j.get("j:AND1"));
-            assertInstanceOf(SubConclusion.class, j.get("j:sc1"));
-            assertInstanceOf(SubConclusion.class, j.get("j:sc2"));
-            assertInstanceOf(Strategy.class, j.get("j:s1"));
-            assertInstanceOf(Strategy.class, j.get("j:s2"));
-            assertInstanceOf(Evidence.class, j.get("j:e1"));
+            assertInstanceOf(Conclusion.class, j.get("c1"));
+            assertInstanceOf(Strategy.class, j.get("AND1"));
+            assertInstanceOf(SubConclusion.class, j.get("sc1"));
+            assertInstanceOf(SubConclusion.class, j.get("sc2"));
+            assertInstanceOf(Strategy.class, j.get("s1"));
+            assertInstanceOf(Strategy.class, j.get("s2"));
+            assertInstanceOf(Evidence.class, j.get("e1"));
         }
 
         @Test

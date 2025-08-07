@@ -48,19 +48,19 @@ public class simpleMergeIT extends SourceFileTest {
         @Test
         public void elementsCanBeAccessedInsideTheJustification() {
             JustificationModel j = unit.get("j");
-            assertEquals(j.get("c1"), j.get("j:c1"));
-            assertEquals(j.get("s1"), j.get("j:s1"));
-            assertEquals(j.get("e1"), j.get("j:e1"));
-            assertEquals(j.get("e2"), j.get("j:e2"));
+            assertEquals(j.get("c1"), j.get("j:j1:c1"));
+            assertEquals(j.get("s1"), j.get("j:j1:s1"));
+            assertEquals(j.get("e1"), j.get("j:j1:e1"));
+            assertEquals(j.get("e2"), j.get("j:j2:e2"));
         }
 
         @Test
         public void elementsHaveTheRightType() {
             JustificationModel j =  unit.get("j");
-            assertInstanceOf(Conclusion.class,   j.get("j:c1"));
-            assertInstanceOf(Strategy.class, j.get("j:s1"));
-            assertInstanceOf(Evidence.class, j.get("j:e1"));
-            assertInstanceOf(Evidence.class, j.get("j:e2"));
+            assertInstanceOf(Conclusion.class,   j.get("c1"));
+            assertInstanceOf(Strategy.class, j.get("s1"));
+            assertInstanceOf(Evidence.class, j.get("e1"));
+            assertInstanceOf(Evidence.class, j.get("e2"));
         }
 
         @Test

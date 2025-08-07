@@ -30,7 +30,7 @@ public abstract class JustificationElement
         this.uid = UUID.randomUUID().getMostSignificantBits();
         this.identifier = identifier;
         this.label = label;
-        this.scope = "";
+        this.scope = identifier;
     }
 
     public final String getIdentifier() {
@@ -63,30 +63,29 @@ public abstract class JustificationElement
     }
 
     /**
-     * Adding outer scope to the Justification Element.
+     * Sets or updates the scope of the Justification Element.
      *
-     * @param prefix String outer scope
+     * @param prefix   String outer scope or prefix
+     * @param newScope Optional scope to be used; if null, current scope is reused
      */
-    public void recordScope(String prefix) {
-        String[] args = scope.split(":");
+    public void recordScope(String prefix, String newScope) {
+        String targetScope = (newScope != null) ? newScope : scope;
+        String[] args = targetScope.split(":");
+
         if (!args[0].equals(prefix)) {
-            scope = prefix + ":" + scope;
+            scope = prefix + ":" + targetScope;
+        } else {
+            scope = targetScope;
         }
     }
 
     /**
-     * Changing the scope of the Justification Element.
+     * Overload for recordScope when only prefix is provided.
      *
-     * @param prefix String current scope of the justification element
-     * @param repScope String representative element scope
+     * @param prefix String outer scope
      */
-    public void recordScope(String prefix, String repScope) {
-        String[] args = repScope.split(":");
-        if (!args[0].equals(prefix)) {
-            scope = prefix + ":" + repScope;
-        } else {
-            scope = repScope;
-        }
+    public void recordScope(String prefix) {
+        recordScope(prefix, null);
     }
 
     /**
