@@ -3,7 +3,6 @@ package ca.mcscert.jpipe.model;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
 import ca.mcscert.jpipe.model.elements.JustificationModel;
 import ca.mcscert.jpipe.visitors.ModelVisitor;
-import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,7 +14,7 @@ import java.util.Set;
 public final class Unit implements Visitable {
 
     private final String name;
-    private final SymbolTable<JustificationModel> contents;
+    private final ElementTable<JustificationModel> contents;
     private final Path location;
     private final Set<String> loaded;
 
@@ -27,7 +26,7 @@ public final class Unit implements Visitable {
      */
     public Unit(String name, Path filePath) {
         this.name = name;
-        this.contents = new SymbolTable<>();
+        this.contents = new ElementTable<>();
         this.loaded = new HashSet<>();
         this.location = filePath;
         addLoadedFile(filePath);
@@ -36,7 +35,6 @@ public final class Unit implements Visitable {
     public String getName() {
         return name;
     }
-
 
     /**
      * Check if a given path is already loaded in the current compilation unit.

@@ -1,27 +1,25 @@
 package ca.mcscert.jpipe.model.elements;
 
-import ca.mcscert.jpipe.model.RepTable;
+import ca.mcscert.jpipe.model.HierarchyMap;
 import ca.mcscert.jpipe.model.SymbolTable;
 import ca.mcscert.jpipe.model.Visitable;
 import ca.mcscert.jpipe.model.cloning.Replicable;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Set;
 
 /**
- * Abstraction to represent patters and justification in a uniform way.
+ * Abstraction to represent patterns and justification in a uniform way.
  */
 public abstract class JustificationModel
         implements Visitable, Replicable<JustificationModel> {
 
     protected final String name;
-    protected final SymbolTable<JustificationElement> symbols;
-    protected RepTable<JustificationElement> repTable;
+    protected final SymbolTable symbolTable;
     protected boolean frozen;
 
     protected JustificationModel(String name, boolean isFrozen) {
         this.name = name;
-        this.symbols = new SymbolTable<>();
-        this.repTable = new RepTable<>();
+        this.symbolTable = new SymbolTable();
         this.frozen = isFrozen;
     }
 
@@ -45,17 +43,22 @@ public abstract class JustificationModel
         return this.frozen;
     }
 
+
+    /**
+     * Get an element inside an unlocked justification.
+     *
+     * @param identifier String identifier
+     */
     public JustificationElement get(String identifier) {
-        String id = (identifier.startsWith(this.name) ? identifier.split(":")[1] : identifier);
-        return this.symbols.get(id);
+        return this.symbolTable.get(identifier);
     }
 
     public Collection<JustificationElement> contents() {
-        return this.symbols.values();
+        return this.symbolTable.values();
     }
 
-    public Map<JustificationElement, JustificationElement> representations() {
-        return this.repTable.getTable();
+    public HierarchyMap<JustificationElement> representations() {
+        return this.symbolTable.getHierarchyMap();
     }
 
     /**
@@ -67,9 +70,7 @@ public abstract class JustificationModel
         if (this.isFrozen()) {
             throw new IllegalStateException("Cannot add an element to a frozen justification");
         }
-        this.symbols.record(e.getIdentifier(), e);
-        this.repTable.record(e);
-        e.setContainer(this);
+        registerElement(e);
     }
 
     /**
@@ -82,10 +83,21 @@ public abstract class JustificationModel
         if (this.isFrozen()) {
             throw new IllegalStateException("Cannot add an element to a frozen justification");
         }
-        this.symbols.record(e.getIdentifier(), e);
-        this.repTable.record(e, rep);
-        e.setContainer(this);
+        registerElement(e, rep);
+    }
 
+    /**
+     * Add an element inside an unlocked justification with the representative elements.
+     *
+     * @param e the element to add
+     * @param reps the representative element of e
+     */
+    public void add(JustificationElement e, Set<JustificationElement> reps) {
+        if (this.isFrozen()) {
+            throw new IllegalStateException("Cannot add an element to a frozen justification");
+        }
+
+        registerElement(e, reps);
     }
 
     /**
@@ -97,12 +109,11 @@ public abstract class JustificationModel
         if (this.isFrozen()) {
             throw new IllegalStateException("Cannot remove an element from a frozen justification");
         }
-        if (! this.symbols.exists(e.getIdentifier())) {
+        if (! this.symbolTable.exists(e.getIdentifier())) {
             String msg = "Cannot remove a non-existing element from a justification";
             throw new IllegalStateException(msg);
         }
-        e.setContainer(null);
-        this.symbols.delete(e.getIdentifier());
+        this.symbolTable.delete(e.getIdentifier(), e);
     }
 
 
@@ -122,8 +133,9 @@ public abstract class JustificationModel
             }
         }
         // Delete the original, and add the new one.
+        this.add(newOne, original);
         this.remove(original);
-        this.add(newOne);
+
     }
 
     /**
@@ -138,21 +150,19 @@ public abstract class JustificationModel
         clone.unfreeze(); // opening the clone for modification
 
         // Building shallow clone of each element in the justification model
-        for (String id : this.symbols.keys()) {
+        for (String id : this.symbolTable.keys()) {
             JustificationElement elem = this.get(id).shallow();
-            repTable.record(elem, this.get(id));
-            clone.add(elem); // replacing by the cloned (but still not wired) one.
+            clone.add(elem, this.get(id)); // replacing by the cloned (but still not wired) one.
         }
 
         // Translating the relation existing in 'this' into 'clone'.
-        for (String id : clone.symbols.keys()) {
+        for (String id : clone.symbolTable.keys()) {
             JustificationElement cloned = clone.get(id);
             for (JustificationElement supporting : this.get(id).getSupports()) {
                 JustificationElement supportingClone = clone.get(supporting.getIdentifier());
                 supportingClone.supports(cloned);
             }
         }
-        clone.repTable = this.repTable;
     }
 
 
@@ -160,22 +170,34 @@ public abstract class JustificationModel
     public String toString() {
         final StringBuffer sb = new StringBuffer("JustificationModel{");
         sb.append("name='").append(name).append('\'');
-        sb.append(", symbols=").append(symbols);
+        sb.append(", symbols=").append(symbolTable);
         sb.append(", ready=").append(frozen);
         sb.append('}');
         return sb.toString();
     }
 
-    public JustificationElement getDirectReplacementOf(JustificationElement elem) {
-        return repTable.getParent(elem);
+    private void registerElement(JustificationElement e) {
+        e.setContainer(this);
+        e.recordScope(this.getName(), e.getIdentifier());
+        this.symbolTable.record(e.getIdentifier(), e);
     }
 
-    public JustificationElement getOriginalOf(JustificationElement elem) {
-        return repTable.getOriginalParent(elem);
+    private void registerElement(JustificationElement e, JustificationElement rep) {
+        this.symbolTable.record(e.getIdentifier(), e, rep);
+        e.setContainer(this);
+        e.recordScope(this.getName(), rep.getScope());
     }
 
-    public boolean hasReplacementRecord(JustificationElement elem) {
-        return repTable.containsKey(elem);
+    private void registerElement(JustificationElement e, Set<JustificationElement> reps) {
+        this.symbolTable.record(e.getIdentifier(), e, reps);
+        e.setContainer(this);
+        for (JustificationElement rep : reps) {
+            if (!e.getIdentifier().equals(rep.getIdentifier())) {
+                e.recordScope(this.getName());
+            } else {
+                e.recordScope(this.getName(), rep.getScope());
+            }
+        }
     }
 
 }

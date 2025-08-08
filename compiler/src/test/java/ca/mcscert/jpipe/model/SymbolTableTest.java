@@ -1,45 +1,49 @@
 package ca.mcscert.jpipe.model;
 
 import ca.mcscert.jpipe.error.DuplicateSymbol;
-import ca.mcscert.jpipe.error.UnknownSymbol;
+import ca.mcscert.jpipe.model.elements.Conclusion;
+import ca.mcscert.jpipe.model.elements.Evidence;
+import ca.mcscert.jpipe.model.elements.Strategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SymbolTableTest {
 
-    private SymbolTable<Integer> t123;
-    private SymbolTable<Integer> t456;
-    private SymbolTable<Integer> t34;
+    private SymbolTable t1;
 
     @BeforeEach
-    public void initialize() {
-        t123 = new SymbolTable<>();
-        t123.record("one", 1);
-        t123.record("two", 2);
-        t123.record("three", 3);
-
-        t456 = new SymbolTable<>();
-        t456.record("four", 4);
-        t456.record("five", 5);
-        t456.record("six", 6);
-
-        t34 = new SymbolTable<>();
-        t34.record("three", 3);
-        t34.record("four", 4);
-
+    public void setUp() {
+        this.t1 = new SymbolTable();
+        Evidence e1 = new Evidence("e", "Test evidence");
+        Strategy s1 = new Strategy("s", "Test strategy");
+        Conclusion c1 = new Conclusion("c", "Test conclusion");
+        t1.record(e1.getIdentifier(), e1);
+        t1.record(s1.getIdentifier(), s1);
+        t1.record(c1.getIdentifier(), c1);
     }
 
     @Test
-    public void scalarTable() {
-        assertEquals(t123.get("one"), 1);
-        assertThrows(UnknownSymbol.class, () -> t123.get("four"));
+    public void containsCorrectSymbols() {
+        assertTrue(t1.exists("e"));
+        assertTrue(t1.exists("s"));
+        assertTrue(t1.exists("c"));
+    }
+
+
+    @Test
+    public void cannotRecordExactDuplicates() {
+        Evidence e1 = (Evidence) t1.get("e");
+        assertThrows(DuplicateSymbol.class, () -> t1.record(e1.getIdentifier(), e1));
     }
 
     @Test
-    public void cannotRecordDuplicates() {
-        assertThrows(DuplicateSymbol.class, () -> t123.record("one", 42));
+    public void canRecordDuplicatesIdentifiers() {
+        Evidence e2 = new Evidence("e", "Another evidence");
+        e2.setScope(e2.getIdentifier());
+        e2.recordScope("test scope");
+        t1.record(e2.getIdentifier(), e2);
+        assertEquals(t1.get("test scope:e"), e2);
     }
-
-
 }

@@ -1,59 +1,105 @@
 package ca.mcscert.jpipe.model;
 
 import ca.mcscert.jpipe.error.DuplicateSymbol;
+import ca.mcscert.jpipe.error.MultipleSymbols;
 import ca.mcscert.jpipe.error.UnknownSymbol;
+import ca.mcscert.jpipe.model.elements.JustificationElement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
- * Define a scope inside a model element, binding local symbols (strings) to elements of type T.
+ * Define the hierarchical status of each Justification Element by their given string identifier.
+ * Each Justification Model have a symbol tree to contain
+ * all their own Justification Elements with their respective scope.
+ * A single identifier has a one-to-many relationship with Justification Elements.
  *
- * <p>Example: a given justification contains a symbol table of JustificationElements.</p>
- *
- * @param <T> the type of elements stored in the
  */
-public final class SymbolTable<T> {
+public final class SymbolTable {
 
-    private final Map<String, T> symbols;
+    // symbol table
+    private final Map<String, Set<JustificationElement>> elements;
+    // representation table
+    private final HierarchyMap<JustificationElement> hierarchyMap;
 
-    /**
-     * Build an empty table.
-     */
     public SymbolTable() {
-        this.symbols = new HashMap<>();
+        this.elements = new HashMap<>();
+        this.hierarchyMap = new HierarchyMap<>();
     }
 
     /**
-     * Record a new symbol in the symbol table.
+     * Records an identifier and its related justification element.
      *
-     * @param identifier the symbol's identifier.
-     * @param element the element to record.
-     * @throws DuplicateSymbol is this symbol is already used in the table.
+     * @param identifier String identifier
+     * @param element Justification element
      */
-    public void record(String identifier, T element) throws DuplicateSymbol {
+    public void record(String identifier, JustificationElement element) throws DuplicateSymbol {
+        recordingToTree(identifier, element);
+        this.hierarchyMap.record(element);
+    }
+
+    /**
+     * Records an identifier and its related justification element.
+     *
+     * @param identifier String identifier
+     * @param element Justification element
+     */
+    public void record(String identifier, JustificationElement element,
+                       JustificationElement rep) throws DuplicateSymbol {
+        recordingToTree(identifier, element);
+        this.hierarchyMap.record(element, rep);
+    }
+
+    /**
+     * Records an identifier and its related justification element.
+     *
+     * @param identifier String identifier
+     * @param element Justification element
+     */
+    public void record(String identifier, JustificationElement element,
+                       Set<JustificationElement> reps) throws DuplicateSymbol {
+        recordingToTree(identifier, element);
+        this.hierarchyMap.record(element, reps);
+    }
+
+    private void recordingToTree(String identifier, JustificationElement element) {
         if (this.keys().contains(identifier)) {
-            throw new DuplicateSymbol(identifier);
+            for (JustificationElement je : this.elements.get(identifier)) {
+                if (je.equals(element)) {
+                    throw new DuplicateSymbol(identifier);
+                }
+            }
+            this.elements.get(identifier).add(element);
+        } else {
+            this.elements.put(identifier, new HashSet<>());
+            this.elements.get(identifier).add(element);
         }
-        this.symbols.put(identifier, element);
     }
 
     /**
-     * Delete a symbol in the table.
+     * Deletes an identifier and the given justification element.
      *
-     * @param identifier the identifier to remove from the table
-     * @throws UnknownSymbol if that very symbol does not exist
+     * @param identifier String identifier
+     * @throws UnknownSymbol if element is not found in the SymbolTree
      */
-    public void delete(String identifier) throws UnknownSymbol {
-        if (!this.keys().contains(identifier)) {
-            throw new UnknownSymbol(identifier);
+    public void delete(String identifier, JustificationElement element) {
+        if (this.keys().contains(identifier)) {
+            for (JustificationElement je : this.elements.get(identifier)) {
+                if (je.equals(element)) {
+                    this.elements.get(identifier).remove(je);
+                    if (this.elements.get(identifier).isEmpty()) {
+                        this.elements.remove(identifier);
+                    }
+                    this.hierarchyMap.delete(element);
+                    return;
+                }
+            }
         }
-        this.symbols.remove(identifier);
+        throw new UnknownSymbol(identifier);
     }
-
 
     /**
      * Get the element associated to a given symbol inside the table.
@@ -62,9 +108,49 @@ public final class SymbolTable<T> {
      * @return the stored element, if any.
      * @throws UnknownSymbol if the symbol is not defined in the table.
      */
-    public T get(String identifier) throws UnknownSymbol {
-        if (this.symbols.containsKey(identifier)) {
-            return this.symbols.get(identifier);
+    public JustificationElement get(String identifier) throws UnknownSymbol {
+        if (identifier.contains(":")) {
+            String[] parts = identifier.split(":");
+            String id = parts[parts.length - 1];
+            return getElement(id, identifier);
+        }
+        return getElement(identifier);
+    }
+
+    private JustificationElement getElement(String identifier) {
+        if (this.elements.containsKey(identifier)) {
+            if (this.elements.get(identifier).size() == 1) {
+                return this.elements.get(identifier).iterator().next();
+            }
+            throw new MultipleSymbols(identifier);
+        }
+        throw new UnknownSymbol(identifier);
+    }
+
+    /**
+     * Get the element associated to a given symbol inside the table.
+     *
+     * @param identifier the identifier one is looking for.
+     * @return the stored element, if any.
+     * @throws UnknownSymbol if the symbol is not defined in the table.
+     */
+    private JustificationElement getElement(String identifier, String scope) throws UnknownSymbol {
+        if (this.elements.containsKey(identifier)) {
+            JustificationElement je = null;
+            for (JustificationElement e : this.elements.get(identifier)) {
+                if (e.getScope().equals(scope)) {
+                    return e;
+                }
+                if (e.getScope().contains(scope)) {
+                    if (je != null) {
+                        throw new MultipleSymbols(identifier);
+                    }
+                    je = e;
+                }
+            }
+            if (je != null) {
+                return je;
+            }
         }
         throw new UnknownSymbol(identifier);
     }
@@ -74,8 +160,10 @@ public final class SymbolTable<T> {
      *
      * @return a collection of elements.
      */
-    public Collection<T> values() {
-        return new HashSet<>(this.symbols.values());
+    public Collection<JustificationElement> values() {
+        return elements.values().stream()
+                .flatMap(Set::stream)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -84,7 +172,7 @@ public final class SymbolTable<T> {
      * @return The symbols, as a set of strings.
      */
     public Set<String> keys() {
-        return new HashSet<>(this.symbols.keySet());
+        return new HashSet<>(this.elements.keySet());
     }
 
     /**
@@ -94,18 +182,16 @@ public final class SymbolTable<T> {
      * @return true if it exists, false elsewhere.
      */
     public boolean exists(String identifier) {
-        return this.symbols.containsKey(identifier);
+        return this.elements.containsKey(identifier);
     }
 
-
-    @Override
-    public String toString() {
-        StringJoiner joiner = new StringJoiner(",", "{", "}");
-        Set<String> keys = this.keys();
-        for (String key : keys) {
-            joiner.add(key + " -->> " + this.get(key).toString());
-        }
-        return joiner.toString();
+    public HierarchyMap<JustificationElement> getHierarchyMap() {
+        return hierarchyMap;
     }
+
+    public boolean containsHierachyKey(JustificationElement element) {
+        return this.hierarchyMap.containsKey(element);
+    }
+
 
 }

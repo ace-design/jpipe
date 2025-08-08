@@ -55,27 +55,27 @@ public class multipleAssemblyIT extends SourceFileTest {
             JustificationModel j = unit.get("j");
             assertEquals(j.get("c"),   j.get("j:c"));
             assertEquals(j.get("AND"), j.get("j:AND"));
-            assertEquals(j.get("c1"), j.get("j:c1"));
-            assertEquals(j.get("c2"), j.get("j:c2"));
-            assertEquals(j.get("c3"), j.get("j:c3"));
-            assertEquals(j.get("s1"), j.get("j:s1"));
-            assertEquals(j.get("s2"), j.get("j:s2"));
-            assertEquals(j.get("s3"), j.get("j:s3"));
-            assertEquals(j.get("e1"), j.get("j:e1"));
+            assertEquals(j.get("c1"), j.get("j:j1:c1"));
+            assertEquals(j.get("c2"), j.get("j:j2:c2"));
+            assertEquals(j.get("c3"), j.get("j:j3:c3"));
+            assertEquals(j.get("s1"), j.get("j:j1:s1"));
+            assertEquals(j.get("s2"), j.get("j:j2:s2"));
+            assertEquals(j.get("s3"), j.get("j:j3:s3"));
+            assertEquals(j.get("e1"), j.get("j:j1:e1"));
         }
 
         @Test
         public void elementsHaveTheRightType() {
             JustificationModel j = unit.get("j");
-            assertInstanceOf(Conclusion.class,   j.get("j:c"));
-            assertInstanceOf(Strategy.class, j.get("j:AND"));
-            assertInstanceOf(SubConclusion.class, j.get("j:c1"));
-            assertInstanceOf(SubConclusion.class, j.get("j:c2"));
-            assertInstanceOf(SubConclusion.class, j.get("j:c3"));
-            assertInstanceOf(Strategy.class, j.get("j:s1"));
-            assertInstanceOf(Strategy.class, j.get("j:s2"));
-            assertInstanceOf(Strategy.class, j.get("j:s3"));
-            assertInstanceOf(Evidence.class, j.get("j:e1"));
+            assertInstanceOf(Conclusion.class,   j.get("c"));
+            assertInstanceOf(Strategy.class, j.get("AND"));
+            assertInstanceOf(SubConclusion.class, j.get("c1"));
+            assertInstanceOf(SubConclusion.class, j.get("c2"));
+            assertInstanceOf(SubConclusion.class, j.get("c3"));
+            assertInstanceOf(Strategy.class, j.get("s1"));
+            assertInstanceOf(Strategy.class, j.get("s2"));
+            assertInstanceOf(Strategy.class, j.get("s3"));
+            assertInstanceOf(Evidence.class, j.get("e1"));
         }
 
         @Test

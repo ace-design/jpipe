@@ -1,0 +1,19 @@
+load "simple.jd"
+
+justification j1 {
+
+    conclusion c is "Prover is available"
+    strategy strat is "Prove model"
+    evidence e is "Evidences to prove"
+
+    strat supports c
+    e supports strat
+
+}
+
+composition {
+    justification j is assemble(j1, proving) {
+        conclusionLabel:  "This model is ready to deploy"
+        strategyLabel: "Aggregating all subconclusion"
+    }
+}

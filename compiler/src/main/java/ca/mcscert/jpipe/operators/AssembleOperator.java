@@ -1,5 +1,6 @@
 package ca.mcscert.jpipe.operators;
 
+import ca.mcscert.jpipe.model.HierarchyMap;
 import ca.mcscert.jpipe.model.elements.Conclusion;
 import ca.mcscert.jpipe.model.elements.Evidence;
 import ca.mcscert.jpipe.model.elements.JustificationElement;
@@ -51,19 +52,21 @@ public class AssembleOperator extends CompositionOperator {
         Strategy newStrategy = new Strategy("AND", strategyLabel);
         newStrategy.supports(newConclusion);
         output.add(newStrategy);
-        HashMap<JustificationElement, JustificationElement> representations = new HashMap<>();
+        HierarchyMap<JustificationElement> representations = new HierarchyMap<>();
         // Go through each justification models
         HashMap<JustificationElement, List<JustificationElement>> evi2Strats = new HashMap<>();
         for (JustificationModel justificationModel : inputs) {
-            representations.putAll(justificationModel.representations());
+            representations.recordAll(justificationModel.representations());
             for (JustificationElement justificationElement : justificationModel.contents()) {
                 // Transform each conclusion --> sub-conclusion
                 if (justificationElement instanceof Conclusion) {
                     SubConclusion subConclusion = ((Conclusion) justificationElement)
                             .intoSubConclusion(newStrategy);
-                    output.add(subConclusion, representations.get(justificationElement));
+                    output.add(subConclusion, justificationModel
+                            .representations().getAllParents(justificationElement));
                 } else if (justificationElement instanceof Strategy) {
-                    output.add(justificationElement, representations.get(justificationElement));
+                    output.add(justificationElement, justificationModel
+                            .representations().getAllParents(justificationElement));
                     for (JustificationElement sup : justificationElement.getSupports()) {
                         if (!(sup instanceof Evidence)) {
                             continue;
@@ -77,7 +80,8 @@ public class AssembleOperator extends CompositionOperator {
                         justificationElement.removeSupport(sup);
                     }
                 } else if (justificationElement instanceof SubConclusion) {
-                    output.add(justificationElement,  representations.get(justificationElement));
+                    output.add(justificationElement, justificationModel
+                            .representations().getAllParents(justificationElement));
                 }
             }
         }
@@ -88,15 +92,8 @@ public class AssembleOperator extends CompositionOperator {
                     justificationElement.supports(strat);
                 }
             }
-            output.add(justificationElement,  representations.get(justificationElement));
+            output.add(justificationElement,  representations.getAllParents(justificationElement));
             justificationElement.supports(evi2Strats.get(justificationElement).getFirst());
-            // Context: When merging different element together, the subsequent
-            //  elements will disappear from the repTable
-            // Problem: This prevents the error management to find the original value
-            // Dilemma: Assuming that the error handling will not be go deeper than one layer,
-            //  do we really need to keep track of it
-            // Solution: Map<T, List<T>> --> one to many
-            // Issue: How will we find the original value (2 parents)
         }
     }
 

@@ -18,6 +18,7 @@ public abstract class JustificationElement
     protected final String identifier;
     protected final String label;
     protected JustificationModel container;
+    protected String scope;
 
     /**
      * A justification element comes minimally with a label and an identifier.
@@ -29,6 +30,7 @@ public abstract class JustificationElement
         this.uid = UUID.randomUUID().getMostSignificantBits();
         this.identifier = identifier;
         this.label = label;
+        this.scope = identifier;
     }
 
     public final String getIdentifier() {
@@ -48,8 +50,42 @@ public abstract class JustificationElement
         return prefix + ":" + this.identifier;
     }
 
+    public final String getScope() {
+        return scope;
+    }
+
     final void setContainer(JustificationModel container) {
         this.container = container;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    /**
+     * Sets or updates the scope of the Justification Element.
+     *
+     * @param prefix   String outer scope or prefix
+     * @param newScope Optional scope to be used; if null, current scope is reused
+     */
+    public void recordScope(String prefix, String newScope) {
+        String targetScope = (newScope != null) ? newScope : scope;
+        String[] args = targetScope.split(":");
+
+        if (!args[0].equals(prefix)) {
+            scope = prefix + ":" + targetScope;
+        } else {
+            scope = targetScope;
+        }
+    }
+
+    /**
+     * Overload for recordScope when only prefix is provided.
+     *
+     * @param prefix String outer scope
+     */
+    public void recordScope(String prefix) {
+        recordScope(prefix, null);
     }
 
     /**
@@ -138,7 +174,6 @@ public abstract class JustificationElement
         throw new IllegalArgumentException("Justification element "
                 + this + " cannot be supported by " + as);
     }
-
 
     @Override
     public final boolean equals(Object o) {

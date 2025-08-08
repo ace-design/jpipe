@@ -67,6 +67,8 @@ public final class Conclusion extends JustificationElement {
             subConclusion.supports(strategy);
         }
         subConclusion.acceptAsSupport(this.strategy);
+        subConclusion.setContainer(container);
+        subConclusion.setScope(scope);
         return subConclusion;
     }
 
@@ -79,6 +81,8 @@ public final class Conclusion extends JustificationElement {
     public SubConclusion intoSubConclusion() {
         SubConclusion subConclusion = new SubConclusion(this.identifier, this.label);
         subConclusion.acceptAsSupport(this.strategy);
+        subConclusion.setContainer(container);
+        subConclusion.setScope(scope);
         return subConclusion;
     }
 }
